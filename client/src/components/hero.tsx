@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Shield, Award, Rocket } from "lucide-react";
 
@@ -22,13 +23,13 @@ export default function Hero() {
               Access Netflix, Prime, Disney+, AI tools, software licenses, and more at unbeatable prices. Genuine access, instant delivery.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-slide-up">
+              <Link href="/products">
+                <Button className="bg-white text-gray-900 px-8 py-4 text-lg font-semibold hover:bg-gray-100 transition-colors">
+                  Explore Products
+                </Button>
+              </Link>
               <Button 
                 onClick={scrollToProducts}
-                className="bg-white text-gray-900 px-8 py-4 text-lg font-semibold hover:bg-gray-100 transition-colors"
-              >
-                Explore Products
-              </Button>
-              <Button 
                 variant="outline"
                 className="border-2 border-white text-white px-8 py-4 text-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors bg-transparent"
               >

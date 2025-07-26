@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import CheckoutModal from "@/components/checkout-modal";
 import { Product } from "@shared/schema";
 
 interface ProductCardProps {
@@ -9,11 +8,10 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [, setLocation] = useLocation();
 
   return (
-    <>
-      <div className="product-card bg-card rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl border">
+    <div className="product-card bg-card rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl border">
         <div className="relative">
           <img 
             src={product.image} 
@@ -57,19 +55,12 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           <Button 
             className="w-full font-semibold"
-            onClick={() => setShowCheckout(true)}
+            onClick={() => setLocation(`/checkout?product=${product.id}`)}
             disabled={!product.available}
           >
             {product.available ? "Buy Now" : "Out of Stock"}
           </Button>
         </div>
       </div>
-
-      <CheckoutModal 
-        product={product}
-        isOpen={showCheckout}
-        onClose={() => setShowCheckout(false)}
-      />
-    </>
   );
 }

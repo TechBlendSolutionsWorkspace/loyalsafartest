@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { Sun, Moon, ShoppingCart, Menu, X } from "lucide-react";
@@ -6,6 +7,7 @@ import { Sun, Moon, ShoppingCart, Menu, X } from "lucide-react";
 export default function Header() {
   const { theme, setTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [location] = useLocation();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -20,45 +22,67 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
               <div className="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
                 <i className="fas fa-digital-tachograph text-white text-lg"></i>
               </div>
               <span className="text-xl font-bold text-foreground">MTS Digital Services</span>
-            </div>
+            </Link>
           </div>
           
           <nav className="hidden md:flex space-x-8">
-            <button 
-              onClick={() => scrollToSection('home')}
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Home
-            </button>
-            <button 
-              onClick={() => scrollToSection('products')}
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Products
-            </button>
-            <button 
-              onClick={() => scrollToSection('about')}
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              About
-            </button>
-            <button 
-              onClick={() => scrollToSection('blog')}
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Blog
-            </button>
-            <button 
-              onClick={() => scrollToSection('contact')}
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Contact
-            </button>
+            {location === '/' ? (
+              <>
+                <button 
+                  onClick={() => scrollToSection('home')}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Home
+                </button>
+                <button 
+                  onClick={() => scrollToSection('products')}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Products
+                </button>
+                <button 
+                  onClick={() => scrollToSection('about')}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  About
+                </button>
+                <button 
+                  onClick={() => scrollToSection('blog')}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Blog
+                </button>
+                <button 
+                  onClick={() => scrollToSection('contact')}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Contact
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/" className="text-muted-foreground hover:text-primary transition-colors">
+                  Home
+                </Link>
+                <Link href="/products" className="text-muted-foreground hover:text-primary transition-colors">
+                  Products
+                </Link>
+                <Link href="/#about" className="text-muted-foreground hover:text-primary transition-colors">
+                  About
+                </Link>
+                <Link href="/#blog" className="text-muted-foreground hover:text-primary transition-colors">
+                  Blog
+                </Link>
+                <Link href="/#contact" className="text-muted-foreground hover:text-primary transition-colors">
+                  Contact
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className="flex items-center space-x-4">
