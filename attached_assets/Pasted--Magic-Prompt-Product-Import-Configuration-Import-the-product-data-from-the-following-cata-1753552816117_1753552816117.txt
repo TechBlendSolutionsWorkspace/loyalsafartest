@@ -1,0 +1,64 @@
+🧙‍♂️ Magic Prompt – Product Import & Configuration
+
+Import the product data from the following catalogs into the MTS Digital Services e-commerce site.
+These are digital goods organized under four main categories: OTT Subscriptions, VPN Services, Cloud Storage, and Streaming Services.
+Each product must be set up as a variable product (with multiple durations), and configured to support user selections, pricing updates, and WhatsApp order redirection.
+
+⸻
+
+🔧 Implementation Details:
+
+📁 Categories & Subcategories:
+	•	Use the “Main Category” column to define the parent product category.
+	•	Use the “Subcategory” column as brand/service filter or secondary categorization.
+
+⸻
+
+🛒 Product Configuration:
+
+For each unique service or platform:
+	1.	Create one main product listing (e.g., “Netflix - Private Profile”).
+	2.	Use the “Duration” values as attributes/variations (1M, 3M, 6M, 12M).
+	3.	Each variation must include:
+	•	✅ Duration
+	•	✅ Our Price (shown to user)
+	•	✅ Features (shown in product short description or feature tabs)
+	•	✅ Activation Time & Warranty (displayed in meta/tooltip/info tab)
+	•	✅ Notes (optional info below product card)
+
+⸻
+
+🔄 Price Logic:
+	•	On duration selection, the corresponding “Our Price” is auto-updated on screen.
+	•	“Official Price” can be shown as a crossed MRP for comparison.
+
+⸻
+
+📱 WhatsApp Redirection:
+	•	After clicking “Buy Now”, user pays via UPI/Paytm/Google Pay (manual payment).
+	•	Upon clicking “I’ve Paid – Continue”, trigger a redirect to WhatsApp with pre-filled message:
+
+Hi, I’ve completed my order for [Full Product Name] – [Duration] – Order ID #[UniqueID]. Please confirm my access.
+
+📥 Product Sources:
+
+Import from the following product catalogs:
+	•	OTT CATALOGUE.xlsx – Category: OTT Subscriptions
+	•	VPN CATALOGUE.csv – Category: VPN Services
+	•	CLOUD CATALOGUE.csv – Category: Cloud Storage
+	•	STREAMING CATALOGUE.csv – Category: Streaming Services
+
+Each file includes:
+	•	Full Product Name
+	•	Duration
+	•	Our Price & Official Price
+	•	Features
+	•	Activation Time, Warranty, Notes
+
+⸻
+
+✅ Output Expectation:
+	•	Products are listed with drop-downs or buttons to select duration.
+	•	Price and feature description update instantly based on variation.
+	•	WhatsApp message includes selected duration and product ID.
+	•	Admin can manage these entries easily through a WooCommerce-style dashboard or CSV importer (optional plugin: WP All Import).

@@ -34,11 +34,19 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Data Models
-- **Products**: Digital services with pricing, categories, and availability
-- **Categories**: Service groupings (OTT, AI tools, etc.)
-- **Orders**: Purchase records with payment method and status tracking
+- **Products**: Digital services with detailed specifications including duration, features, activation time, warranty, and pricing
+- **Categories**: Four main service groupings (OTT Subscriptions, VPN Services, Cloud Storage, Streaming Services)
+- **Orders**: Purchase records with payment method and WhatsApp integration
 - **Testimonials**: Customer reviews and ratings
 - **Blog Posts**: Content marketing articles
+
+### Recent Changes (January 26, 2025)
+- ✓ Imported authentic product data from CSV catalogs
+- ✓ Updated product schema to include duration, features, activation time, warranty, and notes
+- ✓ Enhanced product cards with detailed service information
+- ✓ Integrated Font Awesome icons for better visual presentation
+- ✓ Updated WhatsApp integration to use full product names
+- ✓ Focused on four main categories: OTT, VPN, Cloud Storage, and Streaming Services
 
 ### Core Features
 - **Product Catalog**: Filterable grid with category-based navigation

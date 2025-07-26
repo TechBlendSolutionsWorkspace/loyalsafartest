@@ -34,9 +34,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="p-6">
           <div className="flex items-center mb-3">
             <i className={`${product.icon} text-primary text-2xl mr-3`}></i>
-            <h3 className="text-lg font-semibold text-card-foreground">{product.name}</h3>
+            <div>
+              <h3 className="text-lg font-semibold text-card-foreground">{product.name}</h3>
+              <span className="text-sm text-muted-foreground">{product.duration}</span>
+            </div>
           </div>
-          <p className="text-muted-foreground mb-4">{product.description}</p>
+          <p className="text-muted-foreground mb-2">{product.description}</p>
+          <p className="text-sm text-blue-600 dark:text-blue-400 mb-4">{product.features}</p>
           <div className="flex items-center justify-between mb-4">
             <div>
               <span className="text-2xl font-bold text-primary">₹{product.price}</span>
@@ -45,6 +49,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
               {product.discount}% OFF
             </Badge>
+          </div>
+          <div className="text-xs text-muted-foreground mb-3 space-y-1">
+            <div>⚡ {product.activationTime}</div>
+            <div>🛡️ {product.warranty} warranty</div>
+            {product.notes && <div>📝 {product.notes}</div>}
           </div>
           <Button 
             className="w-full font-semibold"

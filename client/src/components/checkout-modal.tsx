@@ -73,7 +73,7 @@ export default function CheckoutModal({ product, isOpen, onClose }: CheckoutModa
       const orderData: InsertOrder = {
         orderId,
         productId: product.id,
-        productName: product.name,
+        productName: product.fullProductName,
         price: product.price,
         paymentMethod: selectedPaymentMethod,
         status: "pending",
@@ -83,7 +83,7 @@ export default function CheckoutModal({ product, isOpen, onClose }: CheckoutModa
       await orderMutation.mutateAsync(orderData);
 
       // Redirect to WhatsApp
-      redirectToWhatsApp(product.name, orderId);
+      redirectToWhatsApp(product.fullProductName, orderId);
 
       toast({
         title: "Order Created",
