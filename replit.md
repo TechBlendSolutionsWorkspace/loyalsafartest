@@ -13,7 +13,18 @@ Preferred communication style: Simple, everyday language.
 ### Frontend Architecture
 - **Framework**: React 18 with TypeScript
 - **Routing**: Wouter (lightweight client-side routing)
-- **State Management**: TanStack Query (React Query) for server state
+- **State Management**
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-    TanStack Query (React Query) for server state
 - **UI Framework**: Shadcn/ui components built on Radix UI primitives
 - **Styling**: Tailwind CSS with custom design system
 - **Build Tool**: Vite for fast development and optimized builds
