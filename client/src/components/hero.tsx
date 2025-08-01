@@ -20,7 +20,7 @@ export default function Hero() {
               <span className="text-yellow-300">Unbeatable Prices</span>
             </h1>
             <p className="text-lg sm:text-xl mb-8 text-blue-100 animate-slide-up leading-relaxed">
-              Authentic subscriptions for Surfshark VPN, NordVPN, Google Cloud Storage, Spotify Premium, YouTube Music & more. 
+              Authentic subscriptions for Netflix, Prime Video, Disney+ Hotstar, Sony LIV, Surfshark VPN, Google Cloud Storage & more. 
               <span className="block mt-2 text-base text-yellow-200 font-semibold">100% Genuine • Instant Delivery • Trusted by 10,000+ Customers</span>
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-slide-up justify-center md:justify-start">
@@ -57,26 +57,30 @@ export default function Hero() {
             {/* Brand Showcase */}
             <div className="mt-8 sm:mt-12">
               <p className="text-blue-200 text-sm mb-4 font-medium">Authorized for Premium Brands</p>
-              <div className="flex flex-wrap gap-6 justify-center md:justify-start items-center">
+              <div className="flex flex-wrap gap-4 justify-center md:justify-start items-center">
+                <div className="flex items-center space-x-2 text-white/90">
+                  <i className="fas fa-play text-red-600 text-xl"></i>
+                  <span className="text-sm font-semibold">Netflix</span>
+                </div>
+                <div className="flex items-center space-x-2 text-white/90">
+                  <i className="fas fa-video text-blue-400 text-xl"></i>
+                  <span className="text-sm font-semibold">Prime Video</span>
+                </div>
+                <div className="flex items-center space-x-2 text-white/90">
+                  <i className="fas fa-magic text-purple-400 text-xl"></i>
+                  <span className="text-sm font-semibold">Disney+</span>
+                </div>
                 <div className="flex items-center space-x-2 text-white/90">
                   <i className="fas fa-shield-alt text-blue-400 text-xl"></i>
-                  <span className="text-sm font-semibold">Surfshark</span>
+                  <span className="text-sm font-semibold">VPN</span>
                 </div>
                 <div className="flex items-center space-x-2 text-white/90">
-                  <i className="fas fa-shield-alt text-indigo-400 text-xl"></i>
-                  <span className="text-sm font-semibold">NordVPN</span>
-                </div>
-                <div className="flex items-center space-x-2 text-white/90">
-                  <i className="fab fa-google text-red-400 text-xl"></i>
+                  <i className="fab fa-google text-yellow-400 text-xl"></i>
                   <span className="text-sm font-semibold">Google</span>
                 </div>
                 <div className="flex items-center space-x-2 text-white/90">
                   <i className="fab fa-spotify text-green-400 text-xl"></i>
                   <span className="text-sm font-semibold">Spotify</span>
-                </div>
-                <div className="flex items-center space-x-2 text-white/90">
-                  <i className="fab fa-youtube text-red-500 text-xl"></i>
-                  <span className="text-sm font-semibold">YouTube</span>
                 </div>
               </div>
             </div>
