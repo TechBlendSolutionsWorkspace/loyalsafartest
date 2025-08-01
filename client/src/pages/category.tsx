@@ -98,14 +98,14 @@ export default function CategoryPage() {
               <p className="text-muted-foreground text-lg">No products available in this category yet.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {mainProducts.map((product) => (
-                <div key={product.id} className="business-card rounded-xl p-6 hover:shadow-xl transition-all duration-300">
+                <div key={product.id} className="business-card rounded-xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
                   <div className="relative mb-4">
                     <img 
                       src={product.image} 
                       alt={product.name}
-                      className="w-full h-48 object-cover rounded-lg"
+                      className="w-full h-36 sm:h-48 object-cover rounded-lg"
                     />
                     {(product.popular || product.trending) && (
                       <div className="absolute top-3 left-3">
@@ -117,33 +117,33 @@ export default function CategoryPage() {
                   </div>
 
                   <div className="mb-4">
-                    <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                    <p className="text-muted-foreground text-sm mb-3">{product.description}</p>
+                    <h3 className="text-lg sm:text-xl font-bold mb-2 line-clamp-1">{product.name}</h3>
+                    <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-2">{product.description}</p>
                     
                     <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-primary">₹{product.price}</span>
-                        <span className="text-sm text-muted-foreground line-through">₹{product.originalPrice}</span>
+                      <div className="flex items-baseline gap-1 sm:gap-2">
+                        <span className="text-xl sm:text-2xl font-bold text-primary">₹{product.price}</span>
+                        <span className="text-xs sm:text-sm text-muted-foreground line-through">₹{product.originalPrice}</span>
                       </div>
-                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs">
                         {product.discount}% OFF
                       </Badge>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground mb-4">
                       <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded">
-                        <i className="fas fa-clock mr-2 text-blue-500"></i>
-                        <span>{product.activationTime}</span>
+                        <i className="fas fa-clock mr-2 text-blue-500 text-xs"></i>
+                        <span className="truncate">{product.activationTime}</span>
                       </div>
                       <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded">
-                        <i className="fas fa-shield-check mr-2 text-green-500"></i>
-                        <span>{product.warranty}</span>
+                        <i className="fas fa-shield-check mr-2 text-green-500 text-xs"></i>
+                        <span className="truncate">{product.warranty}</span>
                       </div>
                     </div>
                   </div>
 
                   <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                    <Button className="w-full font-semibold">
+                    <Button className="w-full font-semibold text-sm sm:text-base">
                       View Plans
                     </Button>
                   </Link>

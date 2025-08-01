@@ -88,7 +88,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -135,15 +135,15 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-4 md:space-y-6">
+          <TabsList className="grid w-full grid-cols-3 text-xs sm:text-sm">
+            <TabsTrigger value="overview" className="px-2 sm:px-4">Overview</TabsTrigger>
+            <TabsTrigger value="products" className="px-2 sm:px-4">Products</TabsTrigger>
+            <TabsTrigger value="orders" className="px-2 sm:px-4">Orders</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="overview" className="space-y-4 md:space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
               {/* Top Products */}
               <Card>
                 <CardHeader>
@@ -151,20 +151,20 @@ export default function AdminDashboard() {
                   <CardDescription>Best performing products by revenue</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     {topProducts.map((product: any, index) => (
-                      <div key={product.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">
+                      <div key={product.id} className="flex items-center justify-between p-3 md:p-4 border rounded-lg">
+                        <div className="flex items-center space-x-2 md:space-x-3">
+                          <div className="w-6 h-6 md:w-8 md:h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs md:text-sm font-bold">
                             {index + 1}
                           </div>
-                          <div>
-                            <p className="font-medium text-sm">{product.name}</p>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-xs md:text-sm truncate">{product.name}</p>
                             <p className="text-xs text-muted-foreground">{product.orderCount} orders</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold">₹{product.revenue.toLocaleString()}</p>
+                          <p className="font-bold text-sm md:text-base">₹{product.revenue.toLocaleString()}</p>
                           <p className="text-xs text-muted-foreground">Revenue</p>
                         </div>
                       </div>

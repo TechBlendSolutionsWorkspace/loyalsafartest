@@ -60,19 +60,19 @@ export default function ProductGrid({ products, categories, isLoading }: Product
     <>
       {/* Featured Products */}
       {featuredProducts.length > 0 && (
-        <section className="py-16 bg-gray-50 dark:bg-gray-900">
+        <section className="py-8 md:py-16 bg-gray-50 dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
                 Popular & Trending
               </h2>
-              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4">
                 Our most popular digital services with unbeatable prices
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
               {featuredProducts.slice(0, 6).map((product) => (
-                <div key={product.id} className="business-card rounded-xl p-6 hover:shadow-xl transition-all duration-300">
+                <div key={product.id} className="business-card rounded-xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
                   <div className="relative mb-4">
                     <img 
                       src={product.image} 
@@ -111,37 +111,37 @@ export default function ProductGrid({ products, categories, isLoading }: Product
       )}
 
       {/* Service Categories */}
-      <section id="categories" className="py-16">
+      <section id="categories" className="py-8 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
               Service Categories
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4">
               Choose from our premium digital service categories
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
             {categories.map((category) => (
               <div 
                 key={category.id} 
-                className="business-card rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 group"
+                className="business-card rounded-xl p-6 md:p-8 text-center hover:shadow-xl transition-all duration-300 group"
               >
-                <div className="mb-6">
-                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <i className={`${category.icon} text-white text-3xl`}></i>
+                <div className="mb-4 md:mb-6">
+                  <div className="w-16 h-16 md:w-20 md:h-20 mx-auto bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <i className={`${category.icon} text-white text-2xl md:text-3xl`}></i>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2">
                     {category.name}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  <p className="text-gray-600 dark:text-gray-400 text-xs md:text-sm line-clamp-2">
                     {category.description}
                   </p>
                 </div>
                 
                 <Link href={`/category/${category.slug}`}>
-                  <Button className="w-full group-hover:bg-primary/90 transition-colors">
+                  <Button className="w-full group-hover:bg-primary/90 transition-colors text-sm md:text-base">
                     Browse {category.name}
                     <i className="fas fa-arrow-right ml-2 text-sm"></i>
                   </Button>
