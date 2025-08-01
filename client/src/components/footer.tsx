@@ -30,13 +30,16 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
-                <i className="fas fa-digital-tachograph text-white text-lg"></i>
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i className="fas fa-shield-check text-white text-xl"></i>
               </div>
-              <span className="text-xl font-bold">MTS Digital Services</span>
+              <div>
+                <span className="text-xl font-bold">MTS Digital Services</span>
+                <p className="text-sm text-gray-400">Premium Services</p>
+              </div>
             </div>
-            <p className="text-gray-400 mb-4">Making premium digital services accessible and affordable for everyone.</p>
+            <p className="text-gray-400 mb-4 leading-relaxed">Your trusted partner for authentic premium digital subscriptions at unbeatable prices. Serving customers across India with genuine services.</p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Facebook className="h-5 w-5" />

@@ -22,12 +22,15 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 gradient-bg rounded-lg flex items-center justify-center">
-                <i className="fas fa-digital-tachograph text-white text-sm sm:text-lg"></i>
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-90 transition-opacity">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i className="fas fa-shield-check text-white text-lg sm:text-xl"></i>
               </div>
-              <span className="text-lg sm:text-xl font-bold text-foreground hidden xs:block">MTS Digital Services</span>
-              <span className="text-lg sm:text-xl font-bold text-foreground block xs:hidden">MTS</span>
+              <div className="hidden xs:block">
+                <span className="text-xl sm:text-2xl font-bold text-foreground">MTS Digital</span>
+                <p className="text-xs text-muted-foreground font-medium">Premium Services</p>
+              </div>
+              <span className="text-xl sm:text-2xl font-bold text-foreground block xs:hidden">MTS</span>
             </Link>
           </div>
           
