@@ -21,58 +21,60 @@ export default function Header() {
     <header className="bg-background/95 shadow-lg sticky top-0 z-50 backdrop-blur-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
-                <i className="fas fa-digital-tachograph text-white text-lg"></i>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 gradient-bg rounded-lg flex items-center justify-center">
+                <i className="fas fa-digital-tachograph text-white text-sm sm:text-lg"></i>
               </div>
-              <span className="text-xl font-bold text-foreground">MTS Digital Services</span>
+              <span className="text-lg sm:text-xl font-bold text-foreground hidden xs:block">MTS Digital Services</span>
+              <span className="text-lg sm:text-xl font-bold text-foreground block xs:hidden">MTS</span>
             </Link>
           </div>
           
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {location === '/' ? (
               <>
                 <button 
                   onClick={() => scrollToSection('home')}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors font-medium"
                 >
                   Home
                 </button>
                 <button 
                   onClick={() => scrollToSection('products')}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors font-medium"
                 >
                   Products
                 </button>
                 <button 
                   onClick={() => scrollToSection('about')}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors font-medium"
                 >
                   About
                 </button>
                 <button 
                   onClick={() => scrollToSection('blog')}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors font-medium"
                 >
                   Blog
                 </button>
                 <button 
                   onClick={() => scrollToSection('contact')}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors font-medium"
                 >
                   Contact
                 </button>
               </>
             ) : (
               <>
-                <Link href="/" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/" className="text-muted-foreground hover:text-primary transition-colors font-medium">
                   Home
                 </Link>
-                <Link href="/products" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/products" className="text-muted-foreground hover:text-primary transition-colors font-medium">
                   Products
                 </Link>
-                <Link href="/#about" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/#about" className="text-muted-foreground hover:text-primary transition-colors font-medium">
                   About
                 </Link>
                 <Link href="/#blog" className="text-muted-foreground hover:text-primary transition-colors">

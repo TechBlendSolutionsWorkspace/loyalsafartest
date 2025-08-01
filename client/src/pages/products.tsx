@@ -67,44 +67,44 @@ export default function Products() {
       
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Our Digital Services</h1>
-          <p className="text-muted-foreground text-lg">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Our Digital Services</h1>
+          <p className="text-muted-foreground text-base sm:text-lg px-4">
             Premium digital subscriptions and tools at unbeatable prices
           </p>
         </div>
 
         {/* Category Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <div 
-            className={`p-4 rounded-lg border cursor-pointer transition-colors ${
+            className={`p-3 sm:p-4 rounded-lg border cursor-pointer transition-colors ${
               selectedCategory === "all" ? "border-primary bg-primary/5" : "border-border hover:border-primary"
             }`}
             onClick={() => setSelectedCategory("all")}
           >
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{products.length}</div>
-              <div className="text-sm text-muted-foreground">All Products</div>
+              <div className="text-xl sm:text-2xl font-bold text-primary">{products.length}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">All Products</div>
             </div>
           </div>
           {categoryStats.map((category) => (
             <div 
               key={category.slug}
-              className={`p-4 rounded-lg border cursor-pointer transition-colors ${
+              className={`p-3 sm:p-4 rounded-lg border cursor-pointer transition-colors ${
                 selectedCategory === category.slug ? "border-primary bg-primary/5" : "border-border hover:border-primary"
               }`}
               onClick={() => setSelectedCategory(category.slug)}
             >
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{category.count}</div>
-                <div className="text-sm text-muted-foreground">{category.name}</div>
+                <div className="text-xl sm:text-2xl font-bold text-primary">{category.count}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">{category.name}</div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Select category" />
@@ -131,8 +131,8 @@ export default function Products() {
             </SelectContent>
           </Select>
 
-          <div className="flex items-center gap-2">
-            <Badge variant="outline">
+          <div className="flex items-center gap-2 sm:ml-auto">
+            <Badge variant="outline" className="text-xs sm:text-sm">
               {sortedProducts.length} product{sortedProducts.length !== 1 ? 's' : ''} found
             </Badge>
           </div>
@@ -140,7 +140,7 @@ export default function Products() {
 
         {/* Products Grid */}
         {sortedProducts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {sortedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

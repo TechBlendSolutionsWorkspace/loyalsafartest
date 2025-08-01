@@ -161,7 +161,7 @@ export default function Checkout() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="mb-6">
           <Button variant="ghost" onClick={() => setLocation('/')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -169,9 +169,9 @@ export default function Checkout() {
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Product Selection */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
               <h1 className="text-3xl font-bold mb-2">Checkout</h1>
               <p className="text-muted-foreground">Complete your order for premium digital services</p>
