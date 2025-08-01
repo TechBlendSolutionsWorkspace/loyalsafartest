@@ -1055,4 +1055,187 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Admin and Analytics functionality
+export interface AdminStats {
+  totalRevenue: number;
+  totalOrders: number;
+  totalProducts: number;
+  totalReviews: number;
+  averageRating: number;
+  conversionRate: number;
+  revenueGrowth: number;
+  orderGrowth: number;
+}
+
+export interface ChartData {
+  name: string;
+  value: number;
+  revenue?: number;
+  orders?: number;
+  users?: number;
+  pageViews?: number;
+}
+
+// Enhanced storage with analytics
+class MemStorageWithAnalytics extends MemStorage {
+  private analytics: any[] = [];
+  private adminLogs: any[] = [];
+
+  // Analytics methods
+  trackEvent(event: string, data: any = {}, userId?: string, sessionId?: string) {
+    this.analytics.push({
+      id: this.generateId(),
+      event,
+      data,
+      userId,
+      sessionId,
+      ipAddress: '127.0.0.1',
+      userAgent: 'Browser',
+      createdAt: new Date(),
+    });
+  }
+
+  getAnalytics(days: number = 30): any[] {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    return this.analytics.filter(a => new Date(a.createdAt) >= cutoff);
+  }
+
+  // Admin dashboard stats
+  getAdminStats(days: number = 30): AdminStats {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    
+    const recentOrders = this.orders.filter(o => new Date(o.createdAt) >= cutoff);
+    const totalRevenue = recentOrders.reduce((sum, order) => sum + order.amount, 0);
+    const totalOrders = recentOrders.length;
+    
+    // Previous period for comparison
+    const prevCutoff = new Date(cutoff);
+    prevCutoff.setDate(prevCutoff.getDate() - days);
+    const prevOrders = this.orders.filter(o => {
+      const orderDate = new Date(o.createdAt);
+      return orderDate >= prevCutoff && orderDate < cutoff;
+    });
+    const prevRevenue = prevOrders.reduce((sum, order) => sum + order.amount, 0);
+    
+    const reviews = this.reviews.filter(r => r.isVerified && !r.isHidden);
+    const averageRating = reviews.length > 0 
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length 
+      : 0;
+
+    // Calculate conversion rate (orders / unique page views)
+    const pageViews = this.getAnalytics(days).filter(a => a.event === 'page_view').length;
+    const conversionRate = pageViews > 0 ? (totalOrders / pageViews) * 100 : 0;
+
+    return {
+      totalRevenue,
+      totalOrders,
+      totalProducts: this.products.length,
+      totalReviews: reviews.length,
+      averageRating,
+      conversionRate,
+      revenueGrowth: prevRevenue > 0 ? ((totalRevenue - prevRevenue) / prevRevenue) * 100 : 0,
+      orderGrowth: prevOrders.length > 0 ? ((totalOrders - prevOrders.length) / prevOrders.length) * 100 : 0,
+    };
+  }
+
+  getRevenueChartData(days: number = 30): ChartData[] {
+    const data: { [key: string]: number } = {};
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+
+    this.orders
+      .filter(o => new Date(o.createdAt) >= cutoff)
+      .forEach(order => {
+        const date = new Date(order.createdAt).toLocaleDateString();
+        data[date] = (data[date] || 0) + order.amount;
+      });
+
+    return Object.entries(data).map(([name, revenue]) => ({ name, revenue }));
+  }
+
+  getOrdersChartData(days: number = 30): ChartData[] {
+    const data: { [key: string]: number } = {};
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+
+    this.orders
+      .filter(o => new Date(o.createdAt) >= cutoff)
+      .forEach(order => {
+        const date = new Date(order.createdAt).toLocaleDateString();
+        data[date] = (data[date] || 0) + 1;
+      });
+
+    return Object.entries(data).map(([name, orders]) => ({ name, orders }));
+  }
+
+  getProductsChartData(days: number = 30): ChartData[] {
+    const categoryData: { [key: string]: number } = {};
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+
+    this.orders
+      .filter(o => new Date(o.createdAt) >= cutoff)
+      .forEach(order => {
+        const product = this.products.find(p => p.id === order.productId);
+        if (product) {
+          const category = this.categories.find(c => c.id === product.category);
+          const categoryName = category?.name || 'Other';
+          categoryData[categoryName] = (categoryData[categoryName] || 0) + order.amount;
+        }
+      });
+
+    return Object.entries(categoryData).map(([name, value]) => ({ name, value }));
+  }
+
+  getTopProducts(days: number = 30): any[] {
+    const productData: { [key: string]: { revenue: number; orders: number; name: string } } = {};
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+
+    this.orders
+      .filter(o => new Date(o.createdAt) >= cutoff)
+      .forEach(order => {
+        const product = this.products.find(p => p.id === order.productId);
+        if (product) {
+          if (!productData[product.id]) {
+            productData[product.id] = { revenue: 0, orders: 0, name: product.name };
+          }
+          productData[product.id].revenue += order.amount;
+          productData[product.id].orders += 1;
+        }
+      });
+
+    return Object.values(productData)
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10);
+  }
+
+  getRecentOrders(limit: number = 20): any[] {
+    return this.orders
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit)
+      .map(order => {
+        const product = this.products.find(p => p.id === order.productId);
+        return {
+          ...order,
+          product: product?.name || 'Unknown Product',
+        };
+      });
+  }
+
+  logAdminAction(adminId: string, action: string, target?: string, details: any = {}) {
+    this.adminLogs.push({
+      id: this.generateId(),
+      adminId,
+      action,
+      target,
+      details,
+      ipAddress: '127.0.0.1',
+      createdAt: new Date(),
+    });
+  }
+}
+
+export const storage = new MemStorageWithAnalytics();

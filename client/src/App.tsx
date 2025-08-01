@@ -10,6 +10,7 @@ import ProductVariantsPage from "@/pages/product-variants";
 import Products from "@/pages/products";
 import Checkout from "@/pages/checkout";
 import Reviews from "@/pages/reviews";
+import AdminDashboard from "@/pages/admin-simple";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/products" component={Products} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/reviews" component={Reviews} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

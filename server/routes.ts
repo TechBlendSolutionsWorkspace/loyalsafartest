@@ -114,6 +114,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Dashboard API Routes
+  app.get("/api/admin/stats", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const stats = (storage as any).getAdminStats(days);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  app.get("/api/admin/revenue-chart", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const data = (storage as any).getRevenueChartData(days);
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching revenue chart:", error);
+      res.status(500).json({ message: "Failed to fetch revenue data" });
+    }
+  });
+
+  app.get("/api/admin/orders-chart", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const data = (storage as any).getOrdersChartData(days);
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching orders chart:", error);
+      res.status(500).json({ message: "Failed to fetch orders data" });
+    }
+  });
+
+  app.get("/api/admin/products-chart", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const data = (storage as any).getProductsChartData(days);
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching products chart:", error);
+      res.status(500).json({ message: "Failed to fetch products data" });
+    }
+  });
+
+  app.get("/api/admin/top-products", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const data = (storage as any).getTopProducts(days);
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching top products:", error);
+      res.status(500).json({ message: "Failed to fetch top products" });
+    }
+  });
+
+  app.get("/api/admin/recent-orders", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const data = (storage as any).getRecentOrders(limit);
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching recent orders:", error);
+      res.status(500).json({ message: "Failed to fetch recent orders" });
+    }
+  });
+
+  app.get("/api/admin/analytics", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const data = (storage as any).getAnalytics(days);
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      res.status(500).json({ message: "Failed to fetch analytics" });
+    }
+  });
+
+  // Analytics tracking endpoint
+  app.post("/api/analytics/track", async (req, res) => {
+    try {
+      const { event, data, userId, sessionId } = req.body;
+      (storage as any).trackEvent(event, data, userId, sessionId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error tracking analytics:", error);
+      res.status(500).json({ message: "Failed to track event" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

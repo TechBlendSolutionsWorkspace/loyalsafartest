@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, jsonb, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -121,4 +121,54 @@ export const insertReviewSchema = createInsertSchema(reviews).omit({
 });
 
 export type Review = typeof reviews.$inferSelect;
+
+// Admin tables
+export const admins = pgTable("admins", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: text("role").notNull().default("admin"), // admin, super_admin
+  permissions: text("permissions").array().default(sql`ARRAY[]::text[]`),
+  lastLogin: timestamp("last_login"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const adminSessions = pgTable("admin_sessions", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  adminId: text("admin_id").references(() => admins.id, { onDelete: "cascade" }),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const analytics = pgTable("analytics", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  event: text("event").notNull(), // page_view, product_view, purchase, search
+  data: jsonb("data").default(sql`'{}'::jsonb`),
+  userId: text("user_id"),
+  sessionId: text("session_id"),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const adminLogs = pgTable("admin_logs", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  adminId: text("admin_id").references(() => admins.id),
+  action: text("action").notNull(),
+  target: text("target"), // product_id, user_id, etc.
+  details: jsonb("details").default(sql`'{}'::jsonb`),
+  ipAddress: text("ip_address"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type Admin = typeof admins.$inferSelect;
+export type InsertAdmin = typeof admins.$inferInsert;
+export type Analytics = typeof analytics.$inferSelect;
+export type InsertAnalytics = typeof analytics.$inferInsert;
+export type AdminLog = typeof adminLogs.$inferSelect;
+export type InsertAdminLog = typeof adminLogs.$inferInsert;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
