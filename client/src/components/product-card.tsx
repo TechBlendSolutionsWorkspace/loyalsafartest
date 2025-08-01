@@ -1,7 +1,10 @@
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Product } from "@shared/schema";
+import { Product, Review } from "@shared/schema";
+import StarRating from "./star-rating";
+import { MessageCircle } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -9,6 +12,17 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [, setLocation] = useLocation();
+  
+  // Fetch reviews for this product
+  const { data: reviews = [] } = useQuery<Review[]>({
+    queryKey: ["/api/products", product.id, "reviews"],
+  });
+  
+  // Calculate review stats
+  const totalReviews = reviews.length;
+  const averageRating = totalReviews > 0 
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews 
+    : 0;
 
   return (
     <div className="product-card bg-card rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 border flex flex-col h-full">
@@ -38,7 +52,18 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
           <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{product.description}</p>
-          <p className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 mb-4 line-clamp-2">{product.features}</p>
+          <p className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 mb-3 line-clamp-2">{product.features}</p>
+          
+          {/* Review Stats */}
+          {totalReviews > 0 && (
+            <div className="flex items-center gap-2 mb-3">
+              <StarRating rating={Math.round(averageRating)} size="sm" />
+              <span className="text-sm text-muted-foreground">
+                {averageRating.toFixed(1)} ({totalReviews} review{totalReviews !== 1 ? 's' : ''})
+              </span>
+            </div>
+          )}
+          
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
             <div className="flex items-baseline gap-2">
               <span className="text-xl sm:text-2xl font-bold text-primary">₹{product.price}</span>

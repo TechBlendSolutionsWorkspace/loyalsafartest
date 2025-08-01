@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertOrderSchema } from "@shared/schema";
+import { insertOrderSchema, insertReviewSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Products
@@ -82,6 +82,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(posts);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch blog posts" });
+    }
+  });
+
+  // Reviews
+  app.get("/api/reviews", async (req, res) => {
+    try {
+      const reviews = await storage.getPublishedReviews();
+      res.json(reviews);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  app.get("/api/products/:productId/reviews", async (req, res) => {
+    try {
+      const reviews = await storage.getPublishedReviewsByProduct(req.params.productId);
+      res.json(reviews);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch product reviews" });
+    }
+  });
+
+  app.post("/api/reviews", async (req, res) => {
+    try {
+      const reviewData = insertReviewSchema.parse(req.body);
+      const review = await storage.createReview(reviewData);
+      res.json(review);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid review data" });
     }
   });
 

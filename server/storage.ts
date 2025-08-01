@@ -1,6 +1,6 @@
-import { type Product, type InsertProduct, type Category, type InsertCategory, type Order, type InsertOrder, type Testimonial, type InsertTestimonial, type BlogPost, type InsertBlogPost, products, categories, orders, testimonials, blogPosts } from "@shared/schema";
+import { type Product, type InsertProduct, type Category, type InsertCategory, type Order, type InsertOrder, type Testimonial, type InsertTestimonial, type BlogPost, type InsertBlogPost, type Review, type InsertReview, products, categories, orders, testimonials, blogPosts, reviews } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
   // Products
@@ -26,6 +26,14 @@ export interface IStorage {
   // Blog Posts
   getBlogPosts(): Promise<BlogPost[]>;
   getFeaturedBlogPosts(): Promise<BlogPost[]>;
+  
+  // Reviews
+  getReviews(): Promise<Review[]>;
+  getReviewsByProduct(productId: string): Promise<Review[]>;
+  getPublishedReviews(): Promise<Review[]>;
+  getPublishedReviewsByProduct(productId: string): Promise<Review[]>;
+  createReview(review: InsertReview): Promise<Review>;
+  updateReviewStatus(id: string, isPublished: boolean): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -894,6 +902,38 @@ export class DatabaseStorage implements IStorage {
 
   async getFeaturedBlogPosts(): Promise<BlogPost[]> {
     return await db.select().from(blogPosts).where(eq(blogPosts.featured, true));
+  }
+
+  // Review methods
+  async getReviews(): Promise<Review[]> {
+    return await db.select().from(reviews);
+  }
+
+  async getReviewsByProduct(productId: string): Promise<Review[]> {
+    return await db.select().from(reviews).where(eq(reviews.productId, productId));
+  }
+
+  async getPublishedReviews(): Promise<Review[]> {
+    return await db.select().from(reviews).where(eq(reviews.isPublished, true));
+  }
+
+  async getPublishedReviewsByProduct(productId: string): Promise<Review[]> {
+    return await db.select().from(reviews)
+      .where(and(eq(reviews.productId, productId), eq(reviews.isPublished, true)));
+  }
+
+  async createReview(insertReview: InsertReview): Promise<Review> {
+    const [review] = await db
+      .insert(reviews)
+      .values(insertReview)
+      .returning();
+    return review;
+  }
+
+  async updateReviewStatus(id: string, isPublished: boolean): Promise<void> {
+    await db.update(reviews)
+      .set({ isPublished, updatedAt: new Date().toISOString() })
+      .where(eq(reviews.id, id));
   }
 }
 

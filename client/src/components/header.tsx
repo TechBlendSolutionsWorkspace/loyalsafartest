@@ -74,6 +74,9 @@ export default function Header() {
                 <Link href="/products" className="text-muted-foreground hover:text-primary transition-colors font-medium">
                   Products
                 </Link>
+                <Link href="/reviews" className="text-muted-foreground hover:text-primary transition-colors font-medium">
+                  Reviews
+                </Link>
                 <Link href="/#about" className="text-muted-foreground hover:text-primary transition-colors font-medium">
                   About
                 </Link>
