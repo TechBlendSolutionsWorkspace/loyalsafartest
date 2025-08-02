@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { FileUpload } from "@/components/file-upload";
+
 import { Plus, Edit, Trash2, Eye, Users, TrendingUp, ShoppingCart, Package, DollarSign, Activity, Calendar, Star, BarChart3, FileText, Settings, Search } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -105,10 +105,51 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      queryClient.refetchQueries({ queryKey: ["/api/products"] });
       setShowProductDialog(false);
       setSelectedProduct(null);
       resetProductForm();
       toast({ title: "Success", description: "Product updated successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const createCategoryMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/admin/categories", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.refetchQueries({ queryKey: ["/api/categories"] });
+      setShowCategoryDialog(false);
+      setSelectedCategory(null);
+      toast({ title: "Success", description: "Category created successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: ({ id, ...data }: any) => apiRequest("PUT", `/api/admin/categories/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.refetchQueries({ queryKey: ["/api/categories"] });
+      setShowCategoryDialog(false);
+      setSelectedCategory(null);
+      toast({ title: "Success", description: "Category updated successfully" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/categories/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.refetchQueries({ queryKey: ["/api/categories"] });
+      toast({ title: "Success", description: "Category deleted successfully" });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -130,6 +171,28 @@ export default function AdminDashboard() {
 
   const handlePriceChange = (field: 'originalPrice' | 'price', value: number) => {
     setProductFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const openCategoryDialog = (category?: Category) => {
+    setSelectedCategory(category || null);
+    setShowCategoryDialog(true);
+  };
+
+  const handleCategorySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const categoryData = {
+      name: formData.get('name') as string,
+      slug: formData.get('slug') as string,
+      description: formData.get('description') as string,
+      icon: formData.get('icon') as string,
+    };
+
+    if (selectedCategory) {
+      updateCategoryMutation.mutate({ id: selectedCategory.id, ...categoryData });
+    } else {
+      createCategoryMutation.mutate(categoryData);
+    }
   };
 
   const openProductDialog = (product?: Product) => {
@@ -162,18 +225,7 @@ export default function AdminDashboard() {
     },
   });
 
-  const createCategoryMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("POST", "/api/admin/categories", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      setShowCategoryDialog(false);
-      setSelectedCategory(null);
-      toast({ title: "Success", description: "Category created successfully" });
-    },
-    onError: (error: any) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    },
-  });
+
 
   const updateOrderStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) => 
@@ -220,18 +272,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCategorySubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data = {
-      name: formData.get("name") as string,
-      slug: formData.get("slug") as string,
-      description: formData.get("description") as string,
-      icon: formData.get("icon") as string,
-    };
 
-    createCategoryMutation.mutate(data);
-  };
 
   if (statsLoading || productsLoading || categoriesLoading) {
     return (
@@ -557,17 +598,18 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* File Upload Section - Replace Image URL Input */}
+                    {/* Image URL Input */}
                     <div className="space-y-2">
-                      <Label>Product Image Upload</Label>
-                      <FileUpload
-                        onUploadComplete={(url) => setProductFormData(prev => ({ ...prev, image: url }))}
-                        currentImage={productFormData.image}
-                        accept="image/*"
-                        maxSize={5}
-                        className="w-full"
+                      <Label htmlFor="image">Image URL</Label>
+                      <Input
+                        id="image"
+                        name="image"
+                        type="url"
+                        value={productFormData.image}
+                        onChange={(e) => setProductFormData(prev => ({ ...prev, image: e.target.value }))}
+                        placeholder="https://example.com/image.jpg"
+                        required
                       />
-                      <input type="hidden" name="image" value={productFormData.image} />
                     </div>
 
                     {/* Product Variant Selection Section */}
@@ -802,32 +844,32 @@ export default function AdminDashboard() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add New Category</DialogTitle>
-                    <DialogDescription>Create a new product category</DialogDescription>
+                    <DialogTitle>{selectedCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
+                    <DialogDescription>{selectedCategory ? 'Update category details' : 'Create a new product category'}</DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleCategorySubmit} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="categoryName">Category Name</Label>
-                      <Input id="categoryName" name="name" required />
+                      <Input id="categoryName" name="name" defaultValue={selectedCategory?.name} required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="categorySlug">Slug</Label>
-                      <Input id="categorySlug" name="slug" placeholder="e.g., gaming-tools" required />
+                      <Input id="categorySlug" name="slug" defaultValue={selectedCategory?.slug} placeholder="e.g., gaming-tools" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="categoryDescription">Description</Label>
-                      <Textarea id="categoryDescription" name="description" />
+                      <Textarea id="categoryDescription" name="description" defaultValue={selectedCategory?.description || ''} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="categoryIcon">Icon Class</Label>
-                      <Input id="categoryIcon" name="icon" placeholder="e.g., fas fa-gamepad" required />
+                      <Input id="categoryIcon" name="icon" defaultValue={selectedCategory?.icon} placeholder="e.g., fas fa-gamepad" required />
                     </div>
                     <div className="flex justify-end space-x-2">
                       <Button type="button" variant="outline" onClick={() => setShowCategoryDialog(false)}>
                         Cancel
                       </Button>
-                      <Button type="submit" disabled={createCategoryMutation.isPending}>
-                        Create Category
+                      <Button type="submit" disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}>
+                        {selectedCategory ? 'Update Category' : 'Create Category'}
                       </Button>
                     </div>
                   </form>
@@ -849,9 +891,33 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">{category.description}</p>
-                    <p className="text-sm font-medium">
-                      {safeProducts.filter((p: Product) => p.category === category.slug).length} products
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium">
+                        {safeProducts.filter((p: Product) => p.category === category.slug).length} products
+                      </p>
+                      <div className="flex items-center space-x-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openCategoryDialog(category)}
+                          className="p-2"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            if (confirm("Are you sure you want to delete this category?")) {
+                              deleteCategoryMutation.mutate(category.id);
+                            }
+                          }}
+                          className="p-2"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ))}

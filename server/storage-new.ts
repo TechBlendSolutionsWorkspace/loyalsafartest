@@ -14,6 +14,8 @@ export interface IStorage {
   getCategories(): Promise<Category[]>;
   getCategory(id: string): Promise<Category | undefined>;
   createCategory(category: InsertCategory): Promise<Category>;
+  updateCategory(id: string, category: Partial<InsertCategory>): Promise<Category>;
+  deleteCategory(id: string): Promise<void>;
   
   // Orders
   getOrders(): Promise<Order[]>;
@@ -347,6 +349,23 @@ export class MemStorage implements IStorage {
     };
     this.categories.push(newCategory);
     return newCategory;
+  }
+
+  async updateCategory(id: string, updates: Partial<InsertCategory>): Promise<Category> {
+    const index = this.categories.findIndex(c => c.id === id);
+    if (index === -1) {
+      throw new Error("Category not found");
+    }
+    this.categories[index] = { ...this.categories[index], ...updates };
+    return this.categories[index];
+  }
+
+  async deleteCategory(id: string): Promise<void> {
+    const index = this.categories.findIndex(c => c.id === id);
+    if (index === -1) {
+      throw new Error("Category not found");
+    }
+    this.categories.splice(index, 1);
   }
 
   // Orders
