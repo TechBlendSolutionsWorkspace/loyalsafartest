@@ -1,4 +1,4 @@
-import { type Product, type InsertProduct, type Category, type InsertCategory, type Order, type InsertOrder, type Testimonial, type InsertTestimonial, type BlogPost, type InsertBlogPost, type Review, type InsertReview } from "@shared/schema";
+import { type Product, type InsertProduct, type Category, type InsertCategory, type Order, type InsertOrder, type Testimonial, type InsertTestimonial, type BlogPost, type InsertBlogPost, type Review, type InsertReview, type User, type UpsertUser } from "@shared/schema";
 import { nanoid } from "nanoid";
 
 export interface IStorage {
@@ -33,6 +33,13 @@ export interface IStorage {
   getPublishedReviewsByProduct(productId: string): Promise<Review[]>;
   createReview(review: InsertReview): Promise<Review>;
   updateReviewStatus(id: string, isPublished: boolean): Promise<void>;
+
+  // Users
+  getAllUsers(): Promise<User[]>;
+  getUser(id: string): Promise<User | undefined>;
+  createUser(user: UpsertUser): Promise<User>;
+  updateUser(id: string, user: UpsertUser): Promise<User>;
+  deleteUser(id: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -42,6 +49,7 @@ export class MemStorage implements IStorage {
   private testimonials: Testimonial[] = [];
   private blogPosts: BlogPost[] = [];
   private reviews: Review[] = [];
+  private users: User[] = [];
 
   constructor() {
     this.seedData();
@@ -1235,6 +1243,49 @@ class MemStorageWithAnalytics extends MemStorage {
       ipAddress: '127.0.0.1',
       createdAt: new Date(),
     });
+  }
+
+  // User Management Methods
+  async getAllUsers(): Promise<User[]> {
+    return this.users;
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    return this.users.find(user => user.id === id);
+  }
+
+  async createUser(userData: UpsertUser): Promise<User> {
+    const user: User = {
+      id: nanoid(),
+      ...userData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.push(user);
+    return user;
+  }
+
+  async updateUser(id: string, userData: UpsertUser): Promise<User> {
+    const userIndex = this.users.findIndex(user => user.id === id);
+    if (userIndex === -1) {
+      throw new Error('User not found');
+    }
+    
+    this.users[userIndex] = {
+      ...this.users[userIndex],
+      ...userData,
+      updatedAt: new Date(),
+    };
+    
+    return this.users[userIndex];
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    const userIndex = this.users.findIndex(user => user.id === id);
+    if (userIndex === -1) {
+      throw new Error('User not found');
+    }
+    this.users.splice(userIndex, 1);
   }
 }
 
