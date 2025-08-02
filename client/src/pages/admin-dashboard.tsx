@@ -90,12 +90,12 @@ export default function AdminDashboard() {
     }
   }, [productFormData.originalPrice, productFormData.price]);
 
-  // Filter parent products for variant selection
-  const filteredParentProducts = products.filter((p: Product) => 
+  // Filter parent products for variant selection - with safety check
+  const filteredParentProducts = Array.isArray(products) ? products.filter((p: Product) => 
     !p.isVariant && 
     p.id !== selectedProduct?.id &&
-    p.name.toLowerCase().includes(parentProductSearch.toLowerCase())
-  );
+    p.name && p.name.toLowerCase().includes(parentProductSearch.toLowerCase())
+  ) : [];
 
   // Mutations
   const createProductMutation = useMutation({
@@ -702,10 +702,10 @@ export default function AdminDashboard() {
                                   filteredParentProducts.map((product: Product) => (
                                     <SelectItem key={product.id} value={product.id}>
                                       <div className="flex items-center space-x-2">
-                                        <i className={product.icon} />
-                                        <span>{product.name}</span>
+                                        {product.icon && <i className={product.icon} />}
+                                        <span>{product.name || 'Unnamed Product'}</span>
                                         <Badge variant="outline" className="ml-2">
-                                          {product.category}
+                                          {product.category || 'Uncategorized'}
                                         </Badge>
                                       </div>
                                     </SelectItem>
@@ -720,7 +720,7 @@ export default function AdminDashboard() {
                           </div>
                           {productFormData.parentProductId && (
                             <div className="text-sm text-muted-foreground">
-                              Selected: {products.find((p: Product) => p.id === productFormData.parentProductId)?.name}
+                              Selected: {Array.isArray(products) ? products.find((p: Product) => p.id === productFormData.parentProductId)?.name || 'Unknown Product' : 'Loading...'}
                             </div>
                           )}
                         </div>
