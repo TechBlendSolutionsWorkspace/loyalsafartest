@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-
+import { FileUpload } from "@/components/file-upload";
 import { Plus, Edit, Trash2, Eye, Users, TrendingUp, ShoppingCart, Package, DollarSign, Activity, Calendar, Star, BarChart3, FileText, Settings, Search } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
       name: formData.get('name') as string,
       slug: formData.get('slug') as string,
       description: formData.get('description') as string,
-      icon: formData.get('icon') as string,
+      icon: "fas fa-layer-group", // Default icon for all categories
     };
 
     if (selectedCategory) {
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
       originalPrice: productFormData.originalPrice,
       discount: productFormData.discount,
       category: formData.get("category") as string,
-      icon: formData.get("icon") as string,
+      icon: "fas fa-box", // Default icon for all products
       image: productFormData.image || formData.get("image") as string,
       activationTime: formData.get("activationTime") as string,
       warranty: formData.get("warranty") as string,
@@ -586,30 +586,20 @@ export default function AdminDashboard() {
                           required
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="icon">Icon Class</Label>
-                        <Input
-                          id="icon"
-                          name="icon"
-                          defaultValue={selectedProduct?.icon}
-                          placeholder="e.g., fas fa-play"
-                          required
-                        />
-                      </div>
+
                     </div>
 
-                    {/* Image URL Input */}
+                    {/* File Upload Section */}
                     <div className="space-y-2">
-                      <Label htmlFor="image">Image URL</Label>
-                      <Input
-                        id="image"
-                        name="image"
-                        type="url"
-                        value={productFormData.image}
-                        onChange={(e) => setProductFormData(prev => ({ ...prev, image: e.target.value }))}
-                        placeholder="https://example.com/image.jpg"
-                        required
+                      <Label>Product Image Upload</Label>
+                      <FileUpload
+                        onUploadComplete={(url) => setProductFormData(prev => ({ ...prev, image: url }))}
+                        currentImage={productFormData.image}
+                        accept="image/*"
+                        maxSize={5}
+                        className="w-full"
                       />
+                      <input type="hidden" name="image" value={productFormData.image} />
                     </div>
 
                     {/* Product Variant Selection Section */}
@@ -860,10 +850,7 @@ export default function AdminDashboard() {
                       <Label htmlFor="categoryDescription">Description</Label>
                       <Textarea id="categoryDescription" name="description" defaultValue={selectedCategory?.description || ''} />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="categoryIcon">Icon Class</Label>
-                      <Input id="categoryIcon" name="icon" defaultValue={selectedCategory?.icon} placeholder="e.g., fas fa-gamepad" required />
-                    </div>
+
                     <div className="flex justify-end space-x-2">
                       <Button type="button" variant="outline" onClick={() => setShowCategoryDialog(false)}>
                         Cancel

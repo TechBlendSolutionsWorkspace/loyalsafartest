@@ -1,4 +1,4 @@
-import { type Product, type InsertProduct, type Category, type InsertCategory, type Order, type InsertOrder, type Testimonial, type InsertTestimonial, type BlogPost, type InsertBlogPost, type Review, type InsertReview } from "@shared/schema";
+import { type Product, type InsertProduct, type Category, type InsertCategory, type Order, type InsertOrder, type Testimonial, type InsertTestimonial, type BlogPost, type InsertBlogPost, type Review, type InsertReview, type User, type UpsertUser } from "@shared/schema";
 import { nanoid } from "nanoid";
 
 export interface IStorage {
@@ -43,6 +43,10 @@ export interface IStorage {
   getAdminStats(days: number): Promise<any>;
   getRevenueChartData(days: number): Promise<any>;
   getOrdersChartData(days: number): Promise<any>;
+  
+  // User authentication
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
   getProductsChartData(days: number): Promise<any>;
   getTopProducts(days: number): Promise<any>;
   getRecentOrders(limit: number): Promise<any>;
@@ -56,6 +60,7 @@ export class MemStorage implements IStorage {
   private testimonials: Testimonial[] = [];
   private blogPosts: BlogPost[] = [];
   private reviews: Review[] = [];
+  private users: User[] = [];
 
   constructor() {
     this.seedData();
@@ -574,6 +579,28 @@ export class MemStorage implements IStorage {
       },
       topProducts
     };
+  }
+
+  // User authentication methods
+  async getUser(id: string): Promise<User | undefined> {
+    return this.users.find(u => u.id === id);
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const existingIndex = this.users.findIndex(u => u.id === userData.id);
+    const user: User = {
+      ...userData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    if (existingIndex >= 0) {
+      this.users[existingIndex] = { ...this.users[existingIndex], ...user, updatedAt: new Date() };
+      return this.users[existingIndex];
+    } else {
+      this.users.push(user);
+      return user;
+    }
   }
 }
 

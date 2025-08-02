@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
-import { Sun, Moon, ShoppingCart, Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Sun, Moon, ShoppingCart, Menu, X, User, LogIn, LogOut } from "lucide-react";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
+  const { user, isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location] = useLocation();
 
@@ -117,6 +119,42 @@ export default function Header() {
               <Moon className="h-4 w-4 text-gray-600 ml-2" />
             </div>
             
+            {/* User Authentication */}
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-2">
+                {(user as any)?.profileImageUrl ? (
+                  <img
+                    src={(user as any).profileImageUrl}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
+                <span className="hidden lg:inline text-sm font-medium">
+                  {(user as any)?.firstName || "User"}
+                </span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => window.location.href = "/api/logout"}
+                  className="p-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => window.location.href = "/api/login"}
+                className="flex items-center space-x-2"
+              >
+                <LogIn className="h-4 w-4" />
+                <span className="hidden lg:inline">Login</span>
+              </Button>
+            )}
+
             <Button className="hidden md:flex">
               <ShoppingCart className="h-4 w-4 mr-2" />
               Cart (0)
