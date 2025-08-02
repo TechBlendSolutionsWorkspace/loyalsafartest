@@ -49,10 +49,13 @@ export function FileUpload({
 
         xhr.addEventListener('load', () => {
           if (xhr.status === 200) {
-            const objectPath = `/objects/uploads/${uploadURL.split('/').pop()}`;
+            // Extract object path from the upload URL
+            const urlParts = uploadURL.split('/');
+            const fileName = urlParts[urlParts.length - 1].split('?')[0]; // Remove query params
+            const objectPath = `/objects/uploads/${fileName}`;
             resolve(objectPath);
           } else {
-            reject(new Error('Upload failed'));
+            reject(new Error(`Upload failed with status: ${xhr.status}`));
           }
         });
 

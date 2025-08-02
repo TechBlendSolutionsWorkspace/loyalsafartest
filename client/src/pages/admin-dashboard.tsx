@@ -266,14 +266,14 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage your digital services business</p>
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Admin Dashboard</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Manage your digital services business</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
@@ -367,7 +367,7 @@ export default function AdminDashboard() {
                     {(dashboardStats.topProducts || []).map((product: Product) => (
                       <div key={product.id} className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <img src={product.image} alt={product.name} className="w-10 h-10 rounded object-cover" />
+                          <img src={product.image} alt={product.name} className="w-10 h-10 rounded object-cover aspect-square" />
                           <div>
                             <p className="font-medium">{product.name}</p>
                             <p className="text-sm text-muted-foreground">{product.category}</p>
@@ -389,15 +389,17 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="products" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Products Management</h2>
-              <Button onClick={() => openProductDialog()} className="mb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl sm:text-2xl font-bold">Products Management</h2>
+              <Button onClick={() => openProductDialog()} className="w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Product
               </Button>
+            </div>
 
+            <div>
               <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
                   <DialogHeader>
                     <DialogTitle>{selectedProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
                     <DialogDescription>
@@ -405,7 +407,7 @@ export default function AdminDashboard() {
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleProductSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">Product Name</Label>
                         <Input
@@ -426,7 +428,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="subcategory">Subcategory</Label>
                         <Input
@@ -470,7 +472,7 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Automatic Discount Calculation Section */}
-                    <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-blue-50/50">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 border rounded-lg bg-blue-50/50">
                       <div className="space-y-2">
                         <Label htmlFor="originalPrice">Original Price (₹)</Label>
                         <Input
@@ -506,7 +508,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="category">Category</Label>
                         <Select name="category" defaultValue={selectedProduct?.category}>
@@ -532,7 +534,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="warranty">Warranty</Label>
                         <Input
@@ -657,13 +659,14 @@ export default function AdminDashboard() {
                       />
                     </div>
 
-                    <div className="flex items-center space-x-6">
+                    <div className="flex flex-wrap items-center gap-4 sm:gap-6">
                       <div className="flex items-center space-x-2">
                         <input
                           type="checkbox"
                           id="popular"
                           name="popular"
                           defaultChecked={selectedProduct?.popular}
+                          className="rounded"
                         />
                         <Label htmlFor="popular">Popular</Label>
                       </div>
@@ -673,6 +676,7 @@ export default function AdminDashboard() {
                           id="trending"
                           name="trending"
                           defaultChecked={selectedProduct?.trending}
+                          className="rounded"
                         />
                         <Label htmlFor="trending">Trending</Label>
                       </div>
@@ -682,18 +686,25 @@ export default function AdminDashboard() {
                           id="available"
                           name="available"
                           defaultChecked={selectedProduct?.available !== false}
+                          className="rounded"
                         />
                         <Label htmlFor="available">Available</Label>
                       </div>
                     </div>
 
-                    <div className="flex justify-end space-x-2 pt-4">
-                      <Button type="button" variant="outline" onClick={() => setShowProductDialog(false)}>
+                    <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => setShowProductDialog(false)}
+                        className="w-full sm:w-auto"
+                      >
                         Cancel
                       </Button>
                       <Button 
                         type="submit" 
                         disabled={createProductMutation.isPending || updateProductMutation.isPending}
+                        className="w-full sm:w-auto"
                       >
                         {selectedProduct ? 'Update Product' : 'Create Product'}
                       </Button>
@@ -706,52 +717,55 @@ export default function AdminDashboard() {
             <Card>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full min-w-[800px]">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="text-left p-4">Product</th>
-                        <th className="text-left p-4">Category</th>
-                        <th className="text-left p-4">Price</th>
-                        <th className="text-left p-4">Status</th>
-                        <th className="text-left p-4">Actions</th>
+                        <th className="text-left p-3 md:p-4">Product</th>
+                        <th className="text-left p-3 md:p-4 hidden sm:table-cell">Category</th>
+                        <th className="text-left p-3 md:p-4">Price</th>
+                        <th className="text-left p-3 md:p-4 hidden md:table-cell">Status</th>
+                        <th className="text-left p-3 md:p-4">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {safeProducts.map((product: Product) => (
                         <tr key={product.id} className="border-b">
-                          <td className="p-4">
+                          <td className="p-3 md:p-4">
                             <div className="flex items-center space-x-3">
-                              <img src={product.image} alt={product.name} className="w-10 h-10 rounded object-cover" />
+                              <img src={product.image} alt={product.name} className="w-12 h-12 md:w-14 md:h-14 rounded-lg object-cover aspect-square" />
                               <div>
-                                <p className="font-medium">{product.name}</p>
-                                <p className="text-sm text-muted-foreground">{product.duration}</p>
+                                <p className="font-medium text-sm md:text-base">{product.name}</p>
+                                <p className="text-xs md:text-sm text-muted-foreground">{product.duration}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="p-4">{product.category}</td>
-                          <td className="p-4">
+                          <td className="p-3 md:p-4 hidden sm:table-cell">
+                            <Badge variant="outline" className="text-xs">{product.category}</Badge>
+                          </td>
+                          <td className="p-3 md:p-4">
                             <div>
-                              <span className="font-bold">₹{product.price}</span>
-                              <span className="text-sm text-muted-foreground line-through ml-2">₹{product.originalPrice}</span>
+                              <span className="font-bold text-sm md:text-base">₹{product.price}</span>
+                              <span className="text-xs text-muted-foreground line-through ml-1 block sm:inline">₹{product.originalPrice}</span>
                             </div>
                           </td>
-                          <td className="p-4">
-                            <div className="flex items-center space-x-1">
-                              <Badge variant={product.available ? "default" : "secondary"}>
+                          <td className="p-3 md:p-4 hidden md:table-cell">
+                            <div className="flex flex-wrap items-center gap-1">
+                              <Badge variant={product.available ? "default" : "secondary"} className="text-xs">
                                 {product.available ? "Available" : "Unavailable"}
                               </Badge>
-                              {product.popular && <Badge variant="outline">Popular</Badge>}
-                              {product.trending && <Badge variant="outline">Trending</Badge>}
+                              {product.popular && <Badge variant="outline" className="text-xs">Popular</Badge>}
+                              {product.trending && <Badge variant="outline" className="text-xs">Trending</Badge>}
                             </div>
                           </td>
-                          <td className="p-4">
-                            <div className="flex items-center space-x-2">
+                          <td className="p-3 md:p-4">
+                            <div className="flex items-center space-x-1">
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => openProductDialog(product)}
+                                className="p-2"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3 h-3 md:w-4 md:h-4" />
                               </Button>
                               <Button
                                 size="sm"
@@ -761,8 +775,9 @@ export default function AdminDashboard() {
                                     deleteProductMutation.mutate(product.id);
                                   }
                                 }}
+                                className="p-2"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
                               </Button>
                             </div>
                           </td>
