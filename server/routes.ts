@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage } from "./storage-new";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import jwt from "jsonwebtoken";
 import { insertOrderSchema, insertReviewSchema } from "@shared/schema";
@@ -120,7 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/stats", async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
-      const stats = (storage as any).getAdminStats(days);
+      const stats = await storage.getAdminStats(days);
       res.json(stats);
     } catch (error) {
       console.error("Error fetching admin stats:", error);
@@ -131,7 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/revenue-chart", async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
-      const data = (storage as any).getRevenueChartData(days);
+      const data = await storage.getRevenueChartData(days);
       res.json(data);
     } catch (error) {
       console.error("Error fetching revenue chart:", error);
@@ -142,7 +142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/orders-chart", async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
-      const data = (storage as any).getOrdersChartData(days);
+      const data = await storage.getOrdersChartData(days);
       res.json(data);
     } catch (error) {
       console.error("Error fetching orders chart:", error);
@@ -153,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/products-chart", async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
-      const data = (storage as any).getProductsChartData(days);
+      const data = await storage.getProductsChartData(days);
       res.json(data);
     } catch (error) {
       console.error("Error fetching products chart:", error);
@@ -164,7 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/top-products", async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
-      const data = (storage as any).getTopProducts(days);
+      const data = await storage.getTopProducts(days);
       res.json(data);
     } catch (error) {
       console.error("Error fetching top products:", error);
@@ -175,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/recent-orders", async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 20;
-      const data = (storage as any).getRecentOrders(limit);
+      const data = await storage.getRecentOrders(limit);
       res.json(data);
     } catch (error) {
       console.error("Error fetching recent orders:", error);
@@ -186,11 +186,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/analytics", async (req, res) => {
     try {
       const days = parseInt(req.query.days as string) || 30;
-      const data = (storage as any).getAnalytics(days);
+      const data = await storage.getAnalytics(days);
       res.json(data);
     } catch (error) {
       console.error("Error fetching analytics:", error);
       res.status(500).json({ message: "Failed to fetch analytics" });
+    }
+  });
+
+  // Admin CRUD endpoints
+  app.get("/api/admin/orders", async (req, res) => {
+    try {
+      const orders = await storage.getOrders();
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching admin orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.put("/api/admin/orders/:id", async (req, res) => {
+    try {
+      const { status } = req.body;
+      const order = await storage.updateOrderStatus(req.params.id, status);
+      res.json(order);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
+  app.get("/api/admin/reviews", async (req, res) => {
+    try {
+      const reviews = await storage.getReviews();
+      res.json(reviews);
+    } catch (error) {
+      console.error("Error fetching admin reviews:", error);
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  app.put("/api/admin/reviews/:id", async (req, res) => {
+    try {
+      const { isPublished } = req.body;
+      await storage.updateReviewStatus(req.params.id, isPublished);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating review status:", error);
+      res.status(500).json({ message: "Failed to update review status" });
+    }
+  });
+
+  app.post("/api/admin/products", async (req, res) => {
+    try {
+      const product = await storage.createProduct(req.body);
+      res.json(product);
+    } catch (error) {
+      console.error("Error creating product:", error);
+      res.status(500).json({ message: "Failed to create product" });
+    }
+  });
+
+  app.put("/api/admin/products/:id", async (req, res) => {
+    try {
+      const product = await storage.updateProduct(req.params.id, req.body);
+      res.json(product);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  });
+
+  app.delete("/api/admin/products/:id", async (req, res) => {
+    try {
+      await storage.deleteProduct(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+
+  app.post("/api/admin/categories", async (req, res) => {
+    try {
+      const category = await storage.createCategory(req.body);
+      res.json(category);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      res.status(500).json({ message: "Failed to create category" });
     }
   });
 
