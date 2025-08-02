@@ -10,7 +10,7 @@ import ProductVariantsPage from "@/pages/product-variants";
 import Products from "@/pages/products";
 import Checkout from "@/pages/checkout";
 import Reviews from "@/pages/reviews";
-import AdminDashboard from "@/pages/admin-simple";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
