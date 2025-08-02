@@ -42,7 +42,20 @@ export default function AdminDashboard() {
     discount: 0,
     isVariant: false,
     parentProductId: "",
-    image: ""
+    image: "",
+    name: "",
+    fullProductName: "",
+    subcategory: "",
+    duration: "",
+    description: "",
+    features: "",
+    category: "",
+    activationTime: "",
+    warranty: "",
+    notes: "",
+    popular: false,
+    trending: false,
+    available: true
   });
   const [parentProductSearch, setParentProductSearch] = useState("");
 
@@ -160,7 +173,20 @@ export default function AdminDashboard() {
       discount: 0,
       isVariant: false,
       parentProductId: "",
-      image: ""
+      image: "",
+      name: "",
+      fullProductName: "",
+      subcategory: "",
+      duration: "",
+      description: "",
+      features: "",
+      category: "",
+      activationTime: "",
+      warranty: "",
+      notes: "",
+      popular: false,
+      trending: false,
+      available: true
     });
     setParentProductSearch("");
   };
@@ -200,7 +226,20 @@ export default function AdminDashboard() {
         discount: product.discount || 0,
         isVariant: product.isVariant || false,
         parentProductId: product.parentProductId || "",
-        image: product.image || ""
+        image: product.image || "",
+        name: product.name || "",
+        fullProductName: product.fullProductName || "",
+        subcategory: product.subcategory || "",
+        duration: product.duration || "",
+        description: product.description || "",
+        features: product.features || "",
+        category: product.category || "",
+        activationTime: product.activationTime || "",
+        warranty: product.warranty || "",
+        notes: product.notes || "",
+        popular: product.popular || false,
+        trending: product.trending || false,
+        available: product.available !== false
       });
     } else {
       setSelectedProduct(null);
@@ -235,26 +274,25 @@ export default function AdminDashboard() {
 
   const handleProductSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
     const data = {
-      name: formData.get("name") as string,
-      fullProductName: formData.get("fullProductName") as string,
-      subcategory: formData.get("subcategory") as string,
-      duration: formData.get("duration") as string,
-      description: formData.get("description") as string,
-      features: formData.get("features") as string,
+      name: productFormData.name,
+      fullProductName: productFormData.fullProductName,
+      subcategory: productFormData.subcategory,
+      duration: productFormData.duration,
+      description: productFormData.description,
+      features: productFormData.features,
       price: productFormData.price,
       originalPrice: productFormData.originalPrice,
       discount: productFormData.discount,
-      category: formData.get("category") as string,
+      category: productFormData.category,
       icon: "fas fa-box", // Default icon for all products
-      image: productFormData.image || formData.get("image") as string,
-      activationTime: formData.get("activationTime") as string,
-      warranty: formData.get("warranty") as string,
-      notes: formData.get("notes") as string,
-      popular: formData.get("popular") === "on",
-      trending: formData.get("trending") === "on",
-      available: formData.get("available") !== null ? formData.get("available") === "on" : true,
+      image: productFormData.image,
+      activationTime: productFormData.activationTime,
+      warranty: productFormData.warranty,
+      notes: productFormData.notes,
+      popular: productFormData.popular,
+      trending: productFormData.trending,
+      available: productFormData.available,
       isVariant: productFormData.isVariant,
       parentProductId: productFormData.parentProductId,
       parentProductName: productFormData.parentProductId ? 
@@ -450,7 +488,9 @@ export default function AdminDashboard() {
                         <Input
                           id="name"
                           name="name"
-                          defaultValue={selectedProduct?.name}
+                          value={productFormData.name}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="e.g., Netflix Premium"
                           required
                         />
                       </div>
@@ -459,7 +499,9 @@ export default function AdminDashboard() {
                         <Input
                           id="fullProductName"
                           name="fullProductName"
-                          defaultValue={selectedProduct?.fullProductName}
+                          value={productFormData.fullProductName}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, fullProductName: e.target.value }))}
+                          placeholder="e.g., Netflix Premium - 1 Month"
                           required
                         />
                       </div>
@@ -471,7 +513,9 @@ export default function AdminDashboard() {
                         <Input
                           id="subcategory"
                           name="subcategory"
-                          defaultValue={selectedProduct?.subcategory}
+                          value={productFormData.subcategory}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, subcategory: e.target.value }))}
+                          placeholder="e.g., Premium Video"
                           required
                         />
                       </div>
@@ -480,7 +524,8 @@ export default function AdminDashboard() {
                         <Input
                           id="duration"
                           name="duration"
-                          defaultValue={selectedProduct?.duration}
+                          value={productFormData.duration}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, duration: e.target.value }))}
                           placeholder="e.g., 1 Month, 3 Months"
                           required
                         />
@@ -492,7 +537,9 @@ export default function AdminDashboard() {
                       <Textarea
                         id="description"
                         name="description"
-                        defaultValue={selectedProduct?.description}
+                        value={productFormData.description}
+                        onChange={(e) => setProductFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Describe the product and its benefits"
                         required
                       />
                     </div>
@@ -502,7 +549,8 @@ export default function AdminDashboard() {
                       <Textarea
                         id="features"
                         name="features"
-                        defaultValue={selectedProduct?.features}
+                        value={productFormData.features}
+                        onChange={(e) => setProductFormData(prev => ({ ...prev, features: e.target.value }))}
                         placeholder="List key features separated by commas"
                         required
                       />
@@ -548,7 +596,7 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="category">Category</Label>
-                        <Select name="category" defaultValue={selectedProduct?.category}>
+                        <Select value={productFormData.category} onValueChange={(value) => setProductFormData(prev => ({ ...prev, category: value }))}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
@@ -564,7 +612,8 @@ export default function AdminDashboard() {
                         <Input
                           id="activationTime"
                           name="activationTime"
-                          defaultValue={selectedProduct?.activationTime}
+                          value={productFormData.activationTime}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, activationTime: e.target.value }))}
                           placeholder="e.g., Instant, 24 Hours"
                           required
                         />
@@ -577,7 +626,8 @@ export default function AdminDashboard() {
                         <Input
                           id="warranty"
                           name="warranty"
-                          defaultValue={selectedProduct?.warranty}
+                          value={productFormData.warranty}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, warranty: e.target.value }))}
                           placeholder="e.g., 30 Days, Lifetime"
                           required
                         />
@@ -682,7 +732,8 @@ export default function AdminDashboard() {
                       <Textarea
                         id="notes"
                         name="notes"
-                        defaultValue={selectedProduct?.notes || ""}
+                        value={productFormData.notes}
+                        onChange={(e) => setProductFormData(prev => ({ ...prev, notes: e.target.value }))}
                         placeholder="Additional notes or terms"
                       />
                     </div>
@@ -693,7 +744,8 @@ export default function AdminDashboard() {
                           type="checkbox"
                           id="popular"
                           name="popular"
-                          defaultChecked={selectedProduct?.popular}
+                          checked={productFormData.popular}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, popular: e.target.checked }))}
                           className="rounded"
                         />
                         <Label htmlFor="popular">Popular</Label>
@@ -703,7 +755,8 @@ export default function AdminDashboard() {
                           type="checkbox"
                           id="trending"
                           name="trending"
-                          defaultChecked={selectedProduct?.trending}
+                          checked={productFormData.trending}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, trending: e.target.checked }))}
                           className="rounded"
                         />
                         <Label htmlFor="trending">Trending</Label>
@@ -713,7 +766,8 @@ export default function AdminDashboard() {
                           type="checkbox"
                           id="available"
                           name="available"
-                          defaultChecked={selectedProduct?.available !== false}
+                          checked={productFormData.available}
+                          onChange={(e) => setProductFormData(prev => ({ ...prev, available: e.target.checked }))}
                           className="rounded"
                         />
                         <Label htmlFor="available">Available</Label>
