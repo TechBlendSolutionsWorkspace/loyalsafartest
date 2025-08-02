@@ -5,6 +5,7 @@ import Footer from "@/components/footer";
 import { Product, Category } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ServiceIconComponent } from "@/components/service-icons";
 
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -117,7 +118,10 @@ export default function CategoryPage() {
                   </div>
 
                   <div className="mb-4">
-                    <h3 className="text-lg sm:text-xl font-bold mb-2 line-clamp-1">{product.name}</h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <ServiceIconComponent serviceName={product.name} className="flex-shrink-0" />
+                      <h3 className="text-lg sm:text-xl font-bold line-clamp-1">{product.name}</h3>
+                    </div>
                     <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-2">{product.description}</p>
                     
                     <div className="flex items-center justify-between mb-3">

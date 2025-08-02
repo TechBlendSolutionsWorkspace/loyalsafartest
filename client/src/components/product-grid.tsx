@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Product, Category } from "@shared/schema";
 import { Button } from "@/components/ui/button";
+import { ServiceIconComponent } from "@/components/service-icons";
 
 
 interface ProductGridProps {
@@ -87,8 +88,11 @@ export default function ProductGrid({ products, categories, isLoading }: Product
                       </div>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{product.description}</p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <ServiceIconComponent serviceName={product.name} className="flex-shrink-0" />
+                    <h3 className="text-xl font-bold line-clamp-1">{product.name}</h3>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">{product.description}</p>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-bold text-primary">₹{product.price}</span>

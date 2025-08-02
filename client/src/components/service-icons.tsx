@@ -25,29 +25,67 @@ export const ServiceIcons = {
 
   // Amazon Prime Video Icon
   PrimeVideo: () => (
-    <svg viewBox="0 0 24 24" className="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor">
-      <path d="M5.25 4.5c-.66 0-1.2.54-1.2 1.2v12.6c0 .66.54 1.2 1.2 1.2h13.5c.66 0 1.2-.54 1.2-1.2V5.7c0-.66-.54-1.2-1.2-1.2H5.25zM12 8.1l3.15 1.95v3.9L12 15.9l-3.15-1.95v-3.9L12 8.1zm0 1.5l-1.65 1.05v1.95L12 13.65l1.65-1.05v-1.95L12 9.6z"/>
+    <svg viewBox="0 0 100 100" className="w-6 h-6 sm:w-8 sm:h-8" fill="none">
+      <defs>
+        <linearGradient id="primeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{stopColor: '#00A8E1', stopOpacity: 1}} />
+          <stop offset="100%" style={{stopColor: '#0066CC', stopOpacity: 1}} />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="15" fill="url(#primeGradient)" />
+      <text x="50" y="30" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">amazon</text>
+      <text x="50" y="50" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">prime</text>
+      <text x="50" y="70" textAnchor="middle" fill="white" fontSize="10">video</text>
+      <polygon points="30,75 45,85 30,95" fill="white" />
     </svg>
   ),
 
   // ZEE5 Icon
   ZEE5: () => (
-    <svg viewBox="0 0 24 24" className="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor">
-      <path d="M2 2v20h20V2H2zm18 18H4V4h16v16zM6 6v2h8l-8 8v2h10v-2H8l8-8V6H6z"/>
+    <svg viewBox="0 0 100 100" className="w-6 h-6 sm:w-8 sm:h-8" fill="none">
+      <defs>
+        <linearGradient id="zee5Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{stopColor: '#7B2CBF', stopOpacity: 1}} />
+          <stop offset="100%" style={{stopColor: '#C77DFF', stopOpacity: 1}} />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="15" fill="url(#zee5Gradient)" />
+      <text x="25" y="45" fill="white" fontSize="24" fontWeight="bold">Z</text>
+      <text x="40" y="45" fill="white" fontSize="18" fontWeight="bold">EE</text>
+      <text x="70" y="60" fill="#FFD700" fontSize="20" fontWeight="bold">5</text>
     </svg>
   ),
 
-  // Sony Icon
-  Sony: () => (
-    <svg viewBox="0 0 24 24" className="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor">
-      <path d="M8.54 10.23h6.92c.41 0 .74.33.74.74v1.49c0 .41-.33.74-.74.74H8.54c-.41 0-.74-.33-.74-.74v-1.49c0-.41.33-.74.74-.74zM2 8.46v7.08h20V8.46H2zm18.26 5.34H3.74V10.2h16.52v3.6z"/>
+  // Sony LIV Icon (based on attached image)
+  SonyLIV: () => (
+    <svg viewBox="0 0 100 100" className="w-6 h-6 sm:w-8 sm:h-8" fill="none">
+      <defs>
+        <linearGradient id="sonyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{stopColor: '#00BFFF', stopOpacity: 1}} />
+          <stop offset="50%" style={{stopColor: '#8A2BE2', stopOpacity: 1}} />
+          <stop offset="100%" style={{stopColor: '#FF4500', stopOpacity: 1}} />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="15" fill="url(#sonyGradient)" />
+      <text x="50" y="25" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">SONY</text>
+      <text x="20" y="60" fill="#FFD700" fontSize="16" fontWeight="bold">li</text>
+      <text x="40" y="60" fill="#FFD700" fontSize="16" fontWeight="bold" transform="skewX(-10)">V</text>
     </svg>
   ),
 
-  // Gagana Plus (Generic Streaming Icon)
+  // Gagana Plus Icon
   GaganaPlus: () => (
-    <svg viewBox="0 0 24 24" className="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+    <svg viewBox="0 0 100 100" className="w-6 h-6 sm:w-8 sm:h-8" fill="none">
+      <defs>
+        <linearGradient id="gaganaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{stopColor: '#FF6B6B', stopOpacity: 1}} />
+          <stop offset="100%" style={{stopColor: '#4ECDC4', stopOpacity: 1}} />
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="45" fill="url(#gaganaGradient)" />
+      <text x="50" y="40" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">GAGANA</text>
+      <text x="50" y="60" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">PLUS</text>
+      <polygon points="35,70 50,80 35,90" fill="white" />
     </svg>
   )
 };
@@ -61,9 +99,15 @@ export const getServiceIcon = (serviceName: string) => {
   if (name.includes('youtube')) return ServiceIcons.YouTube;
   if (name.includes('prime') || name.includes('amazon')) return ServiceIcons.PrimeVideo;
   if (name.includes('zee5') || name.includes('zee')) return ServiceIcons.ZEE5;
-  if (name.includes('sony')) return ServiceIcons.Sony;
+  if (name.includes('sony') || name.includes('liv')) return ServiceIcons.SonyLIV;
   if (name.includes('gagana')) return ServiceIcons.GaganaPlus;
   
   // Default fallback
   return () => <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">🎵</div>;
+};
+
+// React component wrapper for easy usage
+export const ServiceIconComponent = ({ serviceName, className = "" }: { serviceName: string, className?: string }) => {
+  const IconComponent = getServiceIcon(serviceName);
+  return <div className={className}><IconComponent /></div>;
 };

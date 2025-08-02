@@ -8,6 +8,7 @@ import { Product } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
+import { ServiceIconComponent } from "@/components/service-icons";
 
 export default function ProductVariantsPage() {
   const { productName } = useParams<{ productName: string }>();
@@ -86,7 +87,10 @@ export default function ProductVariantsPage() {
           
           <div className="grid md:grid-cols-2 gap-12 items-center text-white">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">{mainProduct.name}</h1>
+              <div className="flex items-center gap-4 mb-6">
+                <ServiceIconComponent serviceName={mainProduct.name} className="w-12 h-12 md:w-16 md:h-16" />
+                <h1 className="text-4xl md:text-5xl font-bold">{mainProduct.name}</h1>
+              </div>
               <p className="text-xl text-blue-100 mb-6 leading-relaxed">
                 {mainProduct.description}
               </p>
