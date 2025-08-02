@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,9 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Eye, Users, TrendingUp, ShoppingCart, Package, DollarSign, Activity, Calendar, Star, BarChart3, FileText, Settings, Image } from "lucide-react";
+import { FileUpload } from "@/components/file-upload";
+import { Plus, Edit, Trash2, Eye, Users, TrendingUp, ShoppingCart, Package, DollarSign, Activity, Calendar, Star, BarChart3, FileText, Settings, Search } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import type { Product, Category, Order, Review } from "@shared/schema";
@@ -34,6 +36,15 @@ export default function AdminDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [showProductDialog, setShowProductDialog] = useState(false);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
+  const [productFormData, setProductFormData] = useState({
+    originalPrice: 0,
+    price: 0,
+    discount: 0,
+    isVariant: false,
+    parentProductId: "",
+    image: ""
+  });
+  const [parentProductSearch, setParentProductSearch] = useState("");
 
   // Fetch data
   const { data: stats, isLoading: statsLoading } = useQuery({
@@ -56,6 +67,23 @@ export default function AdminDashboard() {
     queryKey: ["/api/admin/reviews"],
   });
 
+  // Auto-calculate discount when prices change
+  useEffect(() => {
+    if (productFormData.originalPrice > 0 && productFormData.price > 0) {
+      const discountPercent = Math.round(
+        ((productFormData.originalPrice - productFormData.price) / productFormData.originalPrice) * 100
+      );
+      setProductFormData(prev => ({ ...prev, discount: Math.max(0, discountPercent) }));
+    }
+  }, [productFormData.originalPrice, productFormData.price]);
+
+  // Filter parent products for variant selection
+  const filteredParentProducts = products.filter((p: Product) => 
+    !p.isVariant && 
+    p.id !== selectedProduct?.id &&
+    p.name.toLowerCase().includes(parentProductSearch.toLowerCase())
+  );
+
   // Mutations
   const createProductMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/products", data),
@@ -64,6 +92,7 @@ export default function AdminDashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
       setShowProductDialog(false);
       setSelectedProduct(null);
+      resetProductForm();
       toast({ title: "Success", description: "Product created successfully" });
     },
     onError: (error: any) => {
@@ -78,12 +107,48 @@ export default function AdminDashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
       setShowProductDialog(false);
       setSelectedProduct(null);
+      resetProductForm();
       toast({ title: "Success", description: "Product updated successfully" });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
+
+  // Helper functions
+  const resetProductForm = () => {
+    setProductFormData({
+      originalPrice: 0,
+      price: 0,
+      discount: 0,
+      isVariant: false,
+      parentProductId: "",
+      image: ""
+    });
+    setParentProductSearch("");
+  };
+
+  const handlePriceChange = (field: 'originalPrice' | 'price', value: number) => {
+    setProductFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const openProductDialog = (product?: Product) => {
+    if (product) {
+      setSelectedProduct(product);
+      setProductFormData({
+        originalPrice: product.originalPrice || 0,
+        price: product.price || 0,
+        discount: product.discount || 0,
+        isVariant: product.isVariant || false,
+        parentProductId: product.parentProductId || "",
+        image: product.image || ""
+      });
+    } else {
+      setSelectedProduct(null);
+      resetProductForm();
+    }
+    setShowProductDialog(true);
+  };
 
   const deleteProductMutation = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/products/${id}`),
@@ -130,18 +195,22 @@ export default function AdminDashboard() {
       duration: formData.get("duration") as string,
       description: formData.get("description") as string,
       features: formData.get("features") as string,
-      price: parseInt(formData.get("price") as string),
-      originalPrice: parseInt(formData.get("originalPrice") as string),
-      discount: parseInt(formData.get("discount") as string),
+      price: productFormData.price,
+      originalPrice: productFormData.originalPrice,
+      discount: productFormData.discount,
       category: formData.get("category") as string,
       icon: formData.get("icon") as string,
-      image: formData.get("image") as string,
+      image: productFormData.image || formData.get("image") as string,
       activationTime: formData.get("activationTime") as string,
       warranty: formData.get("warranty") as string,
       notes: formData.get("notes") as string,
       popular: formData.get("popular") === "on",
       trending: formData.get("trending") === "on",
       available: formData.get("available") !== null ? formData.get("available") === "on" : true,
+      isVariant: productFormData.isVariant,
+      parentProductId: productFormData.parentProductId,
+      parentProductName: productFormData.parentProductId ? 
+        products.find((p: Product) => p.id === productFormData.parentProductId)?.name : null,
     };
 
     if (selectedProduct) {
@@ -322,13 +391,12 @@ export default function AdminDashboard() {
           <TabsContent value="products" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Products Management</h2>
+              <Button onClick={() => openProductDialog()} className="mb-4">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Product
+              </Button>
+
               <Dialog open={showProductDialog} onOpenChange={setShowProductDialog}>
-                <DialogTrigger asChild>
-                  <Button onClick={() => setSelectedProduct(null)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Product
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>{selectedProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
@@ -401,14 +469,16 @@ export default function AdminDashboard() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    {/* Automatic Discount Calculation Section */}
+                    <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-blue-50/50">
                       <div className="space-y-2">
                         <Label htmlFor="originalPrice">Original Price (₹)</Label>
                         <Input
                           id="originalPrice"
                           name="originalPrice"
                           type="number"
-                          defaultValue={selectedProduct?.originalPrice}
+                          value={productFormData.originalPrice}
+                          onChange={(e) => handlePriceChange('originalPrice', Number(e.target.value))}
                           required
                         />
                       </div>
@@ -418,18 +488,20 @@ export default function AdminDashboard() {
                           id="price"
                           name="price"
                           type="number"
-                          defaultValue={selectedProduct?.price}
+                          value={productFormData.price}
+                          onChange={(e) => handlePriceChange('price', Number(e.target.value))}
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="discount">Discount (%)</Label>
+                        <Label htmlFor="discount">Discount (% - Auto Calculated)</Label>
                         <Input
                           id="discount"
                           name="discount"
                           type="number"
-                          defaultValue={selectedProduct?.discount}
-                          required
+                          value={productFormData.discount}
+                          readOnly
+                          className="bg-green-50 font-semibold text-green-700"
                         />
                       </div>
                     </div>
@@ -483,15 +555,96 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
+                    {/* File Upload Section - Replace Image URL Input */}
                     <div className="space-y-2">
-                      <Label htmlFor="image">Product Image URL</Label>
-                      <Input
-                        id="image"
-                        name="image"
-                        defaultValue={selectedProduct?.image}
-                        placeholder="https://example.com/image.jpg"
-                        required
+                      <Label>Product Image Upload</Label>
+                      <FileUpload
+                        onUploadComplete={(url) => setProductFormData(prev => ({ ...prev, image: url }))}
+                        currentImage={productFormData.image}
+                        accept="image/*"
+                        maxSize={5}
+                        className="w-full"
                       />
+                      <input type="hidden" name="image" value={productFormData.image} />
+                    </div>
+
+                    {/* Product Variant Selection Section */}
+                    <div className="space-y-4 p-4 border rounded-lg bg-amber-50/50">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-lg font-semibold">Product Variant Settings</Label>
+                        <Badge variant={productFormData.isVariant ? "default" : "secondary"}>
+                          {productFormData.isVariant ? "Variant Product" : "Main Product"}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="isVariant"
+                          checked={productFormData.isVariant}
+                          onCheckedChange={(checked) => 
+                            setProductFormData(prev => ({ 
+                              ...prev, 
+                              isVariant: checked as boolean,
+                              parentProductId: checked ? prev.parentProductId : ""
+                            }))
+                          }
+                        />
+                        <Label htmlFor="isVariant" className="text-sm">
+                          This is a variant of another product (e.g., different subscription plans)
+                        </Label>
+                      </div>
+
+                      {productFormData.isVariant && (
+                        <div className="space-y-2">
+                          <Label htmlFor="parentProductSearch">Select Main Product</Label>
+                          <div className="space-y-2">
+                            <div className="relative">
+                              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                id="parentProductSearch"
+                                placeholder="Search for main product..."
+                                value={parentProductSearch}
+                                onChange={(e) => setParentProductSearch(e.target.value)}
+                                className="pl-10"
+                              />
+                            </div>
+                            <Select
+                              value={productFormData.parentProductId}
+                              onValueChange={(value) => 
+                                setProductFormData(prev => ({ ...prev, parentProductId: value }))
+                              }
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choose main product" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {filteredParentProducts.length > 0 ? (
+                                  filteredParentProducts.map((product: Product) => (
+                                    <SelectItem key={product.id} value={product.id}>
+                                      <div className="flex items-center space-x-2">
+                                        <i className={product.icon} />
+                                        <span>{product.name}</span>
+                                        <Badge variant="outline" className="ml-2">
+                                          {product.category}
+                                        </Badge>
+                                      </div>
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <SelectItem value="" disabled>
+                                    No main products found
+                                  </SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {productFormData.parentProductId && (
+                            <div className="text-sm text-muted-foreground">
+                              Selected: {products.find((p: Product) => p.id === productFormData.parentProductId)?.name}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -596,10 +749,7 @@ export default function AdminDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => {
-                                  setSelectedProduct(product);
-                                  setShowProductDialog(true);
-                                }}
+                                onClick={() => openProductDialog(product)}
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>

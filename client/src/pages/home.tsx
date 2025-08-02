@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import Header from "@/components/header";
 import Hero from "@/components/hero";
 import ProductGrid from "@/components/product-grid";
@@ -7,9 +9,12 @@ import FAQ from "@/components/faq";
 import About from "@/components/about";
 import Blog from "@/components/blog";
 import Footer from "@/components/footer";
+import { AdminLogin } from "@/components/admin-login";
 import { Product, Category } from "@shared/schema";
 
 export default function Home() {
+  const [, setLocation] = useLocation();
+  
   const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
@@ -17,6 +22,10 @@ export default function Home() {
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
+
+  const handleAdminLoginSuccess = () => {
+    setLocation("/admin");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,6 +53,9 @@ export default function Home() {
           <i className="fab fa-whatsapp text-2xl"></i>
         </a>
       </div>
+
+      {/* Admin Login Component */}
+      <AdminLogin onLoginSuccess={handleAdminLoginSuccess} />
     </div>
   );
 }

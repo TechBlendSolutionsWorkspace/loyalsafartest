@@ -23,6 +23,9 @@ export const products = pgTable("products", {
   popular: boolean("popular").default(false),
   trending: boolean("trending").default(false),
   available: boolean("available").default(true),
+  isVariant: boolean("is_variant").default(false),
+  parentProductId: varchar("parent_product_id").references(() => products.id),
+  parentProductName: text("parent_product_name"),
 });
 
 export const categories = pgTable("categories", {
@@ -122,53 +125,67 @@ export const insertReviewSchema = createInsertSchema(reviews).omit({
 
 export type Review = typeof reviews.$inferSelect;
 
-// Admin tables
+// Admin authentication table
 export const admins = pgTable("admins", {
-  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  email: text("email").notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
-  role: text("role").notNull().default("admin"), // admin, super_admin
-  permissions: text("permissions").array().default(sql`ARRAY[]::text[]`),
-  lastLogin: timestamp("last_login"),
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  username: varchar("username").notNull().unique(),
+  password: text("password").notNull(), // Should be hashed
+  email: varchar("email").notNull().unique(),
+  name: text("name").notNull(),
+  role: text("role").default("admin").notNull(),
   isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  lastLogin: text("last_login"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const insertAdminSchema = createInsertSchema(admins).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type Admin = typeof admins.$inferSelect;
+export type InsertAdmin = z.infer<typeof insertAdminSchema>;
+
+// Admin sessions table
 export const adminSessions = pgTable("admin_sessions", {
-  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
-  adminId: text("admin_id").references(() => admins.id, { onDelete: "cascade" }),
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  adminId: varchar("admin_id").references(() => admins.id).notNull(),
   token: text("token").notNull().unique(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: text("expires_at").notNull(),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const insertAdminSessionSchema = createInsertSchema(adminSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type AdminSession = typeof adminSessions.$inferSelect;
+export type InsertAdminSession = z.infer<typeof insertAdminSessionSchema>;
+
+// Analytics and admin logs table
 export const analytics = pgTable("analytics", {
-  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   event: text("event").notNull(), // page_view, product_view, purchase, search
   data: jsonb("data").default(sql`'{}'::jsonb`),
   userId: text("user_id"),
   sessionId: text("session_id"),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const adminLogs = pgTable("admin_logs", {
-  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
-  adminId: text("admin_id").references(() => admins.id),
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  adminId: varchar("admin_id").references(() => admins.id),
   action: text("action").notNull(),
   target: text("target"), // product_id, user_id, etc.
   details: jsonb("details").default(sql`'{}'::jsonb`),
   ipAddress: text("ip_address"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export type Admin = typeof admins.$inferSelect;
-export type InsertAdmin = typeof admins.$inferInsert;
 export type Analytics = typeof analytics.$inferSelect;
 export type InsertAnalytics = typeof analytics.$inferInsert;
 export type AdminLog = typeof adminLogs.$inferSelect;
 export type InsertAdminLog = typeof adminLogs.$inferInsert;
-export type InsertReview = z.infer<typeof insertReviewSchema>;
