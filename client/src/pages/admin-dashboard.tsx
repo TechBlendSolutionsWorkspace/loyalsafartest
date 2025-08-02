@@ -105,7 +105,6 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
-      queryClient.refetchQueries({ queryKey: ["/api/products"] });
       setShowProductDialog(false);
       setSelectedProduct(null);
       resetProductForm();
@@ -120,7 +119,6 @@ export default function AdminDashboard() {
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/categories", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      queryClient.refetchQueries({ queryKey: ["/api/categories"] });
       setShowCategoryDialog(false);
       setSelectedCategory(null);
       toast({ title: "Success", description: "Category created successfully" });
@@ -134,7 +132,6 @@ export default function AdminDashboard() {
     mutationFn: ({ id, ...data }: any) => apiRequest("PUT", `/api/admin/categories/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      queryClient.refetchQueries({ queryKey: ["/api/categories"] });
       setShowCategoryDialog(false);
       setSelectedCategory(null);
       toast({ title: "Success", description: "Category updated successfully" });
@@ -148,7 +145,6 @@ export default function AdminDashboard() {
     mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/categories/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      queryClient.refetchQueries({ queryKey: ["/api/categories"] });
       toast({ title: "Success", description: "Category deleted successfully" });
     },
     onError: (error: any) => {
