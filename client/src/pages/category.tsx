@@ -72,13 +72,42 @@ export default function CategoryPage() {
       <Header />
       
       {/* Category Hero */}
-      <section className="gradient-bg py-16">
-        <div className="max-w-7xl mx-auto px-4 text-center text-white">
-          <div className="mb-6">
-            <i className={`${category.icon} text-6xl mb-4 block`}></i>
+      <section className="relative py-16 md:py-20 overflow-hidden">
+        {/* Background Video - Only for OTT category */}
+        {category?.slug === 'ott' && (
+          <div className="absolute inset-0 z-0">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ 
+                filter: 'brightness(0.3) blur(1px)',
+                transform: 'scale(1.1)'
+              }}
+            >
+              <source 
+                src="@assets/Winter Theatre Performance Video Intro in Red Animated Style_1754152024546.mp4" 
+                type="video/mp4" 
+              />
+            </video>
+            {/* Video overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-purple-900/70 to-blue-900/80"></div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{category.name}</h1>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+        )}
+        
+        {/* Fallback gradient for non-OTT categories */}
+        {category?.slug !== 'ott' && (
+          <div className="absolute inset-0 gradient-bg"></div>
+        )}
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center text-white">
+          <div className="mb-6">
+            <i className={`${category.icon} text-6xl mb-4 block drop-shadow-lg`}></i>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">{category.name}</h1>
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto drop-shadow-md">
             {category.description} - Authentic subscriptions at unbeatable prices
           </p>
         </div>
