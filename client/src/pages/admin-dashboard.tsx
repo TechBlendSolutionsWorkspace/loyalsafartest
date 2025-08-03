@@ -59,25 +59,35 @@ export default function AdminDashboard() {
   });
   const [parentProductSearch, setParentProductSearch] = useState("");
 
-  // Fetch data
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  // Fetch data with forced fresh fetching
+  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
     queryKey: ["/api/admin/stats"],
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
+  const { data: products = [], isLoading: productsLoading, refetch: refetchProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
+  const { data: categories = [], isLoading: categoriesLoading, refetch: refetchCategories } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
+  const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = useQuery<Order[]>({
     queryKey: ["/api/admin/orders"],
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  const { data: reviews = [], isLoading: reviewsLoading } = useQuery<Review[]>({
+  const { data: reviews = [], isLoading: reviewsLoading, refetch: refetchReviews } = useQuery<Review[]>({
     queryKey: ["/api/admin/reviews"],
+    staleTime: 0,
+    gcTime: 0,
   });
 
   // Auto-calculate discount when prices change
@@ -100,9 +110,10 @@ export default function AdminDashboard() {
   // Mutations
   const createProductMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/products", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+    onSuccess: async () => {
+      // Force refetch instead of just invalidating
+      await queryClient.refetchQueries({ queryKey: ["/api/products"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/admin/stats"] });
       setShowProductDialog(false);
       setSelectedProduct(null);
       resetProductForm();
@@ -115,9 +126,10 @@ export default function AdminDashboard() {
 
   const updateProductMutation = useMutation({
     mutationFn: ({ id, ...data }: any) => apiRequest("PUT", `/api/admin/products/${id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+    onSuccess: async () => {
+      // Force refetch instead of just invalidating
+      await queryClient.refetchQueries({ queryKey: ["/api/products"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/admin/stats"] });
       setShowProductDialog(false);
       setSelectedProduct(null);
       resetProductForm();
@@ -130,8 +142,9 @@ export default function AdminDashboard() {
 
   const createCategoryMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/categories", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    onSuccess: async () => {
+      // Force refetch instead of just invalidating
+      await queryClient.refetchQueries({ queryKey: ["/api/categories"] });
       setShowCategoryDialog(false);
       setSelectedCategory(null);
       toast({ title: "Success", description: "Category created successfully" });
@@ -143,8 +156,9 @@ export default function AdminDashboard() {
 
   const updateCategoryMutation = useMutation({
     mutationFn: ({ id, ...data }: any) => apiRequest("PUT", `/api/admin/categories/${id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    onSuccess: async () => {
+      // Force refetch instead of just invalidating
+      await queryClient.refetchQueries({ queryKey: ["/api/categories"] });
       setShowCategoryDialog(false);
       setSelectedCategory(null);
       toast({ title: "Success", description: "Category updated successfully" });
@@ -156,8 +170,9 @@ export default function AdminDashboard() {
 
   const deleteCategoryMutation = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/categories/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    onSuccess: async () => {
+      // Force refetch instead of just invalidating
+      await queryClient.refetchQueries({ queryKey: ["/api/categories"] });
       toast({ title: "Success", description: "Category deleted successfully" });
     },
     onError: (error: any) => {
@@ -250,9 +265,10 @@ export default function AdminDashboard() {
 
   const deleteProductMutation = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/products/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+    onSuccess: async () => {
+      // Force refetch instead of just invalidating
+      await queryClient.refetchQueries({ queryKey: ["/api/products"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/admin/stats"] });
       toast({ title: "Success", description: "Product deleted successfully" });
     },
     onError: (error: any) => {
@@ -466,10 +482,24 @@ export default function AdminDashboard() {
           <TabsContent value="products" className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h2 className="text-xl sm:text-2xl font-bold">Products Management</h2>
-              <Button onClick={() => openProductDialog()} className="w-full sm:w-auto">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Product
-              </Button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button 
+                  onClick={async () => {
+                    await refetchProducts();
+                    await refetchStats();
+                    toast({ title: "Refreshed", description: "Product data has been refreshed" });
+                  }} 
+                  variant="outline" 
+                  className="flex-1 sm:flex-none"
+                >
+                  <Activity className="w-4 h-4 mr-2" />
+                  Refresh
+                </Button>
+                <Button onClick={() => openProductDialog()} className="flex-1 sm:flex-none">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Product
+                </Button>
+              </div>
             </div>
 
             <div>
@@ -875,7 +905,18 @@ export default function AdminDashboard() {
           <TabsContent value="categories" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Categories Management</h2>
-              <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={async () => {
+                    await refetchCategories();
+                    toast({ title: "Refreshed", description: "Category data has been refreshed" });
+                  }} 
+                  variant="outline"
+                >
+                  <Activity className="w-4 h-4 mr-2" />
+                  Refresh
+                </Button>
+                <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
                 <DialogTrigger asChild>
                   <Button>
                     <Plus className="w-4 h-4 mr-2" />
@@ -912,6 +953,7 @@ export default function AdminDashboard() {
                   </form>
                 </DialogContent>
               </Dialog>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
