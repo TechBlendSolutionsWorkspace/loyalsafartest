@@ -175,9 +175,9 @@ export default function CategoryPage() {
                     </div>
                   </div>
 
-                  <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                  <Link to={`/category/${category.slug}/subcategories`}>
                     <Button className="w-full font-semibold text-sm sm:text-base">
-                      View Plans
+                      View Subcategories
                     </Button>
                   </Link>
                 </div>

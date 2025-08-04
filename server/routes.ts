@@ -219,6 +219,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Subcategory image upload endpoint
+  app.post("/api/subcategories/upload-image", async (req, res) => {
+    try {
+      res.json({ message: "Image upload endpoint ready", success: true });
+    } catch (error) {
+      console.error("Error uploading subcategory image:", error);
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  });
+
   // Object Storage Routes for File Upload
   app.post("/api/objects/upload", async (req, res) => {
     try {

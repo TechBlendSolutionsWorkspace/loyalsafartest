@@ -7,6 +7,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Home from "@/pages/home";
 import CategoryPage from "@/pages/category";
 import ProductVariantsPage from "@/pages/product-variants";
+import CategorySubcategories from "@/pages/category-subcategories";
+import SubcategoryProducts from "@/pages/subcategory-products";
 import Products from "@/pages/products";
 import Checkout from "@/pages/checkout";
 import IBMPayment from "@/pages/ibm-payment";
@@ -19,6 +21,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/category/:slug" component={CategoryPage} />
+      <Route path="/category/:categorySlug/subcategories" component={CategorySubcategories} />
+      <Route path="/category/:categorySlug/subcategory/:subcategoryId/products" component={SubcategoryProducts} />
       <Route path="/product/:productName" component={ProductVariantsPage} />
       <Route path="/products" component={Products} />
       <Route path="/checkout" component={Checkout} />
