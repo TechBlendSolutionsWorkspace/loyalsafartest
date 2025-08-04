@@ -29,6 +29,18 @@ export default function CheckoutModal({ product, isOpen, onClose }: CheckoutModa
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
     },
+    onError: (error: any) => {
+      if (error.message.includes("Login required")) {
+        toast({
+          title: "Login Required",
+          description: "Please log in to purchase products. Redirecting to login...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 2000);
+      }
+    },
   });
 
   const paymentMethods = [

@@ -126,8 +126,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Orders
-  app.post("/api/orders", async (req, res) => {
+  // Orders (requires authentication)
+  app.post("/api/orders", isAuthenticated, async (req, res) => {
     try {
       const orderData = insertOrderSchema.parse(req.body);
       const order = await storage.createOrder(orderData);
