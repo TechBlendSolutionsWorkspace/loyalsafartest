@@ -65,10 +65,10 @@ export default function ProductGrid({ products, categories, isLoading }: Product
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
-                Popular & Trending
+                लोकप्रिय और ट्रेंडिंग सेवाएं
               </h2>
               <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4">
-                Our most popular digital services with unbeatable prices
+                सबसे किफायती कीमतों पर भारत की पसंदीदा डिजिटल सेवाएं
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
@@ -104,7 +104,7 @@ export default function ProductGrid({ products, categories, isLoading }: Product
                   </div>
                   <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
                     <Button className="w-full font-semibold">
-                      View Plans
+                      प्लान देखें
                     </Button>
                   </Link>
                 </div>
@@ -119,10 +119,10 @@ export default function ProductGrid({ products, categories, isLoading }: Product
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
-              Service Categories
+              डिजिटल सेवा श्रेणियां
             </h2>
             <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4">
-              Choose from our premium digital service categories
+              भारत की सबसे बेहतरीन डिजिटल सेवाओं की श्रेणियों में से चुनें
             </p>
           </div>
 
@@ -146,7 +146,7 @@ export default function ProductGrid({ products, categories, isLoading }: Product
                 
                 <Link href={`/category/${category.slug}`}>
                   <Button className="w-full group-hover:bg-primary/90 transition-colors text-sm md:text-base">
-                    Browse {category.name}
+                    {category.name} देखें
                     <i className="fas fa-arrow-right ml-2 text-sm"></i>
                   </Button>
                 </Link>

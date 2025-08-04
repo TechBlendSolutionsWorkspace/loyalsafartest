@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import Header from "@/components/header";
-import Hero from "@/components/hero";
+import VideoHero from "@/components/video-hero";
 import ProductGrid from "@/components/product-grid";
 import Testimonials from "@/components/testimonials";
 import FAQ from "@/components/faq";
@@ -30,7 +30,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <Hero />
+      <VideoHero />
       <ProductGrid 
         products={products} 
         categories={categories}

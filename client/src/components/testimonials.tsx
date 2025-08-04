@@ -39,18 +39,18 @@ export default function Testimonials() {
   }
 
   const stats = [
-    { value: "5000+", label: "Happy Customers" },
-    { value: "99.9%", label: "Success Rate" },
-    { value: "24/7", label: "Support" },
-    { value: "2 Min", label: "Avg. Delivery" },
+    { value: "50,000+", label: "खुश ग्राहक" },
+    { value: "99.9%", label: "सफलता दर" },
+    { value: "24/7", label: "व्हाट्सएप सपोर्ट" },
+    { value: "2 मिनट", label: "औसत डिलीवरी" },
   ];
 
   return (
     <section className="py-20 bg-muted/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4">Trusted by Thousands</h2>
-          <p className="text-xl text-muted-foreground">See what our customers say about their experience</p>
+          <h2 className="text-4xl font-bold text-foreground mb-4">हजारों खुश ग्राहकों का भरोसा</h2>
+          <p className="text-xl text-muted-foreground">देखिए हमारे ग्राहक अपने अनुभव के बारे में क्या कहते हैं</p>
         </div>
 
         {/* Testimonials Grid */}

@@ -217,30 +217,38 @@ export class MemStorage implements IStorage {
       }),
     ];
 
-    // Seed testimonials
+    // Seed testimonials with Indian context
     this.testimonials = [
       {
         id: nanoid(),
-        name: "Rajesh Kumar",
+        name: "राजेश कुमार",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
         rating: 5,
-        review: "Amazing service! Got my Netflix subscription instantly at an incredible price. Highly recommended!",
+        review: "शानदार सेवा! नेटफ्लिक्स सब्सक्रिप्शन तुरंत मिल गई अविश्वसनीय कीमत पर। जरूर इस्तेमाल करें! Mumbai से हूँ और 2 साल से यहाँ से सभी OTT प्लेटफॉर्म लेता हूँ।",
         featured: true,
       },
       {
         id: nanoid(),
-        name: "Priya Sharma",
+        name: "प्रिया शर्मा",
         avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b814?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
         rating: 5,
-        review: "Best prices in the market! Been using their services for months without any issues.",
+        review: "बाजार में सबसे अच्छी कीमतें! महीनों से इनकी सेवा इस्तेमाल कर रही हूँ बिना किसी समस्या के। Delhi की रहने वाली हूँ और family के लिए Hotstar + Netflix combo लिया था।",
         featured: true,
       },
       {
         id: nanoid(),
-        name: "Amit Patel",
+        name: "अमित पटेल",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
-        rating: 4,
-        review: "Great customer support and quick delivery. Very satisfied with their service.",
+        rating: 5,
+        review: "बेहतरीन ग्राहक सेवा और त्वरित डिलीवरी। Amazon Prime + Spotify का combo बहुत अच्छा था। Bangalore से recommend कर रहा हूँ।",
+        featured: true,
+      },
+      {
+        id: nanoid(),
+        name: "अनीता गुप्ता",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+        rating: 5,
+        review: "IPL season के लिए Hotstar subscription लिया था। Quality excellent और price बहुत reasonable था। Pune की हूँ।",
         featured: true,
       },
     ];
