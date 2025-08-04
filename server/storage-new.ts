@@ -587,15 +587,25 @@ export class MemStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const existingIndex = this.users.findIndex(u => u.id === userData.id);
+    const existingIndex = this.users.findIndex(u => u.email === userData.email);
     const user: User = {
+      id: nanoid(),
       ...userData,
+      role: userData.role || "user",
+      permissions: userData.permissions || [],
+      isActive: userData.isActive !== false,
+      lastLogin: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     if (existingIndex >= 0) {
-      this.users[existingIndex] = { ...this.users[existingIndex], ...user, updatedAt: new Date() };
+      const existing = this.users[existingIndex];
+      this.users[existingIndex] = { 
+        ...existing, 
+        ...userData, 
+        updatedAt: new Date() 
+      };
       return this.users[existingIndex];
     } else {
       this.users.push(user);

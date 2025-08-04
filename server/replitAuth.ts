@@ -8,8 +8,10 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage-new";
 
-if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
+// Check if we're running on Replit (optional for external deployments)
+const isReplit = !!process.env.REPLIT_DOMAINS;
+if (!isReplit) {
+  console.warn("REPLIT_DOMAINS not found - Replit Auth will be disabled for external deployment");
 }
 
 const getOidcConfig = memoize(
@@ -32,13 +34,13 @@ export function getSession() {
     tableName: "sessions",
   });
   return session({
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.SESSION_SECRET || 'fallback-session-secret-for-external-deployment',
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
     },
   });
@@ -58,7 +60,6 @@ async function upsertUser(
   claims: any,
 ) {
   await storage.upsertUser({
-    id: claims["sub"],
     email: claims["email"],
     firstName: claims["first_name"],
     lastName: claims["last_name"],
@@ -72,6 +73,26 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Only set up Replit Auth if running on Replit
+  if (!isReplit) {
+    console.log("Skipping Replit Auth setup - not running on Replit platform");
+    
+    // Set up fallback auth routes for external deployments
+    app.get("/api/login", (req, res) => {
+      res.status(501).json({ message: "Authentication not available on this deployment" });
+    });
+
+    app.get("/api/callback", (req, res) => {
+      res.status(501).json({ message: "Authentication not available on this deployment" });
+    });
+
+    app.get("/api/logout", (req, res) => {
+      res.status(501).json({ message: "Authentication not available on this deployment" });
+    });
+    
+    return;
+  }
+
   const config = await getOidcConfig();
 
   const verify: VerifyFunction = async (
@@ -84,8 +105,7 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
-  for (const domain of process.env
-    .REPLIT_DOMAINS!.split(",")) {
+  for (const domain of process.env.REPLIT_DOMAINS!.split(",")) {
     const strategy = new Strategy(
       {
         name: `replitauth:${domain}`,
@@ -128,6 +148,11 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  // Skip authentication for external deployments
+  if (!isReplit) {
+    return res.status(401).json({ message: "Authentication not available on this deployment" });
+  }
+
   const user = req.user as any;
 
   if (!req.isAuthenticated() || !user.expires_at) {

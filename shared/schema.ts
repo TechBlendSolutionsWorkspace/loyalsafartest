@@ -3,7 +3,7 @@ import { pgTable, text, varchar, integer, boolean, jsonb, timestamp, index } fro
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const products = pgTable("products", {
+export const products: any = pgTable("products", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
   fullProductName: text("full_product_name").notNull(),

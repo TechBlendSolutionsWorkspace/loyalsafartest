@@ -2,7 +2,13 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage-new";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+// Conditional auth import based on environment
+import { setupAuth as replitSetupAuth, isAuthenticated as replitIsAuthenticated } from "./replitAuth";
+import { setupSimpleAuth, isAuthenticated as simpleIsAuthenticated } from "./simpleAuth";
+
+// Choose auth system based on environment
+const setupAuth = process.env.REPLIT_DOMAINS ? replitSetupAuth : setupSimpleAuth;
+const isAuthenticated = process.env.REPLIT_DOMAINS ? replitIsAuthenticated : simpleIsAuthenticated;
 import jwt from "jsonwebtoken";
 import { insertOrderSchema, insertReviewSchema } from "@shared/schema";
 
