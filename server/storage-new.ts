@@ -71,12 +71,48 @@ export class MemStorage implements IStorage {
   }
 
   private async seedData() {
-    // Seed categories
+    // Seed categories with banner fields
     this.categories = [
-      { id: "ott", name: "OTT Subscriptions", slug: "ott", description: "Premium video streaming platforms", icon: "fas fa-play-circle" },
-      { id: "vpn", name: "VPN Services", slug: "vpn", description: "Secure browsing solutions", icon: "fas fa-shield-alt" },
-      { id: "cloud", name: "Cloud Storage", slug: "cloud", description: "Cloud storage solutions", icon: "fas fa-cloud" },
-      { id: "streaming", name: "Streaming Services", slug: "streaming", description: "Music and audio streaming", icon: "fas fa-music" },
+      { 
+        id: "ott", 
+        name: "OTT Subscriptions", 
+        slug: "ott", 
+        description: "Premium video streaming platforms", 
+        icon: "fas fa-play-circle",
+        bannerImage: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675",
+        bannerTitle: "Premium OTT Entertainment",
+        bannerSubtitle: "Netflix, Prime Video, Hotstar & More at Incredible Prices"
+      },
+      { 
+        id: "vpn", 
+        name: "VPN Services", 
+        slug: "vpn", 
+        description: "Secure browsing solutions", 
+        icon: "fas fa-shield-alt",
+        bannerImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675",
+        bannerTitle: "Secure VPN Protection",
+        bannerSubtitle: "NordVPN, Surfshark & Top Security Solutions"
+      },
+      { 
+        id: "cloud", 
+        name: "Cloud Storage", 
+        slug: "cloud", 
+        description: "Cloud storage solutions", 
+        icon: "fas fa-cloud",
+        bannerImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675",
+        bannerTitle: "Cloud Storage Solutions",
+        bannerSubtitle: "Google Drive, Dropbox & Premium Storage Plans"
+      },
+      { 
+        id: "streaming", 
+        name: "Streaming Services", 
+        slug: "streaming", 
+        description: "Music and audio streaming", 
+        icon: "fas fa-music",
+        bannerImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675",
+        bannerTitle: "Music Streaming",
+        bannerSubtitle: "Spotify, YouTube Music & Premium Audio Services"
+      },
     ];
 
     // Create a sample product with all required fields

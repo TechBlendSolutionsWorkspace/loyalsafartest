@@ -34,6 +34,9 @@ export const categories = pgTable("categories", {
   slug: text("slug").notNull().unique(),
   description: text("description"),
   icon: text("icon").notNull(),
+  bannerImage: text("banner_image"), // Category banner image URL (16:9 ratio - 1200x675px recommended)
+  bannerTitle: text("banner_title"), // Custom banner title
+  bannerSubtitle: text("banner_subtitle"), // Custom banner subtitle
 });
 
 export const orders = pgTable("orders", {

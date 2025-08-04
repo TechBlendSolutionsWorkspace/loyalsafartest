@@ -16,6 +16,7 @@ import { FileUpload } from "@/components/file-upload";
 import { Plus, Edit, Trash2, Eye, Users, TrendingUp, ShoppingCart, Package, DollarSign, Activity, Calendar, Star, BarChart3, FileText, Settings, Search, Shield, UserCheck, Clock, AlertTriangle } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import AdminBannerManagement from "./admin-banner-management";
 import type { Product, Category, Order, Review, User } from "@shared/schema";
 
 interface DashboardStats {
@@ -364,12 +365,13 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 gap-1">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger value="banners">Category Banners</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
@@ -1122,6 +1124,10 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="banners" className="space-y-6">
+            <AdminBannerManagement />
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
