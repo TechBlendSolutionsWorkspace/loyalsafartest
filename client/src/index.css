@@ -2,20 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Professional gradient background */
+/* Professional cool and peaceful background */
 body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 25%, #e6f3ff 50%, #f5f5f5 75%, #e8f4f8 100%);
   background-attachment: fixed;
   min-height: 100vh;
 }
 
-/* Override for specific pages */
-.bg-background {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  margin: 10px;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+/* Professional glass morphism for containers */
+.bg-background, .bg-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+}
+
+.bg-muted {
+  background: rgba(248, 250, 252, 0.8) !important;
 }
 
 /* Line clamp utilities for text truncation */

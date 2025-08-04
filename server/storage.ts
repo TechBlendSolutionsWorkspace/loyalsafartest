@@ -1287,6 +1287,10 @@ class MemStorageWithAnalytics extends MemStorage {
     }
     this.users.splice(userIndex, 1);
   }
+
+  async deleteAllProducts(): Promise<void> {
+    this.products = [];
+  }
 }
 
 export const storage = new MemStorageWithAnalytics();

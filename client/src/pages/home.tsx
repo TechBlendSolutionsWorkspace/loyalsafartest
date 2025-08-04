@@ -9,7 +9,7 @@ import FAQ from "@/components/faq";
 import About from "@/components/about";
 import Blog from "@/components/blog";
 import Footer from "@/components/footer";
-import { AdminLogin } from "@/components/admin-login";
+
 import { Product, Category } from "@shared/schema";
 
 export default function Home() {
@@ -23,9 +23,7 @@ export default function Home() {
     queryKey: ["/api/categories"],
   });
 
-  const handleAdminLoginSuccess = () => {
-    setLocation("/admin");
-  };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -54,8 +52,7 @@ export default function Home() {
         </a>
       </div>
 
-      {/* Admin Login Component */}
-      <AdminLogin onLoginSuccess={handleAdminLoginSuccess} />
+
     </div>
   );
 }

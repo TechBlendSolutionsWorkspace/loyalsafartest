@@ -525,6 +525,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete all products (admin only)
+  app.delete("/api/admin/products/all", async (req, res) => {
+    try {
+      await storage.deleteAllProducts();
+      res.json({ message: "All products deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting all products:", error);
+      res.status(500).json({ message: "Failed to delete all products" });
+    }
+  });
+
   // User Management Routes
   app.get("/api/admin/users", async (req, res) => {
     try {

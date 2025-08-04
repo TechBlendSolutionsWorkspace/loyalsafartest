@@ -63,6 +63,7 @@ export default function AdminDashboard() {
   const [parentProductSearch, setParentProductSearch] = useState("");
   const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
   const [csvData, setCsvData] = useState("");
+  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // Fetch data with forced fresh fetching
@@ -197,6 +198,19 @@ export default function AdminDashboard() {
       setCsvData("");
       setUploadProgress(0);
       refetchProducts();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  });
+
+  const deleteAllProductsMutation = useMutation({
+    mutationFn: () => apiRequest("DELETE", "/api/admin/products/all"),
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["/api/products"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/admin/stats"] });
+      setShowDeleteAllDialog(false);
+      toast({ title: "Success", description: "All products deleted successfully" });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -1428,6 +1442,30 @@ Prime Basic,Amazon Prime Video Basic - 1 Month,Prime Video,1 Month,Amazon Prime 
                 {bulkUploadMutation.isPending ? 'Uploading...' : 'Upload Products'}
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete All Products Dialog */}
+      <Dialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete All Products</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete ALL products? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setShowDeleteAllDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => deleteAllProductsMutation.mutate()}
+              disabled={deleteAllProductsMutation.isPending}
+            >
+              {deleteAllProductsMutation.isPending ? 'Deleting...' : 'Delete All Products'}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
