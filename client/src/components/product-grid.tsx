@@ -146,7 +146,7 @@ export default function ProductGrid({ products, categories, isLoading }: Product
                 
                 <Link href={`/category/${category.slug}`}>
                   <Button className="w-full group-hover:bg-primary/90 transition-colors text-sm md:text-base">
-                    Browse {category.name}
+                    Browse
                     <i className="fas fa-arrow-right ml-2 text-sm"></i>
                   </Button>
                 </Link>

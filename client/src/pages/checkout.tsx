@@ -308,11 +308,11 @@ export default function Checkout() {
               )}
 
               <Button 
-                onClick={handleConfirmPayment}
-                className="w-full mt-6 bg-secondary text-secondary-foreground hover:bg-secondary/90"
-                disabled={orderMutation.isPending || !selectedPaymentMethod}
+                onClick={() => setLocation(`/ibm-payment?product=${selectedProduct.id}`)}
+                className="w-full mt-6 bg-primary text-white hover:bg-primary/90"
+                disabled={!selectedPaymentMethod}
               >
-                {orderMutation.isPending ? "Processing..." : "I've Paid - Continue"}
+                Continue to Payment Gateway
               </Button>
             </div>
           </div>

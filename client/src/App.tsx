@@ -9,6 +9,7 @@ import CategoryPage from "@/pages/category";
 import ProductVariantsPage from "@/pages/product-variants";
 import Products from "@/pages/products";
 import Checkout from "@/pages/checkout";
+import IBMPayment from "@/pages/ibm-payment";
 import Reviews from "@/pages/reviews";
 import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/product/:productName" component={ProductVariantsPage} />
       <Route path="/products" component={Products} />
       <Route path="/checkout" component={Checkout} />
+      <Route path="/ibm-payment" component={IBMPayment} />
       <Route path="/reviews" component={Reviews} />
       <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />

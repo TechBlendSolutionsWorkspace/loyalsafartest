@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage-new";
+import { DatabaseStorage } from "./database-storage";
+
+const storage = new DatabaseStorage();
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 // Conditional auth import based on environment
 import { setupAuth as replitSetupAuth, isAuthenticated as replitIsAuthenticated } from "./replitAuth";
