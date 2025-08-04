@@ -103,7 +103,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
                       {product.discount}% OFF
                     </div>
                   </div>
-                  <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                  <Link to={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
                     <Button className="w-full font-semibold">
                       View Plans
                     </Button>
@@ -145,7 +145,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
                   </p>
                 </div>
                 
-                <Link href={`/category/${category.slug}`}>
+                <Link to={`/category/${category.slug}/subcategories`}>
                   <Button className="w-full group-hover:bg-primary/90 transition-colors text-sm md:text-base">
                     Browse
                     <i className="fas fa-arrow-right ml-2 text-sm"></i>

@@ -63,7 +63,7 @@ export class MemStorage implements IStorage {
   }
 
   private async seedData() {
-    // Seed categories only
+    // Seed basic categories only for live business
     this.categories = [
       { id: "ott", name: "OTT Subscriptions", slug: "ott", description: "Premium video streaming platforms", icon: "fas fa-play-circle" },
       { id: "vpn", name: "VPN Services", slug: "vpn", description: "Secure browsing solutions", icon: "fas fa-shield-alt" },
@@ -71,43 +71,15 @@ export class MemStorage implements IStorage {
       { id: "streaming", name: "Streaming Services", slug: "streaming", description: "Music and audio streaming", icon: "fas fa-music" },
     ];
 
-    // Empty products for clean production deployment
+    // Empty data for live business deployment
     this.products = [];
+    this.orders = [];
+    this.testimonials = [];
+    this.blogPosts = [];
+    this.reviews = [];
+    this.users = [];
 
-    // Sample testimonials
-    this.testimonials = [
-      {
-        id: nanoid(),
-        name: "Rahul Kumar",
-        rating: 5,
-        comment: "Excellent service! Got my Netflix subscription instantly.",
-        product: "Netflix Premium",
-        isPublished: true,
-        createdAt: new Date(),
-      },
-      {
-        id: nanoid(),
-        name: "Priya Singh",
-        rating: 5,
-        comment: "Very affordable prices and quick delivery. Highly recommended!",
-        product: "Prime Video",
-        isPublished: true,
-        createdAt: new Date(),
-      },
-    ];
 
-    // Sample blog posts
-    this.blogPosts = [
-      {
-        id: nanoid(),
-        title: "Top 5 Streaming Platforms in 2024",
-        excerpt: "Discover the best streaming services for entertainment",
-        content: "Content here...",
-        author: "MTS Team",
-        publishedAt: new Date(),
-        featured: true,
-      },
-    ];
   }
 
   // Product methods
