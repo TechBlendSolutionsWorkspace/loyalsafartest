@@ -104,8 +104,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
-    const [newProduct] = await db.insert(products).values(product).returning();
-    return newProduct;
+    const result = await db.insert(products).values(product).returning();
+    return result[0];
   }
 
   async updateProduct(id: string, updates: Partial<InsertProduct>): Promise<Product> {
@@ -132,8 +132,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createCategory(category: InsertCategory): Promise<Category> {
-    const [newCategory] = await db.insert(categories).values(category).returning();
-    return newCategory;
+    const result = await db.insert(categories).values(category).returning();
+    return result[0];
   }
 
   async updateCategory(id: string, updates: Partial<InsertCategory>): Promise<Category> {

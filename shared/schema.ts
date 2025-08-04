@@ -3,7 +3,7 @@ import { pgTable, text, varchar, integer, boolean, jsonb, timestamp, index } fro
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const products: any = pgTable("products", {
+export const products = pgTable("products", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
   fullProductName: text("full_product_name").notNull(),
@@ -24,7 +24,7 @@ export const products: any = pgTable("products", {
   trending: boolean("trending").default(false),
   available: boolean("available").default(true),
   isVariant: boolean("is_variant").default(false),
-  parentProductId: varchar("parent_product_id").references(() => products.id),
+  parentProductId: varchar("parent_product_id"),
   parentProductName: text("parent_product_name"),
 });
 
@@ -37,6 +37,8 @@ export const categories = pgTable("categories", {
   bannerImage: text("banner_image"), // Category banner image URL (16:9 ratio - 1200x675px recommended)
   bannerTitle: text("banner_title"), // Custom banner title
   bannerSubtitle: text("banner_subtitle"), // Custom banner subtitle
+  parentCategoryId: varchar("parent_category_id"), // For subcategories
+  isSubcategory: boolean("is_subcategory").default(false),
 });
 
 export const orders = pgTable("orders", {

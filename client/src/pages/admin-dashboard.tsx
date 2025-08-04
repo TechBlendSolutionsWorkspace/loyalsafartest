@@ -35,6 +35,8 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [isSubcategoryMode, setIsSubcategoryMode] = useState(false);
+  const [parentCategoryId, setParentCategoryId] = useState<string>("");
   const [showProductDialog, setShowProductDialog] = useState(false);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const [productFormData, setProductFormData] = useState({
@@ -211,8 +213,10 @@ export default function AdminDashboard() {
     setProductFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const openCategoryDialog = (category?: Category) => {
+  const openCategoryDialog = (category?: Category, isSubcategory = false, parentId = "") => {
     setSelectedCategory(category || null);
+    setIsSubcategoryMode(isSubcategory);
+    setParentCategoryId(parentId);
     setShowCategoryDialog(true);
   };
 
@@ -224,6 +228,8 @@ export default function AdminDashboard() {
       slug: formData.get('slug') as string,
       description: formData.get('description') as string,
       icon: "fas fa-layer-group", // Default icon for all categories
+      isSubcategory: isSubcategoryMode,
+      parentCategoryId: isSubcategoryMode ? parentCategoryId : null,
     };
 
     if (selectedCategory) {
@@ -927,8 +933,15 @@ export default function AdminDashboard() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>{selectedCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
-                    <DialogDescription>{selectedCategory ? 'Update category details' : 'Create a new product category'}</DialogDescription>
+                    <DialogTitle>
+                      {selectedCategory ? 'Edit Category' : 
+                       isSubcategoryMode ? 'Add New Subcategory' : 'Add New Category'}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {selectedCategory ? 'Update category details' : 
+                       isSubcategoryMode ? 'Create a new subcategory under the selected category' : 
+                       'Create a new product category'}
+                    </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleCategorySubmit} className="space-y-4">
                     <div className="space-y-2">
@@ -943,6 +956,15 @@ export default function AdminDashboard() {
                       <Label htmlFor="categoryDescription">Description</Label>
                       <Textarea id="categoryDescription" name="description" defaultValue={selectedCategory?.description || ''} />
                     </div>
+                    
+                    {isSubcategoryMode && (
+                      <div className="space-y-2">
+                        <Label htmlFor="parentCategory">Parent Category</Label>
+                        <div className="p-3 bg-muted rounded-md">
+                          {safeCategories.find((cat: Category) => cat.id === parentCategoryId)?.name || 'Unknown Category'}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex justify-end space-x-2">
                       <Button type="button" variant="outline" onClick={() => setShowCategoryDialog(false)}>
@@ -979,9 +1001,19 @@ export default function AdminDashboard() {
                       <div className="flex items-center space-x-1">
                         <Button
                           size="sm"
+                          variant="secondary"
+                          onClick={() => openCategoryDialog(undefined, true, category.id)}
+                          className="p-2"
+                          title="Add Subcategory"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => openCategoryDialog(category)}
                           className="p-2"
+                          title="Edit Category"
                         >
                           <Edit className="w-3 h-3" />
                         </Button>
@@ -994,6 +1026,7 @@ export default function AdminDashboard() {
                             }
                           }}
                           className="p-2"
+                          title="Delete Category"
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
