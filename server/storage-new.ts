@@ -47,6 +47,10 @@ export interface IStorage {
   // User authentication
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
+  createUser(userData: UpsertUser): Promise<User>;
+  updateUser(id: string, userData: Partial<UpsertUser>): Promise<User>;
+  deleteUser(id: string): Promise<void>;
   getProductsChartData(days: number): Promise<any>;
   getTopProducts(days: number): Promise<any>;
   getRecentOrders(limit: number): Promise<any>;
@@ -611,6 +615,47 @@ export class MemStorage implements IStorage {
       this.users.push(user);
       return user;
     }
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return this.users;
+  }
+
+  async createUser(userData: UpsertUser): Promise<User> {
+    const user: User = {
+      id: nanoid(),
+      ...userData,
+      role: userData.role || "user",
+      permissions: userData.permissions || [],
+      isActive: userData.isActive !== false,
+      lastLogin: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.push(user);
+    return user;
+  }
+
+  async updateUser(id: string, userData: Partial<UpsertUser>): Promise<User> {
+    const userIndex = this.users.findIndex(u => u.id === id);
+    if (userIndex === -1) {
+      throw new Error("User not found");
+    }
+    
+    this.users[userIndex] = {
+      ...this.users[userIndex],
+      ...userData,
+      updatedAt: new Date(),
+    };
+    return this.users[userIndex];
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    const userIndex = this.users.findIndex(u => u.id === id);
+    if (userIndex === -1) {
+      throw new Error("User not found");
+    }
+    this.users.splice(userIndex, 1);
   }
 }
 
