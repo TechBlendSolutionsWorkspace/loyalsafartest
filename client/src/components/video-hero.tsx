@@ -23,7 +23,7 @@ const heroSlides: VideoHeroSlide[] = [
   {
     id: "netflix-india",
     title: "Premium Netflix Experience",
-    subtitle: "भारत का पसंदीदा एंटर्टेनमेंट",
+    subtitle: "India's Favorite Entertainment",
     description: "Stream Sacred Games, Delhi Crime, and thousands of international titles with 4K Ultra HD quality. Get your Netflix Premium subscription at unbeatable prices.",
     backgroundImage: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080",
     videoUrl: theatreVideoPath,
@@ -35,7 +35,7 @@ const heroSlides: VideoHeroSlide[] = [
   {
     id: "hotstar-sports",
     title: "JioHotstar + Live Sports",
-    subtitle: "क्रिकेट का घर",
+    subtitle: "Home of Cricket",
     description: "Watch IPL, FIFA World Cup, Olympics and your favorite Disney+ content. India's largest OTT platform with 50 crore active users.",
     backgroundImage: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080",
     ctaText: "Watch Live Sports",
@@ -46,7 +46,7 @@ const heroSlides: VideoHeroSlide[] = [
   {
     id: "prime-video",
     title: "Amazon Prime Video",
-    subtitle: "Prime का फायदा",
+    subtitle: "Prime Benefits",
     description: "Enjoy The Family Man, Mirzapur, and exclusive Amazon Originals. Plus get Amazon shopping benefits with your Prime membership.",
     backgroundImage: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080",
     ctaText: "Start Prime",
@@ -56,7 +56,7 @@ const heroSlides: VideoHeroSlide[] = [
   {
     id: "digital-bundle",
     title: "Complete Digital Suite",
-    subtitle: "सब कुछ एक जगह",
+    subtitle: "Everything in One Place",
     description: "Get Netflix, Prime Video, JioHotstar, Spotify Premium, NordVPN and more - all at prices that make digital entertainment affordable for every Indian family.",
     backgroundImage: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080",
     ctaText: "Explore All Services",
@@ -201,7 +201,7 @@ export default function VideoHero() {
                 className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full backdrop-blur-sm"
                 onClick={() => window.location.href = "https://wa.me/917496067495"}
               >
-                व्हाट्सएप पर संपर्क करें
+                Contact on WhatsApp
               </Button>
             </div>
           </div>
