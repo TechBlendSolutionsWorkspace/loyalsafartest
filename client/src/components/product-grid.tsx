@@ -8,9 +8,10 @@ interface ProductGridProps {
   products: Product[];
   categories: Category[];
   isLoading: boolean;
+  viewMode?: 'grid' | 'list';
 }
 
-export default function ProductGrid({ products, categories, isLoading }: ProductGridProps) {
+export default function ProductGrid({ products, categories, isLoading, viewMode = 'grid' }: ProductGridProps) {
   const featuredProducts = products.filter(product => product.popular || product.trending);
 
   if (isLoading) {

@@ -1,17 +1,22 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Product, Category } from "@shared/schema";
+import { Link, useRoute, useLocation } from "wouter";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import ProductCard from "@/components/product-card";
+import ProductGrid from "@/components/product-grid";
+import { Product, Category } from "@shared/schema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, Filter, Grid, List } from "lucide-react";
 
 export default function Products() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("popular");
-
+  const [, setLocation] = useLocation();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  
   const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
@@ -20,161 +25,147 @@ export default function Products() {
     queryKey: ["/api/categories"],
   });
 
-  // Filter products by category
-  const filteredProducts = selectedCategory === "all" 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
-
-  // Sort products
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return a.price - b.price;
-      case "price-high":
-        return b.price - a.price;
-      case "discount":
-        return b.discount - a.discount;
-      case "popular":
-        return b.popular ? 1 : -1;
-      default:
-        return 0;
-    }
+  // Filter products based on search and category
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !selectedCategory || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
   });
 
-  const categoryStats = categories.map(category => ({
-    ...category,
-    count: products.filter(p => p.category === category.slug).length
-  }));
-
-  if (productsLoading || categoriesLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="max-w-7xl mx-auto px-4 py-20">
-          <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-            <p>Loading products...</p>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  // Get category count
+  const getCategoryCount = (categoryId: string) => {
+    return products.filter(p => p.category === categoryId).length;
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Our Digital Services</h1>
-          <p className="text-muted-foreground text-base sm:text-lg px-4">
-            Premium digital subscriptions and tools at unbeatable prices
-          </p>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-4">Our Products</h1>
+          <p className="text-lg text-muted-foreground">Discover our complete range of digital services and subscriptions</p>
         </div>
 
-        {/* Category Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <div 
-            className={`p-3 sm:p-4 rounded-lg border cursor-pointer transition-colors ${
-              selectedCategory === "all" ? "border-primary bg-primary/5" : "border-border hover:border-primary"
-            }`}
-            onClick={() => setSelectedCategory("all")}
-          >
-            <div className="text-center">
-              <div className="text-xl sm:text-2xl font-bold text-primary">{products.length}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">All Products</div>
+        {/* Search and Filter Controls */}
+        <div className="mb-8 bg-card rounded-lg p-6 shadow-sm">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
             </div>
-          </div>
-          {categoryStats.map((category) => (
-            <div 
-              key={category.slug}
-              className={`p-3 sm:p-4 rounded-lg border cursor-pointer transition-colors ${
-                selectedCategory === category.slug ? "border-primary bg-primary/5" : "border-border hover:border-primary"
-              }`}
-              onClick={() => setSelectedCategory(category.slug)}
-            >
-              <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-primary">{category.count}</div>
-                <div className="text-xs sm:text-sm text-muted-foreground">{category.name}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.slug} value={category.slug}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="popular">Most Popular</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="discount">Highest Discount</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <div className="flex items-center gap-2 sm:ml-auto">
-            <Badge variant="outline" className="text-xs sm:text-sm">
-              {sortedProducts.length} product{sortedProducts.length !== 1 ? 's' : ''} found
-            </Badge>
-          </div>
-        </div>
-
-        {/* Products Grid */}
-        {sortedProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {sortedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="text-muted-foreground text-lg mb-4">
-              No products found in this category
-            </div>
-            <Button onClick={() => setSelectedCategory("all")}>
-              View All Products
-            </Button>
-          </div>
-        )}
-
-        {/* Categories Info */}
-        <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category) => (
-            <div key={category.slug} className="text-center p-6 border rounded-lg bg-card">
-              <i className={`${category.icon} text-primary text-3xl mb-4`}></i>
-              <h3 className="font-semibold mb-2">{category.name}</h3>
-              <p className="text-sm text-muted-foreground mb-4">{category.description}</p>
-              <Button 
-                variant="outline" 
+            
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setSelectedCategory(category.slug)}
+                onClick={() => setViewMode('grid')}
               >
-                View Products
+                <Grid className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+              >
+                <List className="w-4 h-4" />
               </Button>
             </div>
-          ))}
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Category Sidebar */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Filter className="w-5 h-5" />
+                  Categories
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  variant={selectedCategory === '' ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => setSelectedCategory('')}
+                >
+                  All Products
+                  <Badge variant="secondary" className="ml-auto">
+                    {products.length}
+                  </Badge>
+                </Button>
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? 'default' : 'ghost'}
+                    className="w-full justify-start"
+                    onClick={() => setSelectedCategory(category.id)}
+                  >
+                    {category.name}
+                    <Badge variant="secondary" className="ml-auto">
+                      {getCategoryCount(category.id)}
+                    </Badge>
+                  </Button>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Products Display */}
+          <div className="lg:col-span-3">
+            {/* Results Count */}
+            <div className="mb-6">
+              <p className="text-muted-foreground">
+                Showing {filteredProducts.length} of {products.length} products
+                {selectedCategory && (
+                  <span className="ml-2">
+                    in <strong>{categories.find(c => c.id === selectedCategory)?.name}</strong>
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* Products Grid/List */}
+            {productsLoading || categoriesLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
+                <Button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategory('');
+                  }}
+                  className="mt-4"
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            ) : (
+              <ProductGrid 
+                products={filteredProducts} 
+                categories={categories}
+                isLoading={false}
+                viewMode={viewMode}
+              />
+            )}
+          </div>
         </div>
       </div>
-
+      
       <Footer />
     </div>
   );

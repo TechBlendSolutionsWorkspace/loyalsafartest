@@ -494,6 +494,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk upload products from CSV/Excel
+  app.post("/api/admin/products/bulk-upload", async (req, res) => {
+    try {
+      const { products } = req.body;
+      const createdProducts = [];
+      
+      for (const productData of products) {
+        // Calculate discount if not provided
+        const originalPrice = productData.originalPrice || Math.round(productData.price * 1.2);
+        const discount = productData.discount || Math.round(((originalPrice - productData.price) / originalPrice) * 100);
+        
+        const product = {
+          ...productData,
+          originalPrice,
+          discount,
+          popular: productData.popular === 'true' || productData.popular === true,
+          trending: productData.trending === 'true' || productData.trending === true,
+          available: productData.available !== 'false' && productData.available !== false,
+          isVariant: productData.isVariant === 'true' || productData.isVariant === true,
+        };
+        
+        const created = await storage.createProduct(product);
+        createdProducts.push(created);
+      }
+      
+      res.json({ success: true, count: createdProducts.length, products: createdProducts });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // User Management Routes
   app.get("/api/admin/users", async (req, res) => {
     try {

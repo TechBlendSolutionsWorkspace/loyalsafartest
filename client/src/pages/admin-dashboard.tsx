@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { FileUpload } from "@/components/file-upload";
-import { Plus, Edit, Trash2, Eye, Users, TrendingUp, ShoppingCart, Package, DollarSign, Activity, Calendar, Star, BarChart3, FileText, Settings, Search, Shield, UserCheck, Clock, AlertTriangle } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Users, TrendingUp, ShoppingCart, Package, DollarSign, Activity, Calendar, Star, BarChart3, FileText, Settings, Search, Shield, UserCheck, Clock, AlertTriangle, Upload, Download } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import AdminBannerManagement from "./admin-banner-management";
@@ -61,6 +61,9 @@ export default function AdminDashboard() {
     available: true
   });
   const [parentProductSearch, setParentProductSearch] = useState("");
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
+  const [csvData, setCsvData] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Fetch data with forced fresh fetching
   const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
@@ -181,6 +184,23 @@ export default function AdminDashboard() {
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     },
+  });
+
+  const bulkUploadMutation = useMutation({
+    mutationFn: (products: any[]) => apiRequest("POST", "/api/admin/products/bulk-upload", { products }),
+    onSuccess: (data: any) => {
+      toast({ 
+        title: "Success", 
+        description: `Successfully uploaded ${data.count} products` 
+      });
+      setBulkUploadOpen(false);
+      setCsvData("");
+      setUploadProgress(0);
+      refetchProducts();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
   });
 
   // Helper functions
@@ -506,6 +526,10 @@ export default function AdminDashboard() {
                 <Button onClick={() => openProductDialog()} className="flex-1 sm:flex-none">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Product
+                </Button>
+                <Button onClick={() => setBulkUploadOpen(true)} variant="outline" className="flex-1 sm:flex-none">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Bulk Upload
                 </Button>
               </div>
             </div>
@@ -1292,6 +1316,121 @@ export default function AdminDashboard() {
       </div>
 
       <Footer />
+
+      {/* Bulk Upload Dialog */}
+      <Dialog open={bulkUploadOpen} onOpenChange={setBulkUploadOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Bulk Upload Products</DialogTitle>
+            <DialogDescription>
+              Upload multiple products using CSV format. Download the template to get started.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  const template = `name,fullProductName,subcategory,duration,description,features,price,originalPrice,discount,category,icon,image,activationTime,warranty,notes,popular,trending,available,isVariant,parentProductId
+Netflix Basic,Netflix Basic Plan - 1 Month,Netflix,1 Month,Netflix basic subscription for 1 month,1 Device • HD Quality • Shared Login • Open Profile • Ad-Free,99,119,17,ott-subscriptions,fas fa-play-circle,https://via.placeholder.com/300x200/e50914/ffffff?text=Netflix,Instant,WhatsApp Support,Basic Netflix plan with HD streaming,false,false,true,false,
+Netflix Premium,Netflix Premium Plan - 1 Month,Netflix,1 Month,Netflix premium subscription for 1 month,4 Devices • 4K UHD • Private Login • Private Profile • Ad-Free,299,359,17,ott-subscriptions,fas fa-play-circle,https://via.placeholder.com/300x200/e50914/ffffff?text=Netflix,Instant,24/7 Support,Premium Netflix plan with 4K streaming,true,false,true,false,
+Prime Basic,Amazon Prime Video Basic - 1 Month,Prime Video,1 Month,Amazon Prime Video basic subscription,2 Devices • HD Quality • Shared Account • Ad-Free,79,99,20,ott-subscriptions,fab fa-amazon,https://via.placeholder.com/300x200/00A8E1/ffffff?text=Prime,Instant,Email Support,Basic Prime Video plan,false,false,true,false,`;
+                  const blob = new Blob([template], { type: 'text/csv' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'bulk-upload-template.csv';
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Template
+              </Button>
+            </div>
+            
+            <div>
+              <Label htmlFor="csv-data">Paste CSV Data or Upload File</Label>
+              <Textarea
+                id="csv-data"
+                placeholder="Paste your CSV data here..."
+                value={csvData}
+                onChange={(e) => setCsvData(e.target.value)}
+                rows={10}
+                className="font-mono text-sm"
+              />
+            </div>
+            
+            <div>
+              <input
+                type="file"
+                accept=".csv,.xlsx"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                      setCsvData(e.target?.result as string);
+                    };
+                    reader.readAsText(file);
+                  }
+                }}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+              />
+            </div>
+            
+            {uploadProgress > 0 && (
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-primary h-2.5 rounded-full transition-all duration-300" 
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            )}
+            
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setBulkUploadOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (!csvData.trim()) {
+                    toast({ title: "Error", description: "Please provide CSV data", variant: "destructive" });
+                    return;
+                  }
+                  
+                  try {
+                    const lines = csvData.trim().split('\n');
+                    const headers = lines[0].split(',');
+                    const products = lines.slice(1).map(line => {
+                      const values = line.split(',');
+                      const product: any = {};
+                      headers.forEach((header, index) => {
+                        product[header.trim()] = values[index]?.trim() || '';
+                      });
+                      return product;
+                    }).filter(product => product.name && product.price);
+                    
+                    if (products.length === 0) {
+                      toast({ title: "Error", description: "No valid products found in CSV", variant: "destructive" });
+                      return;
+                    }
+                    
+                    setUploadProgress(50);
+                    bulkUploadMutation.mutate(products);
+                  } catch (error) {
+                    toast({ title: "Error", description: "Invalid CSV format", variant: "destructive" });
+                  }
+                }}
+                disabled={bulkUploadMutation.isPending}
+              >
+                {bulkUploadMutation.isPending ? 'Uploading...' : 'Upload Products'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
