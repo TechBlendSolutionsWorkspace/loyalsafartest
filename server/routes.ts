@@ -12,7 +12,7 @@ import { setupSimpleAuth, isAuthenticated as simpleIsAuthenticated } from "./sim
 const setupAuth = process.env.REPLIT_DOMAINS ? replitSetupAuth : setupSimpleAuth;
 const isAuthenticated = process.env.REPLIT_DOMAINS ? replitIsAuthenticated : simpleIsAuthenticated;
 import jwt from "jsonwebtoken";
-import { insertOrderSchema, insertReviewSchema } from "@shared/schema";
+import { insertOrderSchema, insertReviewSchema, insertCategorySchema, insertProductSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -39,6 +39,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/products", async (req, res) => {
+    try {
+      const productData = insertProductSchema.parse(req.body);
+      const product = await storage.createProduct(productData);
+      res.json(product);
+    } catch (error) {
+      console.error("Error creating product:", error);
+      res.status(500).json({ message: "Failed to create product" });
+    }
+  });
+
+  app.put("/api/admin/products/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const productData = req.body;
+      const updatedProduct = await storage.updateProduct(id, productData);
+      res.json(updatedProduct);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  });
+
+  app.delete("/api/admin/products/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteProduct(id);
+      res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+
   app.get("/api/categories/:category/products", async (req, res) => {
     try {
       const products = await storage.getProductsByCategory(req.params.category);
@@ -58,7 +92,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/categories/:id", async (req, res) => {
+  app.post("/api/admin/categories", async (req, res) => {
+    try {
+      const categoryData = insertCategorySchema.parse(req.body);
+      const category = await storage.createCategory(categoryData);
+      res.json(category);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      res.status(500).json({ message: "Failed to create category" });
+    }
+  });
+
+  app.put("/api/admin/categories/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const categoryData = req.body;
@@ -67,6 +112,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating category:", error);
       res.status(500).json({ message: "Failed to update category" });
+    }
+  });
+
+  app.delete("/api/admin/categories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteCategory(id);
+      res.json({ message: "Category deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      res.status(500).json({ message: "Failed to delete category" });
     }
   });
 
@@ -87,6 +143,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(orders);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.put("/api/admin/orders/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const updatedOrder = await storage.updateOrderStatus(id, status);
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Error updating order:", error);
+      res.status(500).json({ message: "Failed to update order" });
     }
   });
 
