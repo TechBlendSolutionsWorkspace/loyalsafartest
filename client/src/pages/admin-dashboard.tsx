@@ -981,60 +981,78 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {safeCategories.map((category: Category) => (
-                <Card key={category.id}>
-                  <CardHeader>
-                    <div className="flex items-center space-x-3">
-                      <i className={`${category.icon} text-2xl text-primary`}></i>
-                      <div>
-                        <CardTitle>{category.name}</CardTitle>
-                        <CardDescription>{category.slug}</CardDescription>
+              {safeCategories.filter((cat: Category) => !cat.isSubcategory).map((category: Category) => {
+                const subcategories = safeCategories.filter((sub: Category) => sub.parentCategoryId === category.id);
+                return (
+                  <Card key={category.id} className="relative">
+                    <CardHeader>
+                      <div className="flex items-center space-x-3">
+                        <i className={`${category.icon} text-2xl text-primary`}></i>
+                        <div>
+                          <CardTitle>{category.name}</CardTitle>
+                          <CardDescription>{category.slug}</CardDescription>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">{category.description}</p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium">
-                        {safeProducts.filter((p: Product) => p.category === category.slug).length} products
-                      </p>
-                      <div className="flex items-center space-x-1">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => openCategoryDialog(undefined, true, category.id)}
-                          className="p-2"
-                          title="Add Subcategory"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => openCategoryDialog(category)}
-                          className="p-2"
-                          title="Edit Category"
-                        >
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            if (confirm("Are you sure you want to delete this category?")) {
-                              deleteCategoryMutation.mutate(category.id);
-                            }
-                          }}
-                          className="p-2"
-                          title="Delete Category"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">{category.description}</p>
+                      
+                      {/* Show subcategories if any */}
+                      {subcategories.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-xs font-medium text-muted-foreground mb-2">Subcategories:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {subcategories.map((sub: Category) => (
+                              <Badge key={sub.id} variant="outline" className="text-xs">
+                                {sub.name} ({safeProducts.filter((p: Product) => p.subcategory === sub.name).length})
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium">
+                          {safeProducts.filter((p: Product) => p.category === category.slug).length} products
+                        </p>
+                        <div className="flex items-center space-x-1">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => openCategoryDialog(undefined, true, category.id)}
+                            className="p-2"
+                            title="Add Subcategory"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openCategoryDialog(category)}
+                            className="p-2"
+                            title="Edit Category"
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              if (confirm("Are you sure you want to delete this category?")) {
+                                deleteCategoryMutation.mutate(category.id);
+                              }
+                            }}
+                            className="p-2"
+                            title="Delete Category"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </TabsContent>
 
