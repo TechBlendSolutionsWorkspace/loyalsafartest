@@ -27,13 +27,29 @@ export default function SubcategoryProductsPage() {
   });
 
   const category = categories.find(cat => cat.slug === categorySlug);
-  const subcategory = categories.find(cat => cat.slug === subcategorySlug && cat.parentCategoryId === category?.id);
   
-  // Get products for this subcategory
-  const subcategoryProducts = products.filter(product => 
-    (product.category === category?.id || product.category === category?.slug) &&
-    product.subcategory === subcategory?.name
+  // Get products for this category first
+  const categoryProducts = products.filter(product => 
+    product.category === category?.id || product.category === category?.slug
   );
+  
+  // Convert subcategory slug back to name for filtering
+  const subcategoryName = subcategorySlug?.split('-').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+  
+  // Get products for this subcategory by matching product subcategory strings
+  const subcategoryProducts = categoryProducts.filter(product => 
+    product.subcategory?.toLowerCase().replace(/\s+/g, '-') === subcategorySlug
+  );
+  
+  // Create a temporary subcategory object for display
+  const subcategory = {
+    name: subcategoryName,
+    slug: subcategorySlug,
+    description: `${subcategoryName} products and services`,
+    icon: 'fas fa-layer-group'
+  };
 
   const handlePurchase = (product: Product) => {
     if (!isAuthenticated) {
@@ -64,7 +80,7 @@ export default function SubcategoryProductsPage() {
     );
   }
 
-  if (!category || !subcategory) {
+  if (!category || !subcategorySlug) {
     return (
       <div className="min-h-screen bg-background">
         <EnhancedHeader />
