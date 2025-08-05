@@ -1,30 +1,19 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
-import { ChevronDown, ShoppingCart } from "lucide-react";
 import EnhancedHeader from "@/components/enhanced-header";
 import Footer from "@/components/footer";
 import { Product, Category } from "@shared/schema";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ServiceIconComponent } from "@/components/service-icons";
-import CheckoutModal from "@/components/checkout-modal";
-import { useAuth } from "@/hooks/useAuth";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const { isAuthenticated } = useAuth();
   
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
 
-  const { data: products = [], isLoading } = useQuery<Product[]>({
+  const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
@@ -56,56 +45,15 @@ export default function CategoryPage() {
   
   // Use proper subcategories if they exist, otherwise use product-based subcategories
   const displaySubcategories = subcategories.length > 0 ? subcategories : productSubcategories;
-  
-  // Filter products based on selected subcategory
-  const filteredProducts = selectedSubcategory === "all" 
-    ? categoryProducts
-    : categoryProducts.filter(product => {
-        const subcategory = displaySubcategories.find(sub => sub.id === selectedSubcategory || sub.name === selectedSubcategory);
-        return product.subcategory === subcategory?.name;
-      });
-
-  const handleSubcategoryClick = (subcategoryName: string) => {
-    setSelectedSubcategory(subcategoryName);
-  };
-
-  const handlePurchase = (product: Product) => {
-    if (!isAuthenticated) {
-      window.location.href = "/api/login";
-      return;
-    }
-    setSelectedProduct(product);
-    setCheckoutOpen(true);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="max-w-7xl mx-auto px-4 py-20">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-lg mb-4"></div>
-                <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded mb-2"></div>
-                <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded w-2/3"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   if (!category) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+        <EnhancedHeader />
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
           <h1 className="text-3xl font-bold mb-4">Category Not Found</h1>
           <Link href="/">
-            <Button>Return Home</Button>
+            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Return Home</button>
           </Link>
         </div>
         <Footer />
@@ -159,225 +107,50 @@ export default function CategoryPage() {
         </div>
       </section>
 
-      {/* Subcategory Selection and Products */}
+      {/* Subcategory Selection */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           {/* Subcategories as Cards */}
           {displaySubcategories.length > 0 && (
             <div className="mb-12">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
-                Choose a Category
+                Choose a Subcategory
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* All Categories Card */}
-                <Card 
-                  className={`cursor-pointer transition-all duration-300 hover:shadow-xl business-card ${
-                    selectedSubcategory === "all" ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950' : ''
-                  }`}
-                  onClick={() => handleSubcategoryClick("all")}
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
-                      <i className="fas fa-th-large text-2xl text-white"></i>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                      All Categories
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                      View all products in this category
-                    </p>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-                      {categoryProducts.length} Products
-                    </Badge>
-                  </CardContent>
-                </Card>
-
                 {/* Individual Subcategory Cards */}
                 {displaySubcategories.map((subcat) => {
                   const subcategoryProducts = categoryProducts.filter(p => p.subcategory === subcat.name);
                   return (
-                    <Card 
+                    <Link 
                       key={subcat.id}
-                      className={`cursor-pointer transition-all duration-300 hover:shadow-xl business-card ${
-                        selectedSubcategory === subcat.name ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950' : ''
-                      }`}
-                      onClick={() => handleSubcategoryClick(subcat.name)}
+                      href={`/category/${category?.slug}/subcategory/${subcat.slug}`}
                     >
-                      <CardContent className="p-6 text-center">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
-                          <i className={`${subcat.icon} text-2xl text-white`}></i>
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                          {subcat.name}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                          {subcat.description}
-                        </p>
-                        <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-                          {subcategoryProducts.length} Products
-                        </Badge>
-                      </CardContent>
-                    </Card>
+                      <Card className="cursor-pointer transition-all duration-300 hover:shadow-xl business-card hover:scale-105">
+                        <CardContent className="p-6 text-center">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
+                            <i className={`${subcat.icon} text-2xl text-white`}></i>
+                          </div>
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            {subcat.name}
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            {subcat.description}
+                          </p>
+                          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                            {subcategoryProducts.length} Products
+                          </Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   );
                 })}
               </div>
             </div>
           )}
-
-          {/* Products Section */}
-          <div className="mb-8">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-              <div>
-                <h2 className="text-3xl font-bold mb-2">
-                  {selectedSubcategory === "all" ? "All Products" : selectedSubcategory}
-                </h2>
-                <p className="text-muted-foreground">
-                  {selectedSubcategory === "all" 
-                    ? `All available products in ${category.name}` 
-                    : `Products in ${selectedSubcategory} category`
-                  }
-                </p>
-              </div>
-              
-
-            </div>
-          </div>
-
-          {/* Products Grid */}
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
-                <ShoppingCart className="w-12 h-12 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
-              <p className="text-muted-foreground mb-4">
-                {selectedSubcategory === "all" 
-                  ? "This category doesn't have any products yet." 
-                  : "No products available in the selected subcategory."}
-              </p>
-              <Button onClick={() => setSelectedSubcategory("all")} variant="outline">
-                View All Products
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center justify-between mb-6">
-                <p className="text-sm text-muted-foreground">
-                  Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} 
-                  {selectedSubcategory !== "all" && (
-                    <span> in {displaySubcategories.find(sub => sub.id === selectedSubcategory)?.name}</span>
-                  )}
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <Card key={product.id} className="hover:shadow-xl transition-shadow duration-300">
-                    <div className="relative">
-                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 rounded-t-lg flex items-center justify-center overflow-hidden">
-                        {product.image ? (
-                          <img 
-                            src={product.image} 
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <ServiceIconComponent serviceName={product.name} className="text-4xl text-primary" />
-                        )}
-                      </div>
-                      
-                      <div className="absolute top-4 left-4 flex gap-2">
-                        {product.popular && <Badge className="bg-orange-500">Popular</Badge>}
-                        {product.trending && <Badge className="bg-red-500">Trending</Badge>}
-                      </div>
-                      
-                      {product.originalPrice > product.price && (
-                        <div className="absolute top-4 right-4">
-                          <Badge variant="destructive">
-                            {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg line-clamp-1">{product.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
-                    </CardHeader>
-                    
-                    <CardContent className="pt-0">
-                      <div className="space-y-4">
-                        {/* Product Info */}
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="font-medium">Duration:</span>
-                            <p className="text-muted-foreground">{product.duration}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium">Delivery:</span>
-                            <p className="text-muted-foreground">{product.activationTime}</p>
-                          </div>
-                        </div>
-                        
-                        {/* Features */}
-                        {product.features && (
-                          <div className="text-sm">
-                            <span className="font-medium">Features:</span>
-                            <p className="text-muted-foreground line-clamp-1">
-                              {product.features.split(',').slice(0, 2).join(', ')}
-                              {product.features.split(',').length > 2 && '...'}
-                            </p>
-                          </div>
-                        )}
-                        
-                        {/* Pricing */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-bold text-green-600">₹{product.price}</span>
-                            {product.originalPrice > product.price && (
-                              <span className="text-sm text-muted-foreground line-through">₹{product.originalPrice}</span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Action Buttons */}
-                        <div className="flex gap-2">
-                          <Link href={`/product/${product.id}`} className="flex-1">
-                            <Button variant="outline" className="w-full">
-                              View Details
-                            </Button>
-                          </Link>
-                          <Button 
-                            onClick={() => handlePurchase(product)}
-                            disabled={!product.available}
-                            className="flex-1 bg-green-600 hover:bg-green-700"
-                          >
-                            {product.available ? "Buy Now" : "Unavailable"}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </>
-          )}
         </div>
       </section>
 
       <Footer />
-      
-      {/* Checkout Modal */}
-      {selectedProduct && (
-        <CheckoutModal
-          product={selectedProduct}
-          isOpen={checkoutOpen}
-          onClose={() => {
-            setCheckoutOpen(false);
-            setSelectedProduct(null);
-          }}
-        />
-      )}
     </div>
   );
 }

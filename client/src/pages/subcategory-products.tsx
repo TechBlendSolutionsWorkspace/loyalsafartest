@@ -1,81 +1,39 @@
 import { useState } from "react";
-import { useRoute, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Filter, Grid, List, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/hooks/useAuth";
-import Header from "@/components/header";
+import { useParams, Link } from "wouter";
+import { ShoppingCart } from "lucide-react";
+import EnhancedHeader from "@/components/enhanced-header";
 import Footer from "@/components/footer";
+import { Product, Category } from "@shared/schema";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ServiceIconComponent } from "@/components/service-icons";
 import CheckoutModal from "@/components/checkout-modal";
-import type { Product, Category } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
 
-export default function SubcategoryProducts() {
-  const [, params] = useRoute("/category/:categorySlug/subcategory/:subcategoryId/products");
-  const categorySlug = params?.categorySlug || "";
-  const subcategoryId = params?.subcategoryId || "";
-  
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("name");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+export default function SubcategoryProductsPage() {
+  const { categorySlug, subcategorySlug } = useParams<{ categorySlug: string; subcategorySlug: string }>();
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { isAuthenticated } = useAuth();
-
-  // Fetch data
+  
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
 
-  const { data: products = [] } = useQuery<Product[]>({
+  const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
-  const currentCategory = categories?.find((cat) => cat.slug === categorySlug);
-  const currentSubcategory = categories?.find((cat) => 
-    cat.isSubcategory && 
-    cat.parentCategoryId === currentCategory?.id && 
-    cat.slug === subcategoryId
+  const category = categories.find(cat => cat.slug === categorySlug);
+  const subcategory = categories.find(cat => cat.slug === subcategorySlug && cat.parentCategoryId === category?.id);
+  
+  // Get products for this subcategory
+  const subcategoryProducts = products.filter(product => 
+    (product.category === category?.id || product.category === category?.slug) &&
+    product.subcategory === subcategory?.name
   );
-  
-  // Get subcategory name - either from proper subcategory or from slug
-  const subcategoryName = currentSubcategory?.name || 
-    subcategoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  
-  // Filter products for this subcategory - handle both proper subcategories and string-based ones
-  const subcategoryProducts = products.filter((product) => {
-    const matchesCategory = product.category === currentCategory?.id;
-    
-    // Check both proper subcategory ID and string-based subcategory
-    const matchesSubcategory = currentSubcategory 
-      ? product.subcategory === currentSubcategory.name
-      : product.subcategory?.toLowerCase().replace(/\s+/g, '-') === subcategoryId;
-      
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesCategory && matchesSubcategory && matchesSearch;
-  });
-
-  // Sort products
-  const sortedProducts = [...subcategoryProducts].sort((a, b) => {
-    switch (sortBy) {
-      case "price-asc":
-        return a.price - b.price;
-      case "price-desc":
-        return b.price - a.price;
-      case "rating":
-        return (b.rating || 0) - (a.rating || 0);
-      case "popular":
-        return Number(b.popular) - Number(a.popular);
-      default:
-        return a.name.localeCompare(b.name);
-    }
-  });
 
   const handlePurchase = (product: Product) => {
     if (!isAuthenticated) {
@@ -86,25 +44,35 @@ export default function SubcategoryProducts() {
     setCheckoutOpen(true);
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
-  if (!currentCategory) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Category Not Found</h1>
-            <Link to="/">
-              <Button>Return Home</Button>
-            </Link>
+        <EnhancedHeader />
+        <div className="max-w-7xl mx-auto px-4 py-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-lg mb-4"></div>
+                <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded mb-2"></div>
+                <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded w-2/3"></div>
+              </div>
+            ))}
           </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!category || !subcategory) {
+    return (
+      <div className="min-h-screen bg-background">
+        <EnhancedHeader />
+        <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+          <h1 className="text-3xl font-bold mb-4">Subcategory Not Found</h1>
+          <Link href={`/category/${categorySlug}`}>
+            <Button>Back to Category</Button>
+          </Link>
         </div>
         <Footer />
       </div>
@@ -113,189 +81,169 @@ export default function SubcategoryProducts() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <EnhancedHeader />
       
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link to={`/category/${categorySlug}/subcategories`}>
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Subcategories
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold">{subcategoryName}</h1>
-            <p className="text-muted-foreground">
-              {currentCategory.name} • {sortedProducts.length} Products
-            </p>
+      {/* Subcategory Header */}
+      <section className="relative py-16 md:py-20 overflow-hidden">
+        <div className="absolute inset-0 gradient-bg"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center text-white">
+          <div className="mb-6">
+            <i className={`${subcategory.icon} text-6xl mb-4 block drop-shadow-lg`}></i>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">{subcategory.name}</h1>
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto drop-shadow-md">
+            {subcategory.description}
+          </p>
+          
+          {/* Breadcrumb */}
+          <div className="mt-6">
+            <nav className="flex justify-center items-center space-x-2 text-blue-200">
+              <Link href="/" className="hover:text-white transition-colors">Home</Link>
+              <span>/</span>
+              <Link href={`/category/${categorySlug}`} className="hover:text-white transition-colors">{category.name}</Link>
+              <span>/</span>
+              <span className="text-white">{subcategory.name}</span>
+            </nav>
           </div>
         </div>
+      </section>
 
-        {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-          
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name">Name A-Z</SelectItem>
-              <SelectItem value="price-asc">Price: Low to High</SelectItem>
-              <SelectItem value="price-desc">Price: High to Low</SelectItem>
-              <SelectItem value="rating">Highest Rated</SelectItem>
-              <SelectItem value="popular">Most Popular</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === "grid" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-            >
-              <Grid className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Products */}
-        {sortedProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold mb-2">No Products Found</h2>
-            <p className="text-muted-foreground mb-4">
-              {searchTerm ? "Try adjusting your search terms." : "This subcategory doesn't have any products yet."}
-            </p>
-            {isAuthenticated && !searchTerm && (
-              <Link to="/admin">
-                <Button>Add Products</Button>
+      {/* Products Grid */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          {subcategoryProducts.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
+                <ShoppingCart className="w-12 h-12 text-muted-foreground" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
+              <p className="text-muted-foreground mb-4">
+                This subcategory doesn't have any products yet.
+              </p>
+              <Link href={`/category/${categorySlug}`}>
+                <Button variant="outline">Back to Category</Button>
               </Link>
-            )}
-          </div>
-        ) : (
-          <div className={viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
-            : "space-y-4"
-          }>
-            {sortedProducts.map((product) => (
-              <Card key={product.id} className={`hover:shadow-lg transition-shadow ${
-                viewMode === "list" ? "flex flex-row" : ""
-              }`}>
-                <div className={viewMode === "list" ? "w-48 flex-shrink-0" : ""}>
-                  <div className={`aspect-video bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg ${
-                    viewMode === "list" ? "m-4 h-32" : "m-4"
-                  } flex items-center justify-center overflow-hidden`}>
-                    {product.image ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <i className={`${currentCategory.icon} text-3xl text-primary`}></i>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex-1">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-lg">{product.name}</CardTitle>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {product.duration} • {product.activationTime}
-                        </p>
-                        {product.popular && (
-                          <Badge variant="secondary" className="mr-2">Popular</Badge>
-                        )}
-                        {product.trending && (
-                          <Badge variant="outline">Trending</Badge>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">
+                  {subcategory.name} Products
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Showing {subcategoryProducts.length} product{subcategoryProducts.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {subcategoryProducts.map((product) => (
+                  <Card key={product.id} className="hover:shadow-xl transition-shadow duration-300">
+                    <div className="relative">
+                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 rounded-t-lg flex items-center justify-center overflow-hidden">
+                        {product.image ? (
+                          <img 
+                            src={product.image} 
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <ServiceIconComponent serviceName={product.name} className="text-4xl text-primary" />
                         )}
                       </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-primary">
-                          {formatPrice(product.price)}
-                        </div>
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <div className="text-sm text-muted-foreground line-through">
-                            {formatPrice(product.originalPrice)}
-                          </div>
-                        )}
+                      
+                      <div className="absolute top-4 left-4 flex gap-2">
+                        {product.popular && <Badge className="bg-orange-500">Popular</Badge>}
+                        {product.trending && <Badge className="bg-red-500">Trending</Badge>}
                       </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {product.description}
-                    </p>
-                    
-                    <div className="flex flex-col gap-3">
-                      {product.features && (
-                        <div className="text-sm">
-                          <div className="font-medium mb-1">Key Features:</div>
-                          <div className="text-muted-foreground line-clamp-1">
-                            {product.features.split(',').slice(0, 2).join(', ')}
-                            {product.features.split(',').length > 2 && '...'}
-                          </div>
+                      
+                      {product.originalPrice > product.price && (
+                        <div className="absolute top-4 right-4">
+                          <Badge variant="destructive">
+                            {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+                          </Badge>
                         </div>
                       )}
-                      
-                      <div className="flex items-center justify-between gap-2">
-                        <Link href={`/product/${product.id}`}>
-                          <Button variant="outline" size="sm">
+                    </div>
+                    
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg line-clamp-1">{product.name}</CardTitle>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+                    </CardHeader>
+                    
+                    <CardContent className="pt-0">
+                      <div className="space-y-4">
+                        {/* Product Info */}
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="font-medium">Duration:</span>
+                            <p className="text-muted-foreground">{product.duration}</p>
+                          </div>
+                          <div>
+                            <span className="font-medium">Delivery:</span>
+                            <p className="text-muted-foreground">{product.activationTime}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Features */}
+                        {product.features && (
+                          <div className="text-sm">
+                            <span className="font-medium">Features:</span>
+                            <p className="text-muted-foreground line-clamp-1">
+                              {product.features.split(',').slice(0, 2).join(', ')}
+                              {product.features.split(',').length > 2 && '...'}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* Pricing */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl font-bold text-primary">
+                              ₹{product.price}
+                            </span>
+                            {product.originalPrice > product.price && (
+                              <span className="text-sm text-muted-foreground line-through">
+                                ₹{product.originalPrice}
+                              </span>
+                            )}
+                          </div>
+                          
+                          <Button 
+                            size="sm" 
+                            onClick={() => handlePurchase(product)}
+                            className="shrink-0"
+                          >
+                            Buy Now
+                          </Button>
+                        </div>
+                        
+                        {/* View Details Link */}
+                        <Link href={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                          <Button variant="outline" size="sm" className="w-full">
                             View Details
                           </Button>
                         </Link>
-                        
-                        <Button 
-                          onClick={() => handlePurchase(product)}
-                          disabled={!product.available}
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          {product.available ? "Buy Now ₹" + product.price : "Unavailable"}
-                        </Button>
                       </div>
-                    </div>
-                  </CardContent>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </section>
 
+      <Footer />
+      
       {/* Checkout Modal */}
       {selectedProduct && (
         <CheckoutModal
           product={selectedProduct}
-          isOpen={checkoutOpen}
-          onClose={() => {
-            setCheckoutOpen(false);
-            setSelectedProduct(null);
-          }}
+          open={checkoutOpen}
+          onOpenChange={setCheckoutOpen}
+          onClose={() => setSelectedProduct(null)}
         />
       )}
-      
-      <Footer />
     </div>
   );
 }
