@@ -22,7 +22,7 @@ export default function PaymentSuccess() {
     enabled: !!orderId
   });
 
-  const order = orders?.find((o: any) => o.orderId === orderId);
+  const order = (orders as any)?.find((o: any) => o.orderId === orderId);
 
   const { data: product } = useQuery({
     queryKey: ['/api/products', order?.productId],

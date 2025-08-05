@@ -42,13 +42,14 @@ export default function CheckoutModal({ product, isOpen, onClose }: CheckoutModa
 
   const createPaymentMutation = useMutation({
     mutationFn: async (data: PaymentData) => {
-      return apiRequest('/api/payments/create', {
+      const response = await fetch('/api/payments/create', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
         },
       });
+      return response.json();
     },
     onSuccess: (response: any) => {
       if (response.success && response.paymentUrl) {
