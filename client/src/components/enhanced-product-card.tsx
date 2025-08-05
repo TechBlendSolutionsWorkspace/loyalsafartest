@@ -98,7 +98,7 @@ export default function EnhancedProductCard({
         )}
 
         {/* Features List */}
-        {product.features && Array.isArray(product.features) && product.features.length > 0 && (
+        {product.features && typeof product.features === 'object' && Array.isArray(product.features) && product.features.length > 0 && (
           <div className="space-y-1">
             {product.features.slice(0, 3).map((feature: string, index: number) => (
               <div key={index} className="flex items-start space-x-2">
