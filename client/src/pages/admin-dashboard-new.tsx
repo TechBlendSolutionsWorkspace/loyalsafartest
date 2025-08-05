@@ -48,7 +48,7 @@ export default function AdminDashboard() {
     price: 0,
     originalPrice: 0,
     discount: 0,
-    category: "",
+    category: undefined as string | undefined,
     image: "",
     activationTime: "",
     warranty: "",
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
     email: "",
     firstName: "",
     lastName: "",
-    role: "user",
+    role: undefined as string | undefined,
     permissions: [] as string[],
     isActive: true,
   });
@@ -634,13 +634,13 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="category">Category</Label>
-                      <Select value={productFormData.category} onValueChange={(value) => setProductFormData(prev => ({ ...prev, category: value }))}>
+                      <Select value={productFormData.category || ""} onValueChange={(value) => setProductFormData(prev => ({ ...prev, category: value }))}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
                           {safeCategories.map((cat: Category) => (
-                            <SelectItem key={cat.id} value={cat.slug}>{cat.name}</SelectItem>
+                            <SelectItem key={cat.id} value={cat.slug || ""}>{cat.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -854,7 +854,7 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="role">Role</Label>
-                      <Select value={userFormData.role} onValueChange={(value) => setUserFormData(prev => ({ ...prev, role: value }))}>
+                      <Select value={userFormData.role || ""} onValueChange={(value) => setUserFormData(prev => ({ ...prev, role: value }))}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select role" />
                         </SelectTrigger>
