@@ -642,7 +642,7 @@ export default function AdminDashboard() {
                     <div className="space-y-2">
                       <Label htmlFor="category">Main Category</Label>
                       <Select 
-                        value={productFormData.category || ""} 
+                        value={productFormData.category || undefined} 
                         onValueChange={(value) => setProductFormData(prev => ({ 
                           ...prev, 
                           category: value,
@@ -662,7 +662,7 @@ export default function AdminDashboard() {
                     <div className="space-y-2">
                       <Label htmlFor="subcategory">Subcategory</Label>
                       <Select 
-                        value={productFormData.subcategory || ""} 
+                        value={productFormData.subcategory || undefined} 
                         onValueChange={(value) => setProductFormData(prev => ({ ...prev, subcategory: value }))}
                         disabled={!productFormData.category || availableSubcategories.length === 0}
                       >
