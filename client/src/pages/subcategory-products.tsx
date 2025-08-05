@@ -27,21 +27,34 @@ export default function SubcategoryProducts() {
   const { isAuthenticated } = useAuth();
 
   // Fetch data
-  const { data: categories } = useQuery({
+  const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
 
-  const { data: products = [] } = useQuery({
+  const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
-  const currentCategory = categories?.find((cat: Category) => cat.slug === categorySlug);
-  const subcategoryName = subcategoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const currentCategory = categories?.find((cat) => cat.slug === categorySlug);
+  const currentSubcategory = categories?.find((cat) => 
+    cat.isSubcategory && 
+    cat.parentCategoryId === currentCategory?.id && 
+    cat.slug === subcategoryId
+  );
   
-  // Filter products for this subcategory
-  const subcategoryProducts = products.filter((product: Product) => {
+  // Get subcategory name - either from proper subcategory or from slug
+  const subcategoryName = currentSubcategory?.name || 
+    subcategoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  
+  // Filter products for this subcategory - handle both proper subcategories and string-based ones
+  const subcategoryProducts = products.filter((product) => {
     const matchesCategory = product.category === currentCategory?.id;
-    const matchesSubcategory = product.subcategory?.toLowerCase().replace(/\s+/g, '-') === subcategoryId;
+    
+    // Check both proper subcategory ID and string-based subcategory
+    const matchesSubcategory = currentSubcategory 
+      ? product.subcategory === currentSubcategory.name
+      : product.subcategory?.toLowerCase().replace(/\s+/g, '-') === subcategoryId;
+      
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -235,18 +248,32 @@ export default function SubcategoryProducts() {
                       {product.description}
                     </p>
                     
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">
-                        <div className="font-medium">Features:</div>
-                        <div className="text-muted-foreground">{product.features}</div>
-                      </div>
+                    <div className="flex flex-col gap-3">
+                      {product.features && (
+                        <div className="text-sm">
+                          <div className="font-medium mb-1">Key Features:</div>
+                          <div className="text-muted-foreground line-clamp-1">
+                            {product.features.split(',').slice(0, 2).join(', ')}
+                            {product.features.split(',').length > 2 && '...'}
+                          </div>
+                        </div>
+                      )}
                       
-                      <Button 
-                        onClick={() => handlePurchase(product)}
-                        disabled={!product.available}
-                      >
-                        {product.available ? "Purchase" : "Unavailable"}
-                      </Button>
+                      <div className="flex items-center justify-between gap-2">
+                        <Link href={`/product/${product.id}`}>
+                          <Button variant="outline" size="sm">
+                            View Details
+                          </Button>
+                        </Link>
+                        
+                        <Button 
+                          onClick={() => handlePurchase(product)}
+                          disabled={!product.available}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          {product.available ? "Buy Now ₹" + product.price : "Unavailable"}
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </div>

@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Home from "@/pages/home";
 import CategoryPage from "@/pages/category";
 import ProductVariantsPage from "@/pages/product-variants";
+import ProductDetail from "@/pages/product-detail";
 import CategorySubcategories from "@/pages/category-subcategories";
 import SubcategoryProducts from "@/pages/subcategory-products";
 import Products from "@/pages/products";
@@ -23,7 +24,8 @@ function Router() {
       <Route path="/category/:slug" component={CategoryPage} />
       <Route path="/category/:categorySlug/subcategories" component={CategorySubcategories} />
       <Route path="/category/:categorySlug/subcategory/:subcategoryId/products" component={SubcategoryProducts} />
-      <Route path="/product/:productName" component={ProductVariantsPage} />
+      <Route path="/product/:productId" component={ProductDetail} />
+      <Route path="/product-variants/:productName" component={ProductVariantsPage} />
       <Route path="/products" component={Products} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/ibm-payment" component={IBMPayment} />

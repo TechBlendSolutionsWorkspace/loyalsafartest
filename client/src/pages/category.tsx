@@ -20,11 +20,30 @@ export default function CategoryPage() {
 
   const category = categories.find(cat => cat.slug === slug);
   
-  // Get subcategories for this category
+  // Get subcategories for this category (proper subcategory entities)
   const subcategories = categories.filter(cat => cat.isSubcategory && cat.parentCategoryId === category?.id);
   
   // Get products for counting purposes only
   const categoryProducts = products.filter(product => product.category === category?.id);
+  
+  // If no proper subcategories exist, create them from product subcategory strings
+  const productSubcategories = Array.from(
+    new Set(categoryProducts.map(p => p.subcategory).filter(Boolean))
+  ).map(subcat => ({
+    id: `temp-${subcat?.toLowerCase().replace(/\s+/g, '-')}`,
+    name: subcat!,
+    slug: subcat?.toLowerCase().replace(/\s+/g, '-')!,
+    description: `${subcat} products and services`,
+    icon: 'fas fa-layer-group',
+    isSubcategory: true,
+    parentCategoryId: category?.id,
+    bannerImage: null,
+    bannerTitle: null,
+    bannerSubtitle: null,
+  }));
+  
+  // Use proper subcategories if they exist, otherwise use product-based subcategories
+  const displaySubcategories = subcategories.length > 0 ? subcategories : productSubcategories;
 
   if (isLoading) {
     return (
@@ -117,15 +136,15 @@ export default function CategoryPage() {
             </p>
           </div>
 
-          {subcategories.length === 0 ? (
+          {displaySubcategories.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg">No subcategories available in this category yet.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-              {subcategories.map((subcategory) => {
+              {displaySubcategories.map((subcategory) => {
                 const subcategoryProducts = categoryProducts.filter(p => p.subcategory === subcategory.name);
-                const subcategorySlug = subcategory.name.toLowerCase().replace(/\s+/g, '-');
+                const subcategorySlug = subcategory.slug || subcategory.name.toLowerCase().replace(/\s+/g, '-');
                 
                 return (
                   <Link key={subcategory.id} href={`/category/${category.slug}/subcategory/${subcategorySlug}/products`}>

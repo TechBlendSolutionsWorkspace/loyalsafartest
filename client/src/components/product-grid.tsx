@@ -105,11 +105,18 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
                       {product.discount}% OFF
                     </div>
                   </div>
-                  <Link to={`/product/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                    <Button className="w-full font-semibold">
-                      View Plans
-                    </Button>
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link href={`/product/${product.id}`} className="flex-1">
+                      <Button variant="outline" className="w-full">
+                        View Details
+                      </Button>
+                    </Link>
+                    <Link href={`/product-variants/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="flex-1">
+                      <Button className="w-full font-semibold">
+                        Buy Now
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
@@ -147,7 +154,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
                   </p>
                 </div>
                 
-                <Link to={`/category/${category.slug}/subcategories`}>
+                <Link href={`/category/${category.slug}`}>
                   <Button className="w-full group-hover:bg-primary/90 transition-colors text-sm md:text-base">
                     Browse
                     <i className="fas fa-arrow-right ml-2 text-sm"></i>
