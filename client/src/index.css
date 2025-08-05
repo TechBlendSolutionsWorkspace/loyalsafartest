@@ -278,3 +278,13 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #5a67d8, #6b46c1);
 }
+
+/* Hide scrollbar for smooth carousel effect */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

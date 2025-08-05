@@ -3,9 +3,10 @@ import { Product, Category } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { ServiceIconComponent } from "@/components/service-icons";
 import EnhancedProductCard from "@/components/enhanced-product-card";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import CheckoutModal from "@/components/checkout-modal";
 import { useAuth } from "@/hooks/useAuth";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 
 interface ProductGridProps {
@@ -18,7 +19,10 @@ interface ProductGridProps {
 export default function ProductGrid({ products, categories, isLoading, viewMode = 'grid' }: ProductGridProps) {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const { isAuthenticated } = useAuth();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
 
   const featuredProducts = products.filter(product => product.popular || product.trending);
   // Filter to show only main categories (not subcategories) on homepage
@@ -27,6 +31,64 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
   const handleCheckout = (product: Product) => {
     setSelectedProduct(product);
     setCheckoutOpen(true);
+  };
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    if (featuredProducts.length <= 3) return; // Don't auto-scroll if 3 or fewer items
+
+    const startAutoScroll = () => {
+      autoScrollRef.current = setInterval(() => {
+        setCurrentIndex(prev => {
+          const nextIndex = prev + 1;
+          return nextIndex >= featuredProducts.length - 2 ? 0 : nextIndex;
+        });
+      }, 4000); // Auto-scroll every 4 seconds
+    };
+
+    const stopAutoScroll = () => {
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current);
+        autoScrollRef.current = null;
+      }
+    };
+
+    startAutoScroll();
+
+    // Pause auto-scroll on hover
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('mouseenter', stopAutoScroll);
+      container.addEventListener('mouseleave', startAutoScroll);
+    }
+
+    return () => {
+      stopAutoScroll();
+      if (container) {
+        container.removeEventListener('mouseenter', stopAutoScroll);
+        container.removeEventListener('mouseleave', startAutoScroll);
+      }
+    };
+  }, [featuredProducts.length]);
+
+  // Smooth scroll to current index
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const cardWidth = 320; // Approximate card width + gap
+      const scrollPosition = currentIndex * cardWidth;
+      scrollContainerRef.current.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  }, [currentIndex]);
+
+  const scrollTo = (direction: 'left' | 'right') => {
+    if (direction === 'left') {
+      setCurrentIndex(prev => Math.max(0, prev - 1));
+    } else {
+      setCurrentIndex(prev => Math.min(featuredProducts.length - 3, prev + 1));
+    }
   };
 
   if (isLoading) {
@@ -87,51 +149,64 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
                 India's favorite digital services at the most affordable prices
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-              {featuredProducts.slice(0, 6).map((product) => (
-                <div key={product.id} className="business-card rounded-xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
-                  <div className="relative mb-4">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-48 object-cover rounded-lg"
+            <div className="relative">
+              {/* Navigation Arrows */}
+              {featuredProducts.length > 3 && (
+                <>
+                  <button
+                    onClick={() => scrollTo('left')}
+                    disabled={currentIndex === 0}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                  </button>
+                  <button
+                    onClick={() => scrollTo('right')}
+                    disabled={currentIndex >= featuredProducts.length - 3}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                  </button>
+                </>
+              )}
+
+              {/* Scrollable Container */}
+              <div 
+                ref={scrollContainerRef}
+                className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
+                style={{ scrollSnapType: 'x mandatory' }}
+              >
+                {featuredProducts.map((product) => (
+                  <div 
+                    key={product.id} 
+                    className="flex-shrink-0 w-80"
+                    style={{ scrollSnapAlign: 'start' }}
+                  >
+                    <EnhancedProductCard
+                      product={product}
+                      onCheckout={handleCheckout}
+                      isAuthenticated={isAuthenticated}
                     />
-                    <div className="absolute top-3 left-3">
-                      <div className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${
-                        product.popular ? 'bg-orange-500' : 'bg-blue-500'
-                      }`}>
-                        {product.popular ? 'Popular' : 'Trending'}
-                      </div>
-                    </div>
                   </div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <ServiceIconComponent serviceName={product.name} className="flex-shrink-0" />
-                    <h3 className="text-xl font-bold line-clamp-1">{product.name}</h3>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">{product.description}</p>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-primary">₹{product.price}</span>
-                      <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
-                    </div>
-                    <div className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 px-2 py-1 rounded text-xs font-semibold">
-                      {product.discount}% OFF
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Link href={`/product/${product.id}`} className="flex-1">
-                      <Button variant="outline" className="w-full">
-                        View Details
-                      </Button>
-                    </Link>
-                    <Link href={`/product-variants/${product.name.toLowerCase().replace(/\s+/g, '-')}`} className="flex-1">
-                      <Button className="w-full font-semibold">
-                        Buy Now
-                      </Button>
-                    </Link>
-                  </div>
+                ))}
+              </div>
+
+              {/* Dots Indicator */}
+              {featuredProducts.length > 3 && (
+                <div className="flex justify-center mt-6 space-x-2">
+                  {Array.from({ length: Math.max(0, featuredProducts.length - 2) }).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentIndex
+                          ? 'bg-blue-600 w-6'
+                          : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
+                      }`}
+                    />
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </section>
