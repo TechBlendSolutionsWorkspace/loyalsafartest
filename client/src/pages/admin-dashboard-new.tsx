@@ -678,27 +678,57 @@ export default function AdminDashboard() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="subcategory">Subcategory</Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="subcategory">Subcategory</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (productFormData.category) {
+                              setActiveTab("categories");
+                              setShowProductDialog(false);
+                            }
+                          }}
+                          disabled={!productFormData.category}
+                          className="text-xs"
+                        >
+                          + Add New Subcategory
+                        </Button>
+                      </div>
                       <Select 
                         value={productFormData.subcategory || undefined} 
                         onValueChange={(value) => setProductFormData(prev => ({ ...prev, subcategory: value }))}
-                        disabled={!productFormData.category || availableSubcategories.length === 0}
+                        disabled={!productFormData.category}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder={
                             !productFormData.category 
                               ? "First select a category" 
                               : availableSubcategories.length === 0 
-                                ? "No subcategories available"
+                                ? "No subcategories - create one first"
                                 : "Select subcategory"
                           } />
                         </SelectTrigger>
                         <SelectContent>
-                          {availableSubcategories.map((subcat: Category) => (
-                            <SelectItem key={subcat.id} value={subcat.name}>{subcat.name}</SelectItem>
-                          ))}
+                          {availableSubcategories.length > 0 ? (
+                            availableSubcategories.map((subcat: Category) => (
+                              <SelectItem key={subcat.id} value={subcat.name}>
+                                {subcat.name}
+                              </SelectItem>
+                            ))
+                          ) : productFormData.category ? (
+                            <SelectItem value="" disabled className="text-muted-foreground">
+                              No subcategories available - click "Add New Subcategory"
+                            </SelectItem>
+                          ) : null}
                         </SelectContent>
                       </Select>
+                      {productFormData.category && availableSubcategories.length === 0 && (
+                        <p className="text-sm text-muted-foreground bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded border">
+                          💡 No subcategories found for this category. Click "Add New Subcategory" to create one first.
+                        </p>
+                      )}
                     </div>
                   </div>
 

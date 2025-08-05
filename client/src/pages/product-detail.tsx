@@ -29,7 +29,7 @@ export default function ProductDetail() {
   });
 
   const product = products.find((p) => p.id === productId);
-  const category = categories.find((c) => c.id === product?.category);
+  const category = categories.find((c) => c.id === product?.category || c.slug === product?.category);
 
   const handlePurchase = () => {
     if (!isAuthenticated) {

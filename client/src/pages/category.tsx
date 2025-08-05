@@ -33,8 +33,10 @@ export default function CategoryPage() {
   // Get subcategories for this category (proper subcategory entities)
   const subcategories = categories.filter(cat => cat.isSubcategory && cat.parentCategoryId === category?.id);
   
-  // Get products for counting purposes only
-  const categoryProducts = products.filter(product => product.category === category?.id);
+  // Get products for this category - handle both ID and slug references
+  const categoryProducts = products.filter(product => 
+    product.category === category?.id || product.category === category?.slug
+  );
   
   // If no proper subcategories exist, create them from product subcategory strings
   const productSubcategories = Array.from(
