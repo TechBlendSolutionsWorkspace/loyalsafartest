@@ -47,6 +47,15 @@ export interface IStorage {
   createUser(user: UpsertUser): Promise<User>;
   updateUser(id: string, user: UpsertUser): Promise<User>;
   deleteUser(id: string): Promise<void>;
+
+  // Admin analytics
+  getAdminStats(days?: number): Promise<any>;
+  getRevenueChartData(days?: number): Promise<any[]>;
+  getOrdersChartData(days?: number): Promise<any[]>;
+  getProductsChartData(days?: number): Promise<any[]>;
+  getTopProducts(days?: number): Promise<any[]>;
+  getRecentOrders(limit?: number): Promise<any[]>;
+  getAnalytics(days?: number): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -311,4 +320,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { DatabaseStorage } from "./database-storage";
+
+export const storage = new DatabaseStorage();

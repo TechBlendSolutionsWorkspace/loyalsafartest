@@ -16,6 +16,7 @@ import Checkout from "@/pages/checkout";
 import IBMPayment from "@/pages/ibm-payment";
 import Reviews from "@/pages/reviews";
 import AdminDashboard from "@/pages/admin-dashboard-integrated";
+import PaymentSuccess from "@/pages/payment-success";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -33,6 +34,7 @@ function Router() {
       <Route path="/ibm-payment" component={IBMPayment} />
       <Route path="/reviews" component={Reviews} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/payment/success" component={PaymentSuccess} />
       <Route component={NotFound} />
     </Switch>
   );

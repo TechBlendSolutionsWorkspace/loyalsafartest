@@ -13,6 +13,8 @@ const setupAuth = process.env.REPLIT_DOMAINS ? replitSetupAuth : setupSimpleAuth
 const isAuthenticated = process.env.REPLIT_DOMAINS ? replitIsAuthenticated : simpleIsAuthenticated;
 import jwt from "jsonwebtoken";
 import { insertOrderSchema, insertReviewSchema, insertCategorySchema, insertProductSchema } from "@shared/schema";
+import { imbPayment, type IMBPaymentRequest } from "./imb-payment";
+import crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -155,6 +157,130 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating order:", error);
       res.status(500).json({ message: "Failed to update order" });
+    }
+  });
+
+  // Payment Routes
+  app.post("/api/payments/create", async (req, res) => {
+    try {
+      const { productId, customerEmail, customerName } = req.body;
+      
+      // Get product details
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      // Generate unique order ID
+      const orderId = `ORDER_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+      
+      // Create payment request
+      const paymentRequest: IMBPaymentRequest = {
+        orderId,
+        amount: product.price,
+        productName: product.fullProductName,
+        customerEmail,
+        customerName,
+        returnUrl: `${req.protocol}://${req.get('Host')}/payment/success`,
+        callbackUrl: `${req.protocol}://${req.get('Host')}/api/payments/callback`,
+      };
+
+      // Create payment with IMB
+      const paymentResponse = await imbPayment.createPayment(paymentRequest);
+      
+      if (paymentResponse.success) {
+        // Create order in database
+        const orderData = {
+          orderId,
+          productId: product.id,
+          productName: product.fullProductName,
+          price: product.price,
+          paymentMethod: "IMB_Gateway",
+          status: "pending",
+          whatsappSent: false,
+        };
+
+        await storage.createOrder(orderData);
+
+        res.json({
+          success: true,
+          paymentUrl: paymentResponse.paymentUrl,
+          transactionId: paymentResponse.transactionId,
+          orderId,
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: paymentResponse.message,
+          error: paymentResponse.error,
+        });
+      }
+    } catch (error: any) {
+      console.error("Payment creation error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Payment processing failed",
+        error: error.message,
+      });
+    }
+  });
+
+  // Payment callback handler
+  app.post("/api/payments/callback", async (req, res) => {
+    try {
+      const { signature, ...callbackData } = req.body;
+      
+      // Verify callback signature
+      const isValidSignature = await imbPayment.verifyCallback(callbackData, signature);
+      
+      if (!isValidSignature) {
+        return res.status(400).json({ message: "Invalid signature" });
+      }
+
+      const { order_id, status, transaction_id } = callbackData;
+
+      // Update order status
+      const orders = await storage.getOrders();
+      const orderToUpdate = orders.find(o => o.orderId === order_id);
+      
+      if (orderToUpdate) {
+        await storage.updateOrderStatus(orderToUpdate.id, status);
+        
+        // If payment is successful, trigger WhatsApp flow
+        if (status === 'completed') {
+          // Generate WhatsApp message
+          const product = await storage.getProduct(orderToUpdate.productId);
+          if (product) {
+            const whatsappMessage = `🎉 *Order Confirmed!*%0A%0A📦 *Product*: ${product.fullProductName}%0A💰 *Price*: ₹${product.price}%0A🆔 *Order ID*: ${order_id}%0A⚡ *Activation*: ${product.activationTime}%0A🛡️ *Warranty*: ${product.warranty}%0A%0AThank you for your purchase! Your product will be activated soon.`;
+            const whatsappUrl = `https://wa.me/918142528883?text=${whatsappMessage}`;
+            
+            // Mark WhatsApp as sent (in production, you might want to actually send it)
+            // This is just marking it for tracking purposes
+          }
+        }
+      }
+
+      res.json({ message: "Callback processed successfully" });
+    } catch (error: any) {
+      console.error("Payment callback error:", error);
+      res.status(500).json({ message: "Callback processing failed" });
+    }
+  });
+
+  // Payment status check
+  app.get("/api/payments/status/:transactionId", async (req, res) => {
+    try {
+      const { transactionId } = req.params;
+      const status = await imbPayment.getPaymentStatus(transactionId);
+      
+      if (status) {
+        res.json(status);
+      } else {
+        res.status(404).json({ message: "Transaction not found" });
+      }
+    } catch (error: any) {
+      console.error("Payment status check error:", error);
+      res.status(500).json({ message: "Status check failed" });
     }
   });
 
