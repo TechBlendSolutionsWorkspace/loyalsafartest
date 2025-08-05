@@ -98,21 +98,32 @@ export default function EnhancedProductCard({
         )}
 
         {/* Features List */}
-        {product.features && typeof product.features === 'object' && Array.isArray(product.features) && product.features.length > 0 && (
+        {product.features && (
           <div className="space-y-1">
-            {product.features.slice(0, 3).map((feature: string, index: number) => (
-              <div key={index} className="flex items-start space-x-2">
+            {typeof product.features === 'string' ? (
+              <div className="flex items-start space-x-2">
                 <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
                 <span className="text-xs text-gray-600 dark:text-gray-400">
-                  {feature}
+                  {product.features}
                 </span>
               </div>
-            ))}
-            {product.features.length > 3 && (
-              <span className="text-xs text-blue-600 dark:text-blue-400">
-                +{product.features.length - 3} more features
-              </span>
-            )}
+            ) : Array.isArray(product.features) ? (
+              <>
+                {product.features.slice(0, 3).map((feature: string, index: number) => (
+                  <div key={index} className="flex items-start space-x-2">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      {feature}
+                    </span>
+                  </div>
+                ))}
+                {product.features.length > 3 && (
+                  <span className="text-xs text-blue-600 dark:text-blue-400">
+                    +{product.features.length - 3} more features
+                  </span>
+                )}
+              </>
+            ) : null}
           </div>
         )}
 
