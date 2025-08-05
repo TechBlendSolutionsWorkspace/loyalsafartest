@@ -325,3 +325,20 @@ export default function CategoryPage() {
     </div>
   );
 }
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          View Products →
+                        </Button>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+}
