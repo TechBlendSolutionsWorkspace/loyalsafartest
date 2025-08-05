@@ -70,7 +70,7 @@ export default function PaymentSuccess() {
   }
 
   const whatsappMessage = product ? 
-    `🎉 *Order Confirmed!*%0A%0A📦 *Product*: ${product.fullProductName}%0A💰 *Price*: ₹${product.price}%0A🆔 *Order ID*: ${orderId}%0A⚡ *Activation*: ${product.activationTime}%0A🛡️ *Warranty*: ${product.warranty}%0A%0AThank you for your purchase! Your product will be activated soon.` : '';
+    `🎉 *Order Confirmed!*%0A%0A📦 *Product*: ${(product as any).fullProductName}%0A💰 *Price*: ₹${(product as any).price}%0A🆔 *Order ID*: ${orderId}%0A⚡ *Activation*: ${(product as any).activationTime}%0A🛡️ *Warranty*: ${(product as any).warranty}%0A%0AThank you for your purchase! Your product will be activated soon.` : '';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
@@ -108,13 +108,13 @@ export default function PaymentSuccess() {
                 <div className="flex items-center gap-3">
                   <Package className="h-8 w-8 text-blue-600" />
                   <div>
-                    <h4 className="font-semibold">{product.fullProductName}</h4>
-                    <p className="text-sm text-gray-500">{product.subcategory}</p>
+                    <h4 className="font-semibold">{(product as any).fullProductName}</h4>
+                    <p className="text-sm text-gray-500">{(product as any).subcategory}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-green-600">₹{product.price}</p>
-                  <Badge variant="secondary">{product.duration}</Badge>
+                  <p className="text-2xl font-bold text-green-600">₹{(product as any).price}</p>
+                  <Badge variant="secondary">{(product as any).duration}</Badge>
                 </div>
               </div>
 
@@ -122,13 +122,13 @@ export default function PaymentSuccess() {
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-orange-500" />
                   <span className="text-sm">
-                    <strong>Activation:</strong> {product.activationTime}
+                    <strong>Activation:</strong> {(product as any).activationTime}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-green-500" />
                   <span className="text-sm">
-                    <strong>Warranty:</strong> {product.warranty}
+                    <strong>Warranty:</strong> {(product as any).warranty}
                   </span>
                 </div>
               </div>
