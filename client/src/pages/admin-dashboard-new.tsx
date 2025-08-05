@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ interface DashboardStats {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("overview");
   
   // Product Management State
@@ -236,17 +237,17 @@ export default function AdminDashboard() {
     },
   });
 
-  // Category Mutations
+  // Category Mutations with proper cache invalidation
   const createCategoryMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/categories", data),
     onSuccess: () => {
       toast({ title: "Success", description: "Category created successfully" });
       setShowCategoryDialog(false);
       resetCategoryForm();
-      setTimeout(() => {
-        refetchCategories();
-        refetchStats();
-      }, 100);
+      // Invalidate and refetch categories immediately
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      refetchCategories();
+      refetchStats();
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -259,10 +260,11 @@ export default function AdminDashboard() {
       toast({ title: "Success", description: "Category updated successfully" });
       setShowCategoryDialog(false);
       resetCategoryForm();
-      setTimeout(() => {
-        refetchCategories();
-        refetchStats();
-      }, 100);
+      setIsEditingCategory(false);
+      // Invalidate and refetch categories immediately
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      refetchCategories();
+      refetchStats();
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -273,10 +275,10 @@ export default function AdminDashboard() {
     mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/categories/${id}`),
     onSuccess: () => {
       toast({ title: "Success", description: "Category deleted successfully" });
-      setTimeout(() => {
-        refetchCategories();
-        refetchStats();
-      }, 100);
+      // Invalidate and refetch categories immediately
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      refetchCategories();
+      refetchStats();
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -512,7 +514,7 @@ export default function AdminDashboard() {
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">₹{stats.totalRevenue?.toLocaleString() || 0}</div>
+                  <div className="text-2xl font-bold">₹{(stats as any)?.totalRevenue?.toLocaleString() || 0}</div>
                   <p className="text-xs text-muted-foreground">+20.1% from last month</p>
                 </CardContent>
               </Card>
@@ -522,7 +524,7 @@ export default function AdminDashboard() {
                   <ShoppingCart className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalOrders || 0}</div>
+                  <div className="text-2xl font-bold">{(stats as any)?.totalOrders || 0}</div>
                   <p className="text-xs text-muted-foreground">+15% from last month</p>
                 </CardContent>
               </Card>
@@ -532,7 +534,7 @@ export default function AdminDashboard() {
                   <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalProducts || safeProducts.length}</div>
+                  <div className="text-2xl font-bold">{(stats as any)?.totalProducts || safeProducts.length}</div>
                   <p className="text-xs text-muted-foreground">Active products</p>
                 </CardContent>
               </Card>
@@ -542,7 +544,7 @@ export default function AdminDashboard() {
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalUsers || safeUsers.length}</div>
+                  <div className="text-2xl font-bold">{(stats as any)?.totalUsers || safeUsers.length}</div>
                   <p className="text-xs text-muted-foreground">Registered users</p>
                 </CardContent>
               </Card>
@@ -1063,11 +1065,11 @@ export default function AdminDashboard() {
             <h2 className="text-xl sm:text-2xl font-bold">Orders Management</h2>
             <Card>
               <CardContent className="p-6">
-                {orders.length === 0 ? (
+                {(orders as any[])?.length === 0 ? (
                   <div className="text-center text-muted-foreground">No orders found</div>
                 ) : (
                   <div className="space-y-4">
-                    {orders.map((order: Order) => (
+                    {(orders as any[])?.map((order: any) => (
                       <div key={order.id} className="p-4 border rounded-lg">
                         <div className="flex justify-between items-start">
                           <div>
@@ -1091,11 +1093,11 @@ export default function AdminDashboard() {
             <h2 className="text-xl sm:text-2xl font-bold">Reviews Management</h2>
             <Card>
               <CardContent className="p-6">
-                {reviews.length === 0 ? (
+                {(reviews as any[])?.length === 0 ? (
                   <div className="text-center text-muted-foreground">No reviews found</div>
                 ) : (
                   <div className="space-y-4">
-                    {reviews.map((review: Review) => (
+                    {(reviews as any[])?.map((review: any) => (
                       <div key={review.id} className="p-4 border rounded-lg">
                         <div className="flex justify-between items-start">
                           <div>
