@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { ChevronDown, ShoppingCart } from "lucide-react";
-import Header from "@/components/header";
+import EnhancedHeader from "@/components/enhanced-header";
 import Footer from "@/components/footer";
 import { Product, Category } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -111,7 +111,7 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <EnhancedHeader />
       
       {/* Category Hero */}
       <section className="relative py-16 md:py-20 overflow-hidden">

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import Header from "@/components/header";
+import EnhancedHeader from "@/components/enhanced-header";
 import VideoHero from "@/components/video-hero";
 import ProductGrid from "@/components/product-grid";
+import ProfessionalStats from "@/components/professional-stats";
+import FloatingElements from "@/components/floating-elements";
 import Testimonials from "@/components/testimonials";
 import FAQ from "@/components/faq";
 import About from "@/components/about";
@@ -26,14 +28,16 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-background relative">
+      <FloatingElements />
+      <EnhancedHeader />
       <VideoHero />
       <ProductGrid 
         products={products} 
         categories={categories}
         isLoading={productsLoading || categoriesLoading}
       />
+      <ProfessionalStats />
       <Testimonials />
       <FAQ />
       <About />

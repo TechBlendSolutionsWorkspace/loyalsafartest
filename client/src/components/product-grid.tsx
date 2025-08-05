@@ -2,6 +2,10 @@ import { Link } from "wouter";
 import { Product, Category } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { ServiceIconComponent } from "@/components/service-icons";
+import EnhancedProductCard from "@/components/enhanced-product-card";
+import { useState } from "react";
+import CheckoutModal from "@/components/checkout-modal";
+import { useAuth } from "@/hooks/useAuth";
 
 
 interface ProductGridProps {
@@ -12,9 +16,18 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ products, categories, isLoading, viewMode = 'grid' }: ProductGridProps) {
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { isAuthenticated } = useAuth();
+
   const featuredProducts = products.filter(product => product.popular || product.trending);
   // Filter to show only main categories (not subcategories) on homepage
   const mainCategories = categories.filter(category => !category.isSubcategory);
+
+  const handleCheckout = (product: Product) => {
+    setSelectedProduct(product);
+    setCheckoutOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -28,10 +41,10 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-xl mb-4"></div>
-                  <div className="bg-gray-200 dark:bg-gray-700 h-6 rounded mb-2"></div>
-                  <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded"></div>
+                <div key={`featured-${i}`} className="animate-pulse business-card p-6">
+                  <div className="bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 h-48 rounded-xl mb-4 animate-glow"></div>
+                  <div className="bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 h-6 rounded mb-2"></div>
+                  <div className="bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 h-4 rounded"></div>
                 </div>
               ))}
             </div>
@@ -47,10 +60,10 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-xl mb-4"></div>
-                  <div className="bg-gray-200 dark:bg-gray-700 h-6 rounded mb-2"></div>
-                  <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded"></div>
+                <div key={`categories-${i}`} className="animate-pulse business-card p-6">
+                  <div className="bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 h-48 rounded-xl mb-4 animate-glow"></div>
+                  <div className="bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 h-6 rounded mb-2"></div>
+                  <div className="bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 h-4 rounded"></div>
                 </div>
               ))}
             </div>
@@ -64,7 +77,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
     <>
       {/* Featured Products */}
       {featuredProducts.length > 0 && (
-        <section className="py-8 md:py-16 bg-gray-50 dark:bg-gray-900">
+        <section className="py-8 md:py-16 section-gradient">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
@@ -124,8 +137,17 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
         </section>
       )}
 
+      {/* Checkout Modal */}
+      {selectedProduct && (
+        <CheckoutModal 
+          isOpen={checkoutOpen}
+          onClose={() => setCheckoutOpen(false)}
+          product={selectedProduct}
+        />
+      )}
+
       {/* Service Categories */}
-      <section id="categories" className="py-8 md:py-16">
+      <section id="categories" className="py-8 md:py-16 section-gradient">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">

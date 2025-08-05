@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
-import Header from "@/components/header";
+import EnhancedHeader from "@/components/enhanced-header";
 import Footer from "@/components/footer";
 import CheckoutModal from "@/components/checkout-modal";
 import type { Product, Category } from "@shared/schema";
@@ -61,7 +61,7 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <EnhancedHeader />
       
       {/* Breadcrumb */}
       <div className="border-b bg-muted/30">
