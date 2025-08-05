@@ -13,6 +13,8 @@ interface ProductGridProps {
 
 export default function ProductGrid({ products, categories, isLoading, viewMode = 'grid' }: ProductGridProps) {
   const featuredProducts = products.filter(product => product.popular || product.trending);
+  // Filter to show only main categories (not subcategories) on homepage
+  const mainCategories = categories.filter(category => !category.isSubcategory);
 
   if (isLoading) {
     return (
@@ -128,7 +130,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-            {categories.map((category) => (
+            {mainCategories.map((category) => (
               <div 
                 key={category.id} 
                 className="business-card rounded-xl p-6 md:p-8 text-center hover:shadow-xl transition-all duration-300 group"
