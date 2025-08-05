@@ -65,6 +65,10 @@ export default function CategoryPage() {
         return product.subcategory === subcategory?.name;
       });
 
+  const handleSubcategoryClick = (subcategoryName: string) => {
+    setSelectedSubcategory(subcategoryName);
+  };
+
   const handlePurchase = (product: Product) => {
     if (!isAuthenticated) {
       window.location.href = "/api/login";
@@ -158,34 +162,84 @@ export default function CategoryPage() {
       {/* Subcategory Selection and Products */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
-          {/* Subcategory Selector */}
+          {/* Subcategories as Cards */}
+          {displaySubcategories.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
+                Choose a Category
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* All Categories Card */}
+                <Card 
+                  className={`cursor-pointer transition-all duration-300 hover:shadow-xl business-card ${
+                    selectedSubcategory === "all" ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950' : ''
+                  }`}
+                  onClick={() => handleSubcategoryClick("all")}
+                >
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                      <i className="fas fa-th-large text-2xl text-white"></i>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      All Categories
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      View all products in this category
+                    </p>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                      {categoryProducts.length} Products
+                    </Badge>
+                  </CardContent>
+                </Card>
+
+                {/* Individual Subcategory Cards */}
+                {displaySubcategories.map((subcat) => {
+                  const subcategoryProducts = categoryProducts.filter(p => p.subcategory === subcat.name);
+                  return (
+                    <Card 
+                      key={subcat.id}
+                      className={`cursor-pointer transition-all duration-300 hover:shadow-xl business-card ${
+                        selectedSubcategory === subcat.name ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950' : ''
+                      }`}
+                      onClick={() => handleSubcategoryClick(subcat.name)}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
+                          <i className={`${subcat.icon} text-2xl text-white`}></i>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                          {subcat.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          {subcat.description}
+                        </p>
+                        <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                          {subcategoryProducts.length} Products
+                        </Badge>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Products Section */}
           <div className="mb-8">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
               <div>
-                <h2 className="text-3xl font-bold mb-2">Browse {category.name}</h2>
+                <h2 className="text-3xl font-bold mb-2">
+                  {selectedSubcategory === "all" ? "All Products" : selectedSubcategory}
+                </h2>
                 <p className="text-muted-foreground">
-                  Select a subcategory to view products, or see all available items
+                  {selectedSubcategory === "all" 
+                    ? `All available products in ${category.name}` 
+                    : `Products in ${selectedSubcategory} category`
+                  }
                 </p>
               </div>
               
-              <div className="w-full md:w-80">
-                <Select value={selectedSubcategory} onValueChange={setSelectedSubcategory}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose subcategory..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All {category.name} Products ({categoryProducts.length})</SelectItem>
-                    {displaySubcategories.map((subcategory) => {
-                      const count = categoryProducts.filter(p => p.subcategory === subcategory.name).length;
-                      return (
-                        <SelectItem key={subcategory.id} value={subcategory.id}>
-                          {subcategory.name} ({count})
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              </div>
+
             </div>
           </div>
 
