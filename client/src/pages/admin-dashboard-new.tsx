@@ -73,6 +73,14 @@ export default function AdminDashboard() {
   // Category Management State
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
+  const [isEditingCategory, setIsEditingCategory] = useState(false);
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: "",
+    description: "",
+    icon: "",
+    isSubcategory: false,
+    parentCategoryId: undefined as string | undefined,
+  });
 
   // Manual Refresh Only - No Auto Updates
   const { data: products = [], isLoading: isLoadingProducts, refetch: refetchProducts } = useQuery({
@@ -228,6 +236,53 @@ export default function AdminDashboard() {
     },
   });
 
+  // Category Mutations
+  const createCategoryMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/admin/categories", data),
+    onSuccess: () => {
+      toast({ title: "Success", description: "Category created successfully" });
+      setShowCategoryDialog(false);
+      resetCategoryForm();
+      setTimeout(() => {
+        refetchCategories();
+        refetchStats();
+      }, 100);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: ({ id, ...data }: any) => apiRequest("PUT", `/api/admin/categories/${id}`, data),
+    onSuccess: () => {
+      toast({ title: "Success", description: "Category updated successfully" });
+      setShowCategoryDialog(false);
+      resetCategoryForm();
+      setTimeout(() => {
+        refetchCategories();
+        refetchStats();
+      }, 100);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/categories/${id}`),
+    onSuccess: () => {
+      toast({ title: "Success", description: "Category deleted successfully" });
+      setTimeout(() => {
+        refetchCategories();
+        refetchStats();
+      }, 100);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
   // Helper Functions
   const resetProductForm = () => {
     setProductFormData({
@@ -263,6 +318,18 @@ export default function AdminDashboard() {
       isActive: true,
     });
     setSelectedUser(null);
+  };
+
+  const resetCategoryForm = () => {
+    setCategoryFormData({
+      name: "",
+      description: "",
+      icon: "",
+      isSubcategory: false,
+      parentCategoryId: undefined,
+    });
+    setSelectedCategory(null);
+    setIsEditingCategory(false);
   };
 
   const openProductDialog = (product?: Product) => {
@@ -311,6 +378,23 @@ export default function AdminDashboard() {
     setShowUserDialog(true);
   };
 
+  const openCategoryDialog = (category?: Category) => {
+    if (category) {
+      setSelectedCategory(category);
+      setIsEditingCategory(true);
+      setCategoryFormData({
+        name: category.name || "",
+        description: category.description || "",
+        icon: category.icon || "",
+        isSubcategory: category.isSubcategory || false,
+        parentCategoryId: category.parentCategoryId || undefined,
+      });
+    } else {
+      resetCategoryForm();
+    }
+    setShowCategoryDialog(true);
+  };
+
   const handlePriceChange = (field: 'price' | 'originalPrice', value: number) => {
     setProductFormData(prev => {
       const updated = { ...prev, [field]: value };
@@ -343,6 +427,16 @@ export default function AdminDashboard() {
       updateUserMutation.mutate({ id: selectedUser.id, ...userFormData });
     } else {
       createUserMutation.mutate(userFormData);
+    }
+  };
+
+  const handleCategorySubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    if (isEditingCategory && selectedCategory) {
+      updateCategoryMutation.mutate({ id: selectedCategory.id, ...categoryFormData });
+    } else {
+      createCategoryMutation.mutate(categoryFormData);
     }
   };
 
@@ -383,7 +477,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-7 lg:w-auto">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
@@ -564,7 +658,7 @@ export default function AdminDashboard() {
                     <div className="space-y-2">
                       <Label htmlFor="category">Main Category</Label>
                       <Select 
-                        value={productFormData.category} 
+                        value={productFormData.category || undefined} 
                         onValueChange={(value) => setProductFormData(prev => ({ 
                           ...prev, 
                           category: value,
@@ -584,7 +678,7 @@ export default function AdminDashboard() {
                     <div className="space-y-2">
                       <Label htmlFor="subcategory">Subcategory</Label>
                       <Select 
-                        value={productFormData.subcategory} 
+                        value={productFormData.subcategory || undefined} 
                         onValueChange={(value) => setProductFormData(prev => ({ ...prev, subcategory: value }))}
                         disabled={!productFormData.category || availableSubcategories.length === 0}
                       >
@@ -1023,30 +1117,214 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="categories" className="space-y-6">
-            <h2 className="text-xl sm:text-2xl font-bold">Categories Management</h2>
-            <Card>
-              <CardContent className="p-6">
-                {safeCategories.length === 0 ? (
-                  <div className="text-center text-muted-foreground">No categories found</div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {safeCategories.map((category: Category) => (
-                      <div key={category.id} className="p-4 border rounded-lg">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl sm:text-2xl font-bold">Categories & Subcategories Management</h2>
+              <Button onClick={() => openCategoryDialog()} className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Add Category/Subcategory
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Main Categories */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Main Categories</CardTitle>
+                  <CardDescription>Primary category groups</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {mainCategories.length === 0 ? (
+                    <div className="text-center text-muted-foreground py-8">No main categories found</div>
+                  ) : (
+                    mainCategories.map((category: Category) => (
+                      <div key={category.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center space-x-3">
-                          <i className={category.icon} />
+                          <i className={`${category.icon} text-blue-600`} />
                           <div>
                             <h4 className="font-semibold">{category.name}</h4>
                             <p className="text-sm text-muted-foreground">{category.description}</p>
                           </div>
                         </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openCategoryDialog(category)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              if (confirm('Are you sure you want to delete this category?')) {
+                                deleteCategoryMutation.mutate(category.id);
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Subcategories */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Subcategories</CardTitle>
+                  <CardDescription>Subcategory items within main categories</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {safeCategories.filter((cat: Category) => cat.isSubcategory).length === 0 ? (
+                    <div className="text-center text-muted-foreground py-8">No subcategories found</div>
+                  ) : (
+                    safeCategories
+                      .filter((cat: Category) => cat.isSubcategory)
+                      .map((subcategory: Category) => {
+                        const parentCategory = mainCategories.find(cat => cat.id === subcategory.parentCategoryId);
+                        return (
+                          <div key={subcategory.id} className="flex items-center justify-between p-3 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                            <div className="flex items-center space-x-3">
+                              <i className={`${subcategory.icon || 'fas fa-layer-group'} text-green-600`} />
+                              <div>
+                                <h4 className="font-semibold">{subcategory.name}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Parent: {parentCategory?.name || 'Unknown'}
+                                </p>
+                                <p className="text-xs text-muted-foreground">{subcategory.description}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => openCategoryDialog(subcategory)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => {
+                                  if (confirm('Are you sure you want to delete this subcategory?')) {
+                                    deleteCategoryMutation.mutate(subcategory.id);
+                                  }
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
+
+        {/* Category Management Dialog */}
+        <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {isEditingCategory ? 'Edit Category/Subcategory' : 'Add New Category/Subcategory'}
+              </DialogTitle>
+              <DialogDescription>
+                Create or modify categories and subcategories for better product organization
+              </DialogDescription>
+            </DialogHeader>
+            
+            <form onSubmit={handleCategorySubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="categoryName">Category Name</Label>
+                  <Input
+                    id="categoryName"
+                    value={categoryFormData.name}
+                    onChange={(e) => setCategoryFormData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g., Premium Video, VPN Services"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="categoryIcon">Icon Class</Label>
+                  <Input
+                    id="categoryIcon"
+                    value={categoryFormData.icon}
+                    onChange={(e) => setCategoryFormData(prev => ({ ...prev, icon: e.target.value }))}
+                    placeholder="e.g., fas fa-play-circle"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="categoryDescription">Description</Label>
+                <Textarea
+                  id="categoryDescription"
+                  value={categoryFormData.description}
+                  onChange={(e) => setCategoryFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe this category and its purpose"
+                  required
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isSubcategory"
+                    checked={categoryFormData.isSubcategory}
+                    onCheckedChange={(checked) => setCategoryFormData(prev => ({ 
+                      ...prev, 
+                      isSubcategory: !!checked,
+                      parentCategoryId: checked ? prev.parentCategoryId : undefined
+                    }))}
+                  />
+                  <Label htmlFor="isSubcategory">This is a subcategory</Label>
+                </div>
+
+                {categoryFormData.isSubcategory && (
+                  <div className="space-y-2">
+                    <Label htmlFor="parentCategory">Parent Category</Label>
+                    <Select 
+                      value={categoryFormData.parentCategoryId || undefined} 
+                      onValueChange={(value) => setCategoryFormData(prev => ({ ...prev, parentCategoryId: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select parent category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {mainCategories.map((cat: Category) => (
+                          <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => setShowCategoryDialog(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={createCategoryMutation.isPending || updateCategoryMutation.isPending}
+                >
+                  {createCategoryMutation.isPending || updateCategoryMutation.isPending ? (
+                    "Saving..."
+                  ) : (
+                    isEditingCategory ? "Update Category" : "Create Category"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
       <Footer />
     </div>

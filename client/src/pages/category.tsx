@@ -19,18 +19,12 @@ export default function CategoryPage() {
   });
 
   const category = categories.find(cat => cat.slug === slug);
-  const categoryProducts = products.filter(product => product.category === category?.id);
   
-  // Group products by their base name to show only unique products
-  const uniqueProducts = categoryProducts.reduce((acc, product) => {
-    const baseName = product.name.split(' - ')[0] || product.name;
-    if (!acc[baseName] || product.popular || product.trending) {
-      acc[baseName] = product;
-    }
-    return acc;
-  }, {} as Record<string, Product>);
-
-  const mainProducts = Object.values(uniqueProducts);
+  // Get subcategories for this category
+  const subcategories = categories.filter(cat => cat.isSubcategory && cat.parentCategoryId === category?.id);
+  
+  // Get products for counting purposes only
+  const categoryProducts = products.filter(product => product.category === category?.id);
 
   if (isLoading) {
     return (
@@ -113,75 +107,61 @@ export default function CategoryPage() {
         </div>
       </section>
 
-      {/* Products Grid */}
+      {/* Subcategories Grid */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Available Services</h2>
+            <h2 className="text-3xl font-bold mb-4">Available Subcategories</h2>
             <p className="text-muted-foreground text-lg">
-              Choose from our premium {category.name.toLowerCase()} collection
+              Browse our {category.name.toLowerCase()} subcategories
             </p>
           </div>
 
-          {mainProducts.length === 0 ? (
+          {subcategories.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">No products available in this category yet.</p>
+              <p className="text-muted-foreground text-lg">No subcategories available in this category yet.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-              {mainProducts.map((product) => (
-                <div key={product.id} className="business-card rounded-xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
-                  <div className="relative mb-4">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-36 sm:h-48 object-cover rounded-lg"
-                    />
-                    {(product.popular || product.trending) && (
-                      <div className="absolute top-3 left-3">
-                        <Badge className={product.popular ? "bg-orange-500" : "bg-blue-500"}>
-                          {product.popular ? "Popular" : "Trending"}
-                        </Badge>
+              {subcategories.map((subcategory) => {
+                const subcategoryProducts = categoryProducts.filter(p => p.subcategory === subcategory.name);
+                const subcategorySlug = subcategory.name.toLowerCase().replace(/\s+/g, '-');
+                
+                return (
+                  <Link key={subcategory.id} href={`/category/${category.slug}/subcategory/${subcategorySlug}/products`}>
+                    <div className="business-card rounded-xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300 cursor-pointer">
+                      <div className="relative mb-4">
+                        <div className="w-full h-36 sm:h-48 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg flex items-center justify-center">
+                          <i className={`${subcategory.icon || 'fas fa-layer-group'} text-4xl text-blue-600 dark:text-blue-400`}></i>
+                        </div>
+                        {subcategoryProducts.length > 0 && (
+                          <div className="absolute top-3 right-3">
+                            <Badge className="bg-green-500">
+                              {subcategoryProducts.length} Products
+                            </Badge>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
 
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <ServiceIconComponent serviceName={product.name} className="flex-shrink-0" />
-                      <h3 className="text-lg sm:text-xl font-bold line-clamp-1">{product.name}</h3>
-                    </div>
-                    <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-2">{product.description}</p>
-                    
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-baseline gap-1 sm:gap-2">
-                        <span className="text-xl sm:text-2xl font-bold text-primary">₹{product.price}</span>
-                        <span className="text-xs sm:text-sm text-muted-foreground line-through">₹{product.originalPrice}</span>
+                      <div className="mb-4">
+                        <h3 className="font-semibold text-lg mb-2">{subcategory.name}</h3>
+                        <p className="text-muted-foreground text-sm line-clamp-2">
+                          {subcategory.description || `Browse all ${subcategory.name.toLowerCase()} products and services`}
+                        </p>
                       </div>
-                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs">
-                        {product.discount}% OFF
-                      </Badge>
-                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground mb-4">
-                      <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded">
-                        <i className="fas fa-clock mr-2 text-blue-500 text-xs"></i>
-                        <span className="truncate">{product.activationTime}</span>
-                      </div>
-                      <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded">
-                        <i className="fas fa-shield-check mr-2 text-green-500 text-xs"></i>
-                        <span className="truncate">{product.warranty}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          {subcategoryProducts.length} Product{subcategoryProducts.length !== 1 ? 's' : ''}
+                        </span>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          View Products →
+                        </Button>
                       </div>
                     </div>
-                  </div>
-
-                  <Link to={`/category/${category.slug}/subcategories`}>
-                    <Button className="w-full font-semibold text-sm sm:text-base">
-                      View Subcategories
-                    </Button>
                   </Link>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
