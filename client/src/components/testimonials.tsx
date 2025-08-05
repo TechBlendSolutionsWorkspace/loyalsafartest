@@ -49,7 +49,7 @@ export default function Testimonials() {
     <section className="py-20 bg-muted/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4">Trusted by Thousands of Happy Customers</h2>
+          <h2 className="text-4xl font-bold text-foreground mb-4">Customer Reviews & Testimonials</h2>
           <p className="text-xl text-muted-foreground">See what our customers say about their experience</p>
         </div>
 
