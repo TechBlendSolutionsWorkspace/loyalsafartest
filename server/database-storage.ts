@@ -33,6 +33,7 @@ export interface IStorage {
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: string, updates: Partial<InsertProduct>): Promise<Product>;
   deleteProduct(id: string): Promise<void>;
+  deleteAllProducts(): Promise<void>;
   
   // Categories
   getCategories(): Promise<Category[]>;
@@ -119,6 +120,10 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProduct(id: string): Promise<void> {
     await db.delete(products).where(eq(products.id, id));
+  }
+
+  async deleteAllProducts(): Promise<void> {
+    await db.delete(products);
   }
 
   // Categories
