@@ -562,25 +562,59 @@ export default function AdminDashboard() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="subcategory">Subcategory</Label>
-                      <Input
-                        id="subcategory"
-                        value={productFormData.subcategory}
-                        onChange={(e) => setProductFormData(prev => ({ ...prev, subcategory: e.target.value }))}
-                        placeholder="e.g., Premium Video"
-                        required
-                      />
+                      <Label htmlFor="category">Main Category</Label>
+                      <Select 
+                        value={productFormData.category} 
+                        onValueChange={(value) => setProductFormData(prev => ({ 
+                          ...prev, 
+                          category: value,
+                          subcategory: undefined // Reset subcategory when category changes
+                        }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select main category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {mainCategories.map((cat: Category) => (
+                            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="duration">Duration</Label>
-                      <Input
-                        id="duration"
-                        value={productFormData.duration}
-                        onChange={(e) => setProductFormData(prev => ({ ...prev, duration: e.target.value }))}
-                        placeholder="e.g., 1 Month, 3 Months"
-                        required
-                      />
+                      <Label htmlFor="subcategory">Subcategory</Label>
+                      <Select 
+                        value={productFormData.subcategory} 
+                        onValueChange={(value) => setProductFormData(prev => ({ ...prev, subcategory: value }))}
+                        disabled={!productFormData.category || availableSubcategories.length === 0}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={
+                            !productFormData.category 
+                              ? "First select a category" 
+                              : availableSubcategories.length === 0 
+                                ? "No subcategories available"
+                                : "Select subcategory"
+                          } />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableSubcategories.map((subcat: Category) => (
+                            <SelectItem key={subcat.id} value={subcat.name}>{subcat.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="duration">Duration</Label>
+                    <Input
+                      id="duration"
+                      value={productFormData.duration}
+                      onChange={(e) => setProductFormData(prev => ({ ...prev, duration: e.target.value }))}
+                      placeholder="e.g., 1 Month, 3 Months"
+                      required
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -638,51 +672,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="category">Main Category</Label>
-                      <Select 
-                        value={productFormData.category || undefined} 
-                        onValueChange={(value) => setProductFormData(prev => ({ 
-                          ...prev, 
-                          category: value,
-                          subcategory: undefined // Reset subcategory when category changes
-                        }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select main category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {mainCategories.map((cat: Category) => (
-                            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="subcategory">Subcategory</Label>
-                      <Select 
-                        value={productFormData.subcategory || undefined} 
-                        onValueChange={(value) => setProductFormData(prev => ({ ...prev, subcategory: value }))}
-                        disabled={!productFormData.category || availableSubcategories.length === 0}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={
-                            !productFormData.category 
-                              ? "First select a category" 
-                              : availableSubcategories.length === 0 
-                                ? "No subcategories available"
-                                : "Select subcategory"
-                          } />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableSubcategories.map((subcat: Category) => (
-                            <SelectItem key={subcat.id} value={subcat.name}>{subcat.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -904,7 +894,7 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="role">Role</Label>
-                      <Select value={userFormData.role || ""} onValueChange={(value) => setUserFormData(prev => ({ ...prev, role: value }))}>
+                      <Select value={userFormData.role || undefined} onValueChange={(value) => setUserFormData(prev => ({ ...prev, role: value }))}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select role" />
                         </SelectTrigger>
