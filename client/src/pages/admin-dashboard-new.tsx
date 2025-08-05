@@ -41,7 +41,7 @@ export default function AdminDashboard() {
   const [productFormData, setProductFormData] = useState({
     name: "",
     fullProductName: "",
-    subcategory: "",
+    subcategory: undefined as string | undefined,
     duration: "",
     description: "",
     features: "",
@@ -235,14 +235,14 @@ export default function AdminDashboard() {
     setProductFormData({
       name: "",
       fullProductName: "",
-      subcategory: "",
+      subcategory: undefined,
       duration: "",
       description: "",
       features: "",
       price: 0,
       originalPrice: 0,
       discount: 0,
-      category: "",
+      category: undefined,
       image: "",
       activationTime: "",
       warranty: "",
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
       email: "",
       firstName: "",
       lastName: "",
-      role: "user",
+      role: undefined,
       permissions: [],
       isActive: true,
     });
@@ -276,14 +276,14 @@ export default function AdminDashboard() {
       setProductFormData({
         name: product.name || "",
         fullProductName: product.fullProductName || "",
-        subcategory: product.subcategory || "",
+        subcategory: product.subcategory || undefined,
         duration: product.duration || "",
         description: product.description || "",
         features: product.features || "",
         price: product.price || 0,
         originalPrice: product.originalPrice || 0,
         discount: product.discount || 0,
-        category: product.category || "",
+        category: product.category || undefined,
         image: product.image || "",
         activationTime: product.activationTime || "",
         warranty: product.warranty || "",
@@ -357,6 +357,21 @@ export default function AdminDashboard() {
   const safeCategories = Array.isArray(categories) ? categories : [];
   const safeProducts = Array.isArray(products) ? products : [];
   const safeUsers = Array.isArray(users) ? users : [];
+  
+  // Filter main categories only (exclude subcategories)
+  const mainCategories = safeCategories.filter((cat: Category) => !cat.isSubcategory);
+  
+  // Get subcategories for selected main category
+  const getSubcategoriesForCategory = (categoryId: string) => {
+    return safeCategories.filter((cat: Category) => 
+      cat.isSubcategory && cat.parentCategoryId === categoryId
+    );
+  };
+  
+  // Get subcategories for currently selected category
+  const availableSubcategories = productFormData.category 
+    ? getSubcategoriesForCategory(productFormData.category)
+    : [];
 
   const availablePermissions = [
     "read_products", "write_products", "delete_products",
@@ -633,18 +648,51 @@ export default function AdminDashboard() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="category">Category</Label>
-                      <Select value={productFormData.category || ""} onValueChange={(value) => setProductFormData(prev => ({ ...prev, category: value }))}>
+                      <Label htmlFor="category">Main Category</Label>
+                      <Select 
+                        value={productFormData.category || ""} 
+                        onValueChange={(value) => setProductFormData(prev => ({ 
+                          ...prev, 
+                          category: value,
+                          subcategory: undefined // Reset subcategory when category changes
+                        }))}
+                      >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue placeholder="Select main category" />
                         </SelectTrigger>
                         <SelectContent>
-                          {safeCategories.map((cat: Category) => (
-                            <SelectItem key={cat.id} value={cat.slug || ""}>{cat.name}</SelectItem>
+                          {mainCategories.map((cat: Category) => (
+                            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="subcategory">Subcategory</Label>
+                      <Select 
+                        value={productFormData.subcategory || ""} 
+                        onValueChange={(value) => setProductFormData(prev => ({ ...prev, subcategory: value }))}
+                        disabled={!productFormData.category || availableSubcategories.length === 0}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={
+                            !productFormData.category 
+                              ? "First select a category" 
+                              : availableSubcategories.length === 0 
+                                ? "No subcategories available"
+                                : "Select subcategory"
+                          } />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableSubcategories.map((subcat: Category) => (
+                            <SelectItem key={subcat.id} value={subcat.name}>{subcat.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="activationTime">Activation Time</Label>
                       <Input
@@ -652,6 +700,16 @@ export default function AdminDashboard() {
                         value={productFormData.activationTime}
                         onChange={(e) => setProductFormData(prev => ({ ...prev, activationTime: e.target.value }))}
                         placeholder="e.g., Instant, 24 Hours"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="duration">Duration</Label>
+                      <Input
+                        id="duration"
+                        value={productFormData.duration}
+                        onChange={(e) => setProductFormData(prev => ({ ...prev, duration: e.target.value }))}
+                        placeholder="e.g., 1 Month, 1 Year"
                         required
                       />
                     </div>
