@@ -56,8 +56,6 @@ export default function AdminDashboard() {
     popular: false,
     trending: false,
     available: true,
-    isVariant: false,
-    parentProductId: "",
   });
 
   // User Management State
@@ -250,8 +248,6 @@ export default function AdminDashboard() {
       popular: false,
       trending: false,
       available: true,
-      isVariant: false,
-      parentProductId: "",
     });
     setSelectedProduct(null);
     setIsEditingProduct(false);
@@ -291,8 +287,6 @@ export default function AdminDashboard() {
         popular: product.popular || false,
         trending: product.trending || false,
         available: product.available !== false,
-        isVariant: product.isVariant || false,
-        parentProductId: product.parentProductId || "",
       });
     } else {
       resetProductForm();
@@ -333,8 +327,6 @@ export default function AdminDashboard() {
     const data = {
       ...productFormData,
       icon: "fas fa-box", // Default icon
-      parentProductName: productFormData.parentProductId ? 
-        products.find((p: Product) => p.id === productFormData.parentProductId)?.name : null,
     };
 
     if (isEditingProduct && selectedProduct) {
