@@ -6,7 +6,7 @@ import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
-import { storage } from "./storage-new";
+import { storage } from "./storage";
 
 // Check if we're running on Replit (optional for external deployments)
 const isReplit = !!process.env.REPLIT_DOMAINS;

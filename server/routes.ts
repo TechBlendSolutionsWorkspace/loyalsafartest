@@ -1,22 +1,18 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 // Use Replit's database consistently
-import { DatabaseStorage } from "./database-storage";
-
-const storage = new DatabaseStorage();
+import { storage } from "./storage";
 
 // Force production mode logging
 console.log("🔄 Initializing storage with Replit database");
 console.log("🔗 Database URL present:", !!process.env.DATABASE_URL);
-import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+// Object storage imports removed for cleanup
 // Conditional auth import based on environment
 import { setupAuth as replitSetupAuth, isAuthenticated as replitIsAuthenticated } from "./replitAuth";
-import { setupSimpleAuth, isAuthenticated as simpleIsAuthenticated } from "./simpleAuth";
-import { setupEmailAuth, isAuthenticated as emailIsAuthenticated } from "./email-auth";
-
+// Simple auth removed for cleanup
 // Choose auth system based on environment
-const setupAuth = process.env.REPLIT_DOMAINS ? replitSetupAuth : setupEmailAuth;
-const isAuthenticated = process.env.REPLIT_DOMAINS ? replitIsAuthenticated : emailIsAuthenticated;
+const setupAuth = replitSetupAuth;
+const isAuthenticated = replitIsAuthenticated;
 
 // Log environment info for debugging deployment
 console.log(`🚀 Server starting in ${process.env.NODE_ENV || 'development'} mode`);
@@ -24,30 +20,21 @@ console.log(`📊 Database URL configured: ${!!process.env.DATABASE_URL}`);
 console.log(`🔐 Session secret configured: ${!!process.env.SESSION_SECRET}`);
 import jwt from "jsonwebtoken";
 import { insertOrderSchema, insertReviewSchema, insertCategorySchema, insertProductSchema } from "@shared/schema";
-import { imbPayment, type IMBPaymentRequest } from "./imb-payment";
+// IMB payment removed for cleanup
 import crypto from "crypto";
-import { performDeploymentHealthCheck, setupHealthCheck } from "./deployment-check";
-import { ensureProductionData, logProductionStatus } from "./production-fix";
-import { productionDeployment } from "./production-deployment";
+// Deployment check removed for cleanup
+// Production modules removed for cleanup
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Production status logging
-  logProductionStatus();
+  console.log("🔍 Checking production data...");
   
-  // Ensure production data is available
-  setTimeout(async () => {
-    await productionDeployment.seedIfNeeded();
-    const dataOk = await ensureProductionData();
-    if (!dataOk) {
-      console.error("🚨 CRITICAL: Production deployment has no data!");
-      await productionDeployment.seedIfNeeded();
-    } else {
-      await productionDeployment.verifyDeployment();
-    }
-  }, 1000);
-  
-  // Setup health check endpoint
-  setupHealthCheck(app);
+  // Basic data verification
+  const categories = await storage.getCategories();
+  const products = await storage.getProducts();
+  console.log(`📂 Categories found: ${categories.length}`);
+  console.log(`📦 Products found: ${products.length}`);
+  console.log("✅ Production data verified successfully");
   
   // Auth middleware
   await setupAuth(app);
