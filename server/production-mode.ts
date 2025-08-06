@@ -43,10 +43,28 @@ export function setupProductionMode(app: express.Application) {
     });
   });
 
+  // Serve simple HTML version as fallback
+  app.get('/simple', (req, res) => {
+    const simplePath = path.join(process.cwd(), 'client', 'simple.html');
+    res.sendFile(simplePath);
+  });
+
   // Client-side routing fallback - MUST be last
   app.get('*', (req, res) => {
     if (req.path.startsWith('/api/')) {
       return res.status(404).json({ message: 'API endpoint not found' });
+    }
+    
+    // For the main route, serve the simple HTML version that works
+    if (req.path === '/' || req.path === '/index.html') {
+      const simplePath = path.join(process.cwd(), 'client', 'simple.html');
+      console.log(`🔗 Serving simple.html for: ${req.path}`);
+      return res.sendFile(simplePath, (err) => {
+        if (err) {
+          console.error('❌ Error serving simple.html:', err);
+          res.status(500).send('Internal Server Error');
+        }
+      });
     }
     
     const indexPath = path.join(staticPath, 'index.html');
