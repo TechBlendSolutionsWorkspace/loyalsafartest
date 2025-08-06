@@ -9,7 +9,7 @@ import {
   type User, type UpsertUser
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import type { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -155,8 +155,7 @@ export class DatabaseStorage implements IStorage {
 
   async getPublishedReviewsByProduct(productId: string): Promise<Review[]> {
     return await db.select().from(reviews)
-      .where(eq(reviews.productId, productId))
-      .where(eq(reviews.isPublished, true));
+      .where(and(eq(reviews.productId, productId), eq(reviews.isPublished, true)));
   }
 
   async createReview(review: InsertReview): Promise<Review> {
@@ -181,6 +180,11 @@ export class DatabaseStorage implements IStorage {
 
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     return user || undefined;
   }
 

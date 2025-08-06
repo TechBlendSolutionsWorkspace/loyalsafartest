@@ -43,19 +43,20 @@ export interface IStorage {
   // Users
   getAllUsers(): Promise<User[]>;
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   createUser(user: UpsertUser): Promise<User>;
   updateUser(id: string, user: UpsertUser): Promise<User>;
   deleteUser(id: string): Promise<void>;
 
-  // Admin analytics
-  getAdminStats(days?: number): Promise<any>;
-  getRevenueChartData(days?: number): Promise<any[]>;
-  getOrdersChartData(days?: number): Promise<any[]>;
-  getProductsChartData(days?: number): Promise<any[]>;
-  getTopProducts(days?: number): Promise<any[]>;
-  getRecentOrders(limit?: number): Promise<any[]>;
-  getAnalytics(days?: number): Promise<any>;
+  // Admin analytics - optional methods
+  getAdminStats?(days?: number): Promise<any>;
+  getRevenueChartData?(days?: number): Promise<any[]>;
+  getOrdersChartData?(days?: number): Promise<any[]>;
+  getProductsChartData?(days?: number): Promise<any[]>;
+  getTopProducts?(days?: number): Promise<any[]>;
+  getRecentOrders?(limit?: number): Promise<any[]>;
+  getAnalytics?(days?: number): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -263,6 +264,10 @@ export class MemStorage implements IStorage {
 
   async getUser(id: string): Promise<User | undefined> {
     return this.users.find(user => user.id === id);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return this.users.find(user => user.email === email);
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {

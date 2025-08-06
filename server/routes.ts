@@ -7,10 +7,11 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 // Conditional auth import based on environment
 import { setupAuth as replitSetupAuth, isAuthenticated as replitIsAuthenticated } from "./replitAuth";
 import { setupSimpleAuth, isAuthenticated as simpleIsAuthenticated } from "./simpleAuth";
+import { setupEmailAuth, isAuthenticated as emailIsAuthenticated } from "./email-auth";
 
-// Choose auth system based on environment
-const setupAuth = process.env.REPLIT_DOMAINS ? replitSetupAuth : setupSimpleAuth;
-const isAuthenticated = process.env.REPLIT_DOMAINS ? replitIsAuthenticated : simpleIsAuthenticated;
+// Choose auth system based on environment - prioritize email auth
+const setupAuth = setupEmailAuth; // Using email auth as primary
+const isAuthenticated = emailIsAuthenticated;
 import jwt from "jsonwebtoken";
 import { insertOrderSchema, insertReviewSchema, insertCategorySchema, insertProductSchema } from "@shared/schema";
 import { imbPayment, type IMBPaymentRequest } from "./imb-payment";
