@@ -1,17 +1,22 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+// Use Replit's database consistently
 import { DatabaseStorage } from "./database-storage";
 
 const storage = new DatabaseStorage();
+
+// Force production mode logging
+console.log("🔄 Initializing storage with Replit database");
+console.log("🔗 Database URL present:", !!process.env.DATABASE_URL);
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 // Conditional auth import based on environment
 import { setupAuth as replitSetupAuth, isAuthenticated as replitIsAuthenticated } from "./replitAuth";
 import { setupSimpleAuth, isAuthenticated as simpleIsAuthenticated } from "./simpleAuth";
 import { setupEmailAuth, isAuthenticated as emailIsAuthenticated } from "./email-auth";
 
-// Choose auth system based on environment - prioritize email auth
-const setupAuth = setupEmailAuth; // Using email auth as primary
-const isAuthenticated = emailIsAuthenticated;
+// Choose auth system based on environment
+const setupAuth = process.env.REPLIT_DOMAINS ? replitSetupAuth : setupEmailAuth;
+const isAuthenticated = process.env.REPLIT_DOMAINS ? replitIsAuthenticated : emailIsAuthenticated;
 
 // Log environment info for debugging deployment
 console.log(`🚀 Server starting in ${process.env.NODE_ENV || 'development'} mode`);
@@ -22,15 +27,27 @@ import { insertOrderSchema, insertReviewSchema, insertCategorySchema, insertProd
 import { imbPayment, type IMBPaymentRequest } from "./imb-payment";
 import crypto from "crypto";
 import { performDeploymentHealthCheck, setupHealthCheck } from "./deployment-check";
+import { ensureProductionData, logProductionStatus } from "./production-fix";
+import { productionDeployment } from "./production-deployment";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Production status logging
+  logProductionStatus();
+  
+  // Ensure production data is available
+  setTimeout(async () => {
+    await productionDeployment.seedIfNeeded();
+    const dataOk = await ensureProductionData();
+    if (!dataOk) {
+      console.error("🚨 CRITICAL: Production deployment has no data!");
+      await productionDeployment.seedIfNeeded();
+    } else {
+      await productionDeployment.verifyDeployment();
+    }
+  }, 1000);
+  
   // Setup health check endpoint
   setupHealthCheck(app);
-  
-  // Perform initial health check
-  setTimeout(async () => {
-    await performDeploymentHealthCheck();
-  }, 2000);
   
   // Auth middleware
   await setupAuth(app);
