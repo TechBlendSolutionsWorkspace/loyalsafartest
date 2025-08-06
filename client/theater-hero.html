@@ -711,19 +711,14 @@
             try {
                 console.log('🔄 Loading premium categories...');
                 
-                const [healthResponse, categoriesResponse] = await Promise.all([
-                    fetch('/api/health'),
-                    fetch('/api/categories')
-                ]);
+                const categoriesResponse = await fetch('/api/categories');
 
-                if (!healthResponse.ok || !categoriesResponse.ok) {
+                if (!categoriesResponse.ok) {
                     throw new Error('Premium API connection failed');
                 }
 
-                const healthData = await healthResponse.json();
                 const categoriesData = await categoriesResponse.json();
 
-                console.log('✅ Premium API Connected:', healthData);
                 console.log('✅ Categories loaded:', categoriesData.length);
 
                 // Filter to exactly 12 main categories as requested
@@ -737,7 +732,7 @@
                 
                 const categoryProductCounts = {};
                 products.forEach(product => {
-                    const catId = product.categoryId;
+                    const catId = product.category; // Use 'category' field instead of 'categoryId'
                     categoryProductCounts[catId] = (categoryProductCounts[catId] || 0) + 1;
                 });
 
@@ -761,7 +756,7 @@
                 container.innerHTML = `
                     <div class="categories-grid">
                         ${mainCategories.map((category, index) => {
-                            const productCount = categoryProductCounts[category.id] || 0;
+                            const productCount = categoryProductCounts[category.slug] || categoryProductCounts[category.id] || 0;
                             const delay = index * 0.15;
                             const iconKey = category.slug.split('-')[0];
                             const icon = categoryIcons[iconKey] || 'fas fa-cube';

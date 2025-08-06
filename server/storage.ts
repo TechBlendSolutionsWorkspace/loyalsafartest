@@ -325,4 +325,246 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Create DatabaseStorage that uses actual database
+export class DatabaseStorage implements IStorage {
+  // Database connection handled by db.ts
+  
+  // Categories - fetch from database
+  async getCategories(): Promise<Category[]> {
+    const { db } = await import('./db');
+    const { categories } = await import('@shared/schema');
+    const result = await db.select().from(categories);
+    return result;
+  }
+
+  async getCategory(id: string): Promise<Category | undefined> {
+    const { db } = await import('./db');
+    const { categories } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    const [result] = await db.select().from(categories).where(eq(categories.id, id));
+    return result;
+  }
+
+  async createCategory(categoryData: InsertCategory): Promise<Category> {
+    const { db } = await import('./db');
+    const { categories } = await import('@shared/schema');
+    const id = categoryData.id || nanoid();
+    const [result] = await db.insert(categories).values({
+      ...categoryData,
+      id,
+    }).returning();
+    return result;
+  }
+
+  async updateCategory(id: string, categoryData: InsertCategory): Promise<Category> {
+    const { db } = await import('./db');
+    const { categories } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    const [result] = await db.update(categories)
+      .set(categoryData)
+      .where(eq(categories.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteCategory(id: string): Promise<void> {
+    const { db } = await import('./db');
+    const { categories } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    await db.delete(categories).where(eq(categories.id, id));
+  }
+
+  // Products - fetch from database
+  async getProducts(): Promise<Product[]> {
+    const { db } = await import('./db');
+    const { products } = await import('@shared/schema');
+    const result = await db.select().from(products);
+    return result;
+  }
+
+  async getProduct(id: string): Promise<Product | undefined> {
+    const { db } = await import('./db');
+    const { products } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    const [result] = await db.select().from(products).where(eq(products.id, id));
+    return result;
+  }
+
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    const { db } = await import('./db');
+    const { products } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    const result = await db.select().from(products).where(eq(products.category, category));
+    return result;
+  }
+
+  async createProduct(productData: InsertProduct): Promise<Product> {
+    const { db } = await import('./db');
+    const { products } = await import('@shared/schema');
+    const id = productData.id || nanoid();
+    const [result] = await db.insert(products).values({
+      ...productData,
+      id,
+    }).returning();
+    return result;
+  }
+
+  async updateProduct(id: string, productData: InsertProduct): Promise<Product> {
+    const { db } = await import('./db');
+    const { products } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    const [result] = await db.update(products)
+      .set(productData)
+      .where(eq(products.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    const { db } = await import('./db');
+    const { products } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    await db.delete(products).where(eq(products.id, id));
+  }
+
+  async deleteAllProducts(): Promise<void> {
+    const { db } = await import('./db');
+    const { products } = await import('@shared/schema');
+    await db.delete(products);
+  }
+
+  // Implement all other required methods with database queries
+  async getOrders(): Promise<Order[]> {
+    const { db } = await import('./db');
+    const { orders } = await import('@shared/schema');
+    return await db.select().from(orders);
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    const { db } = await import('./db');
+    const { orders } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    const [result] = await db.select().from(orders).where(eq(orders.id, id));
+    return result;
+  }
+
+  async createOrder(orderData: InsertOrder): Promise<Order> {
+    const { db } = await import('./db');
+    const { orders } = await import('@shared/schema');
+    const id = orderData.id || nanoid();
+    const [result] = await db.insert(orders).values({
+      ...orderData,
+      id,
+    }).returning();
+    return result;
+  }
+
+  async updateOrderStatus(id: string, status: string): Promise<Order> {
+    const { db } = await import('./db');
+    const { orders } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    const [result] = await db.update(orders)
+      .set({ status })
+      .where(eq(orders.id, id))
+      .returning();
+    return result;
+  }
+
+  // Testimonials - fallback to empty arrays for now
+  async getTestimonials(): Promise<Testimonial[]> {
+    return [];
+  }
+
+  async getFeaturedTestimonials(): Promise<Testimonial[]> {
+    return [];
+  }
+
+  // Blog Posts - fallback to empty arrays for now  
+  async getBlogPosts(): Promise<BlogPost[]> {
+    return [];
+  }
+
+  async getFeaturedBlogPosts(): Promise<BlogPost[]> {
+    return [];
+  }
+
+  // Reviews - fallback to empty arrays for now
+  async getReviews(): Promise<Review[]> {
+    return [];
+  }
+
+  async getReviewsByProduct(productId: string): Promise<Review[]> {
+    return [];
+  }
+
+  async getPublishedReviews(): Promise<Review[]> {
+    return [];
+  }
+
+  async getPublishedReviewsByProduct(productId: string): Promise<Review[]> {
+    return [];
+  }
+
+  async createReview(reviewData: InsertReview): Promise<Review> {
+    const id = nanoid();
+    return {
+      ...reviewData,
+      id,
+      createdAt: new Date(),
+      isVerified: false,
+      isPublished: false,
+    };
+  }
+
+  async updateReviewStatus(id: string, isPublished: boolean): Promise<void> {
+    // Placeholder implementation
+  }
+
+  // Users - fallback to empty implementations for now
+  async getAllUsers(): Promise<User[]> {
+    return [];
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    return undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return undefined;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const id = userData.id || nanoid();
+    return {
+      ...userData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
+
+  async createUser(userData: UpsertUser): Promise<User> {
+    const id = userData.id || nanoid();
+    return {
+      ...userData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
+
+  async updateUser(id: string, userData: UpsertUser): Promise<User> {
+    return {
+      ...userData,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    // Placeholder implementation
+  }
+}
+
+export const storage = new DatabaseStorage();
