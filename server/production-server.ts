@@ -58,6 +58,12 @@ export async function setupProductionServer(app: express.Application) {
   
   // API routes are already registered, they should work fine
   
+  // Special test route
+  app.get('/test', (req, res) => {
+    const testPath = path.join(process.cwd(), 'test-deployment.html');
+    res.sendFile(testPath);
+  });
+
   // Catch-all handler for client-side routing - serve index.html
   app.get('*', (req, res) => {
     // Skip API routes
