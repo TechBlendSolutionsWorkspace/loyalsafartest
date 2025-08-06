@@ -5,8 +5,20 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Eye, EyeOff, Lock, User, Shield } from "lucide-react";
 
 interface AdminLoginProps {
@@ -16,7 +28,10 @@ interface AdminLoginProps {
 export function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+  });
   const { toast } = useToast();
 
   const loginMutation = useMutation({
@@ -93,7 +108,10 @@ export function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
                     className="pl-10"
                     value={credentials.username}
                     onChange={(e) =>
-                      setCredentials({ ...credentials, username: e.target.value })
+                      setCredentials({
+                        ...credentials,
+                        username: e.target.value,
+                      })
                     }
                     disabled={loginMutation.isPending}
                   />
@@ -111,7 +129,10 @@ export function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
                     className="pl-10 pr-10"
                     value={credentials.password}
                     onChange={(e) =>
-                      setCredentials({ ...credentials, password: e.target.value })
+                      setCredentials({
+                        ...credentials,
+                        password: e.target.value,
+                      })
                     }
                     disabled={loginMutation.isPending}
                   />
