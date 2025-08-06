@@ -104,11 +104,22 @@ export function setupProductionMode(app: express.Application) {
       res.setHeader('Content-Type', 'text/html; charset=UTF-8');
       
       const theaterPath = path.join(process.cwd(), 'client', 'theater-hero.html');
-      console.log(`🔗 Serving theater-hero.html for: ${req.path} (THEATER HERO VERSION)`);
+      console.log(`🎭 SERVING THEATER HERO VERSION for: ${req.path}`);
+      console.log(`🎭 Theater path: ${theaterPath}`);
+      
+      // Check if file exists
+      const fs = require('fs');
+      if (!fs.existsSync(theaterPath)) {
+        console.error(`❌ Theater file not found at: ${theaterPath}`);
+        return res.status(500).send('Theater file not found');
+      }
+      
       return res.sendFile(theaterPath, (err) => {
         if (err) {
           console.error('❌ Error serving theater-hero.html:', err);
           res.status(500).send('Internal Server Error');
+        } else {
+          console.log('✅ Theater hero served successfully');
         }
       });
     }
