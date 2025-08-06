@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { setupProductionServer } from "./production-server";
+import { setupProductionMode } from "./production-mode";
 
 const app = express();
 app.use(express.json());
@@ -66,8 +66,8 @@ app.use((req, res, next) => {
     console.log("📦 Setting up Vite development server...");
     await setupVite(app, server);
   } else {
-    console.log("🚀 Setting up production static file serving...");
-    await setupProductionServer(app);
+    console.log("🚀 Setting up production mode...");
+    setupProductionMode(app);
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
