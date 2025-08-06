@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { setupProductionServer } from "./production-server";
 
 const app = express();
 app.use(express.json());
@@ -50,10 +51,22 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  // Check if we're in production deployment (when REPLIT_DOMAINS is set, it's usually production)
+  const isProduction = process.env.NODE_ENV === "production" || process.env.REPLIT_DOMAINS;
+  
+  console.log(`🌍 Environment Detection:`, {
+    NODE_ENV: process.env.NODE_ENV,
+    REPLIT_DOMAINS: !!process.env.REPLIT_DOMAINS,
+    isProduction,
+    mode: isProduction ? 'PRODUCTION' : 'DEVELOPMENT'
+  });
+  
+  if (!isProduction) {
+    console.log('📦 Setting up Vite development server...');
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    console.log('🚀 Setting up production static file serving...');
+    setupProductionServer(app);
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
