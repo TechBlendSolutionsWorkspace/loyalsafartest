@@ -103,11 +103,11 @@ export function setupProductionMode(app: express.Application) {
       res.setHeader('Expires', '0');
       res.setHeader('Content-Type', 'text/html; charset=UTF-8');
       
-      const premiumPath = path.join(process.cwd(), 'client', 'premium.html');
-      console.log(`🔗 Serving premium.html for: ${req.path} (PREMIUM VERSION)`);
-      return res.sendFile(premiumPath, (err) => {
+      const theaterPath = path.join(process.cwd(), 'client', 'theater-hero.html');
+      console.log(`🔗 Serving theater-hero.html for: ${req.path} (THEATER HERO VERSION)`);
+      return res.sendFile(theaterPath, (err) => {
         if (err) {
-          console.error('❌ Error serving premium.html:', err);
+          console.error('❌ Error serving theater-hero.html:', err);
           res.status(500).send('Internal Server Error');
         }
       });
