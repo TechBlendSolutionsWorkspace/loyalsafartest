@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -101,8 +102,7 @@ export function setupProductionMode(app: express.Application) {
     console.log(`🎭 SERVING THEATER HERO VERSION for ROOT PATH: ${req.path}`);
     console.log(`🎭 Theater path: ${theaterPath}`);
     
-    // Check if file exists
-    const fs = require('fs');
+    // Check if file exists  
     if (!fs.existsSync(theaterPath)) {
       console.error(`❌ Theater file not found at: ${theaterPath}`);
       return res.status(500).send('Theater file not found');
