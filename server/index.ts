@@ -66,7 +66,7 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   } else {
     console.log('🚀 Setting up production static file serving...');
-    setupProductionServer(app);
+    await setupProductionServer(app);
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
