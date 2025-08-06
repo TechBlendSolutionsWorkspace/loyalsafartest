@@ -95,7 +95,7 @@ export function setupProductionMode(app: express.Application) {
       return res.status(404).json({ message: 'API endpoint not found' });
     }
     
-    // For the main route, serve the simple HTML version that works with NO CACHE
+    // For the main route, serve the premium HTML version
     if (req.path === '/' || req.path === '/index.html') {
       // Force no cache headers for immediate refresh on custom domains
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -103,11 +103,11 @@ export function setupProductionMode(app: express.Application) {
       res.setHeader('Expires', '0');
       res.setHeader('Content-Type', 'text/html; charset=UTF-8');
       
-      const simplePath = path.join(process.cwd(), 'client', 'simple.html');
-      console.log(`🔗 Serving simple.html for: ${req.path} (FORCE NO CACHE)`);
-      return res.sendFile(simplePath, (err) => {
+      const premiumPath = path.join(process.cwd(), 'client', 'premium.html');
+      console.log(`🔗 Serving premium.html for: ${req.path} (PREMIUM VERSION)`);
+      return res.sendFile(premiumPath, (err) => {
         if (err) {
-          console.error('❌ Error serving simple.html:', err);
+          console.error('❌ Error serving premium.html:', err);
           res.status(500).send('Internal Server Error');
         }
       });
