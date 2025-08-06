@@ -12,19 +12,23 @@ export function setupProductionMode(app: express.Application) {
   const staticPath = path.join(process.cwd(), 'dist', 'public');
   console.log('📁 Static files path:', staticPath);
   
-  // Serve static files with proper headers
+  // Serve static files with NO CACHE to force refresh
   app.use(express.static(staticPath, {
-    maxAge: '1h',
-    etag: true,
-    lastModified: true,
+    maxAge: 0,
+    etag: false,
+    lastModified: false,
     setHeaders: (res, filePath) => {
+      // Force no cache for ALL files to ensure immediate updates
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
       if (filePath.endsWith('.js')) {
         res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
       } else if (filePath.endsWith('.css')) {
         res.setHeader('Content-Type', 'text/css; charset=UTF-8');
       } else if (filePath.endsWith('.html')) {
         res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-        res.setHeader('Cache-Control', 'no-cache');
       }
     }
   }));
@@ -32,15 +36,51 @@ export function setupProductionMode(app: express.Application) {
   // Production health check
   app.get('/production-health', async (req, res) => {
     const fs = await import('fs');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.json({
       status: 'production',
       timestamp: new Date().toISOString(),
+      domain: req.hostname,
+      userAgent: req.headers['user-agent'],
       staticPath: staticPath,
       filesExist: {
         indexHtml: fs.existsSync(path.join(staticPath, 'index.html')),
         assetsDir: fs.existsSync(path.join(staticPath, 'assets'))
       }
     });
+  });
+
+  // Domain-specific cache-busting endpoint
+  app.get('/force-refresh', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+    
+    const timestamp = new Date().toISOString();
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Force Refresh - MTS Digital Services</title>
+        <meta http-equiv="cache-control" content="no-cache">
+        <meta http-equiv="refresh" content="3;url=/">
+        <style>
+          body { font-family: Arial; text-align: center; padding: 3rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+          .container { background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 1rem; display: inline-block; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>🔄 Force Refresh</h1>
+          <p>Domain: ${req.hostname}</p>
+          <p>Time: ${timestamp}</p>
+          <p>Redirecting to main site in 3 seconds...</p>
+          <p><a href="/" style="color: #fff;">Click here if not redirected</a></p>
+        </div>
+      </body>
+      </html>
+    `);
   });
 
   // Serve simple HTML version as fallback
@@ -55,10 +95,16 @@ export function setupProductionMode(app: express.Application) {
       return res.status(404).json({ message: 'API endpoint not found' });
     }
     
-    // For the main route, serve the simple HTML version that works
+    // For the main route, serve the simple HTML version that works with NO CACHE
     if (req.path === '/' || req.path === '/index.html') {
+      // Force no cache headers for immediate refresh on custom domains
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+      
       const simplePath = path.join(process.cwd(), 'client', 'simple.html');
-      console.log(`🔗 Serving simple.html for: ${req.path}`);
+      console.log(`🔗 Serving simple.html for: ${req.path} (FORCE NO CACHE)`);
       return res.sendFile(simplePath, (err) => {
         if (err) {
           console.error('❌ Error serving simple.html:', err);
