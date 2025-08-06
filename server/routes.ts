@@ -12,20 +12,37 @@ import { setupEmailAuth, isAuthenticated as emailIsAuthenticated } from "./email
 // Choose auth system based on environment - prioritize email auth
 const setupAuth = setupEmailAuth; // Using email auth as primary
 const isAuthenticated = emailIsAuthenticated;
+
+// Log environment info for debugging deployment
+console.log(`🚀 Server starting in ${process.env.NODE_ENV || 'development'} mode`);
+console.log(`📊 Database URL configured: ${!!process.env.DATABASE_URL}`);
+console.log(`🔐 Session secret configured: ${!!process.env.SESSION_SECRET}`);
 import jwt from "jsonwebtoken";
 import { insertOrderSchema, insertReviewSchema, insertCategorySchema, insertProductSchema } from "@shared/schema";
 import { imbPayment, type IMBPaymentRequest } from "./imb-payment";
 import crypto from "crypto";
+import { performDeploymentHealthCheck, setupHealthCheck } from "./deployment-check";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup health check endpoint
+  setupHealthCheck(app);
+  
+  // Perform initial health check
+  setTimeout(async () => {
+    await performDeploymentHealthCheck();
+  }, 2000);
+  
   // Auth middleware
   await setupAuth(app);
   // Products
   app.get("/api/products", async (req, res) => {
     try {
+      console.log(`📦 Fetching products from storage...`);
       const products = await storage.getProducts();
+      console.log(`✅ Found ${products.length} products`);
       res.json(products);
     } catch (error) {
+      console.error("❌ Error fetching products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
     }
   });
@@ -88,9 +105,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Categories
   app.get("/api/categories", async (req, res) => {
     try {
+      console.log(`📂 Fetching categories from storage...`);
       const categories = await storage.getCategories();
+      console.log(`✅ Found ${categories.length} categories`);
       res.json(categories);
     } catch (error) {
+      console.error("❌ Error fetching categories:", error);
       res.status(500).json({ message: "Failed to fetch categories" });
     }
   });
