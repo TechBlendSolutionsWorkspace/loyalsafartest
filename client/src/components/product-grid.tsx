@@ -27,6 +27,15 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
   const featuredProducts = products.filter(product => product.popular || product.trending);
   // Filter to show only main categories (not subcategories) on homepage
   const mainCategories = categories.filter(category => !category.isSubcategory);
+  
+  // Debug logging for production
+  console.log("🔍 ProductGrid Debug:", {
+    totalCategories: categories.length,
+    mainCategories: mainCategories.length,
+    firstMainCategory: mainCategories[0]?.name || "None",
+    isLoading,
+    hasData: categories.length > 0
+  });
 
   const handleCheckout = (product: Product) => {
     setSelectedProduct(product);
@@ -234,7 +243,8 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-            {mainCategories.map((category) => (
+            {mainCategories.length > 0 ? (
+              mainCategories.map((category) => (
               <div 
                 key={category.id} 
                 className="business-card rounded-xl p-6 md:p-8 text-center hover:shadow-xl transition-all duration-300 group"
@@ -258,7 +268,20 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
                   </Button>
                 </Link>
               </div>
-            ))}
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  No Categories Available
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Categories are being loaded. Please check back in a moment.
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Debug: {categories.length} total categories, {mainCategories.length} main categories
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
