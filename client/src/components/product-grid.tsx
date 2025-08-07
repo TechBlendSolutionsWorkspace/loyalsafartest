@@ -24,17 +24,23 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
 
-  const featuredProducts = products.filter(product => product.popular || product.trending);
+  // Show all products if no featured products, or limit to 12 featured products
+  const featuredProducts = products.filter(product => product.popular || product.trending).slice(0, 12);
+  const displayProducts = featuredProducts.length > 0 ? featuredProducts : products.slice(0, 12);
   // Filter to show only main categories (not subcategories) on homepage
   const mainCategories = categories.filter(category => !category.isSubcategory);
   
   // Debug logging for production
   console.log("🔍 ProductGrid Debug:", {
+    totalProducts: products.length,
+    featuredProducts: featuredProducts.length,
+    displayProducts: displayProducts.length,
     totalCategories: categories.length,
     mainCategories: mainCategories.length,
     firstMainCategory: mainCategories[0]?.name || "None",
+    firstProduct: products[0]?.name || "None",
     isLoading,
-    hasData: categories.length > 0
+    hasData: categories.length > 0 && products.length > 0
   });
 
   const handleCheckout = (product: Product) => {
@@ -78,7 +84,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
         container.removeEventListener('mouseleave', startAutoScroll);
       }
     };
-  }, [featuredProducts.length]);
+  }, [displayProducts.length]);
 
   // Smooth scroll to current index
   useEffect(() => {
@@ -96,7 +102,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
     if (direction === 'left') {
       setCurrentIndex(prev => Math.max(0, prev - 1));
     } else {
-      setCurrentIndex(prev => Math.min(featuredProducts.length - 3, prev + 1));
+      setCurrentIndex(prev => Math.min(displayProducts.length - 3, prev + 1));
     }
   };
 
@@ -146,21 +152,21 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
 
   return (
     <>
-      {/* Featured Products */}
-      {featuredProducts.length > 0 && (
+      {/* Featured Products - Always show products */}
+      {displayProducts.length > 0 && (
         <section className="py-8 md:py-16 section-gradient">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
-                Popular & Trending Services
+                {featuredProducts.length > 0 ? 'Popular & Trending Services' : 'Featured Digital Services'}
               </h2>
               <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4">
-                India's favorite digital services at the most affordable prices
+                India's premium digital services at affordable prices - {displayProducts.length} products available
               </p>
             </div>
             <div className="relative">
               {/* Navigation Arrows */}
-              {featuredProducts.length > 3 && (
+              {displayProducts.length > 3 && (
                 <>
                   <button
                     onClick={() => scrollTo('left')}
@@ -171,7 +177,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
                   </button>
                   <button
                     onClick={() => scrollTo('right')}
-                    disabled={currentIndex >= featuredProducts.length - 3}
+                    disabled={currentIndex >= displayProducts.length - 3}
                     className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronRight className="w-6 h-6 text-gray-600 dark:text-gray-400" />
@@ -185,7 +191,7 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
                 className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
                 style={{ scrollSnapType: 'x mandatory' }}
               >
-                {featuredProducts.map((product) => (
+                {displayProducts.map((product) => (
                   <div 
                     key={product.id} 
                     className="flex-shrink-0 w-80"
@@ -201,9 +207,9 @@ export default function ProductGrid({ products, categories, isLoading, viewMode 
               </div>
 
               {/* Dots Indicator */}
-              {featuredProducts.length > 3 && (
+              {displayProducts.length > 3 && (
                 <div className="flex justify-center mt-6 space-x-2">
-                  {Array.from({ length: Math.max(0, featuredProducts.length - 2) }).map((_, index) => (
+                  {Array.from({ length: Math.max(0, displayProducts.length - 2) }).map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentIndex(index)}
