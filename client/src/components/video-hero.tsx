@@ -70,6 +70,7 @@ export default function VideoHero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const intervalRef = useRef<NodeJS.Timeout>();
 
@@ -90,19 +91,32 @@ export default function VideoHero() {
     };
   }, [isPlaying]);
 
-  // Video controls
+  // Video controls and loading
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-      if (isPlaying) {
-        videoRef.current.play().catch(() => {
+      const video = videoRef.current;
+      
+      const handleCanPlay = () => setIsVideoLoaded(true);
+      const handleError = () => setIsVideoLoaded(false);
+      
+      video.addEventListener('canplay', handleCanPlay);
+      video.addEventListener('error', handleError);
+      
+      video.muted = isMuted;
+      if (isPlaying && isVideoLoaded) {
+        video.play().catch(() => {
           // Auto-play failed, which is expected in many browsers
         });
       } else {
-        videoRef.current.pause();
+        video.pause();
       }
+      
+      return () => {
+        video.removeEventListener('canplay', handleCanPlay);
+        video.removeEventListener('error', handleError);
+      };
     }
-  }, [isPlaying, isMuted, currentSlide]);
+  }, [isPlaying, isMuted, currentSlide, isVideoLoaded]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
@@ -117,31 +131,69 @@ export default function VideoHero() {
   };
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-black">
-      {/* Background Video/Image */}
-      <div className="absolute inset-0 w-full h-full">
-        {currentHero.videoUrl ? (
+    <section className="relative h-screen w-full overflow-hidden bg-gradient-to-br from-red-950 via-black to-purple-950 theater-container">
+      {/* Theater Curtains & Frame */}
+      <div className="absolute inset-0 z-20 pointer-events-none theater-frame">
+        <div className="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-red-900 via-red-800 to-transparent opacity-90 theater-curtain-left" />
+        <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-red-900 via-red-800 to-transparent opacity-90 theater-curtain-right" />
+        <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-red-900 to-transparent opacity-80" />
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black via-red-950 to-transparent opacity-95" />
+      </div>
+
+      {/* Premium Theater Screen */}
+      <div className="absolute inset-0 w-full h-full theater-screen-container" style={{ padding: '20px' }}>
+        {currentHero.videoUrl && isVideoLoaded ? (
           <video
             ref={videoRef}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover theater-screen rounded-lg shadow-2xl"
             loop
             muted={isMuted}
             playsInline
             autoPlay
+            style={{ 
+              filter: 'brightness(0.9) contrast(1.15) saturate(1.1)',
+              border: '3px solid rgba(255, 215, 0, 0.3)',
+              boxShadow: '0 0 50px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.3)'
+            }}
+            onCanPlay={() => setIsVideoLoaded(true)}
+            onError={() => setIsVideoLoaded(false)}
           >
             <source src={currentHero.videoUrl} type="video/mp4" />
           </video>
         ) : (
           <div
-            className="w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${currentHero.backgroundImage})` }}
+            className="w-full h-full bg-cover bg-center bg-no-repeat theater-screen rounded-lg shadow-2xl"
+            style={{ 
+              backgroundImage: `url(${currentHero.backgroundImage})`,
+              filter: 'brightness(0.8) contrast(1.1)',
+              border: '3px solid rgba(255, 215, 0, 0.3)',
+              boxShadow: '0 0 50px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.3)'
+            }}
           />
         )}
-        
-        {/* Cinematic Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
       </div>
+
+      {/* Sparkle & Light Effects */}
+      <div className="absolute inset-0 z-15 pointer-events-none theater-effects">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-yellow-300 rounded-full animate-pulse theater-sparkle"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 2}s`,
+              boxShadow: '0 0 6px rgba(255, 255, 0, 0.6)'
+            }}
+          />
+        ))}
+      </div>
+        
+      {/* Premium Theater Gradient Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-transparent to-black/70 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-red-950/10 to-transparent z-10" />
+      <div className="absolute inset-0 bg-radial-gradient from-transparent via-amber-900/5 to-black/30 z-10" />
 
       {/* Content */}
       <div className="relative z-10 flex items-center h-full">
@@ -188,7 +240,7 @@ export default function VideoHero() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105"
+                className="theater-cta-button text-white px-8 py-4 text-lg font-semibold rounded-full shadow-xl transition-all duration-300"
                 onClick={() => window.location.href = currentHero.ctaLink}
               >
                 <Play className="mr-2 h-5 w-5" />
