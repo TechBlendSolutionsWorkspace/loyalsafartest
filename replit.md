@@ -1,8 +1,8 @@
-# MTS Digital Services - Replit Configuration
+# Famous Indian Restaurant Website - Replit Configuration
 
 ## Overview
 
-This is a clean, modern full-stack web application built with React, TypeScript, and PostgreSQL. The application features a minimal setup ready for development of any type of web application. The database has been cleared and the app structure simplified for a fresh start.
+This is a completely fresh, clean full-stack web application built with React, TypeScript, and PostgreSQL specifically for a famous Indian restaurant website. All previous e-commerce functionality, digital services integrations, and complex backend systems have been completely removed. The database is clean and the app structure is minimal, ready for restaurant-specific features.
 
 ## User Preferences
 
@@ -56,12 +56,13 @@ The database schema includes ready-to-use tables for:
 
 All tables are currently empty and ready for your new application data.
 
-### Recent Changes (August 7, 2025)
-- ✅ **COMPLETE APPLICATION RESET** - All data cleared from database, app structure simplified for fresh start
-- ✅ **CLEAN STARTER TEMPLATE** - Beautiful welcome page with modern design, minimal routing, and clean architecture
-- ✅ **DATABASE CLEARED** - PostgreSQL database emptied (0 categories, 0 products) ready for new project
-- ✅ **SIMPLIFIED CODEBASE** - Removed complex e-commerce logic, cleaned TypeScript errors, streamlined for new development
-- ✅ **READY FOR NEW IDEA** - Modern stack (React, TypeScript, PostgreSQL, Tailwind) with clean foundation for any web application
+### Recent Changes (August 16, 2025)
+- ✅ **COMPLETE TRANSFORMATION TO RESTAURANT WEBSITE** - Completely removed all MTS Digital Services, e-commerce, and digital marketplace functionality
+- ✅ **CLEAN INDIAN RESTAURANT FOUNDATION** - Fresh start with restaurant-specific branding, colors, and welcome page
+- ✅ **ALL OLD FUNCTIONALITY STRIPPED** - Removed payments, orders, products, categories, reviews, blog posts, testimonials, admin dashboards
+- ✅ **SIMPLIFIED SERVER ARCHITECTURE** - Clean Express server with basic health check, removed all complex integrations
+- ✅ **DATABASE COMPLETELY CLEARED** - All tables truncated, ready for restaurant-specific data (menu items, reservations, etc.)
+- ✅ **FRESH UI COMPONENTS** - Removed all old components, clean home page with Indian restaurant theme
 
 ### Recent Changes (August 6, 2025) 
 - ✅ **PRODUCTION MODE ONLY DEPLOYMENT** - Application now runs exclusively in production mode (NODE_ENV=production) with optimized performance and minified assets
