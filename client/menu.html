@@ -129,6 +129,54 @@
             margin: 0 auto;
         }
 
+        /* Category Navigation */
+        .category-nav {
+            position: fixed;
+            top: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(26, 6, 6, 0.6) 100%);
+            padding: 15px 30px;
+            border-radius: 30px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-btn {
+            color: rgba(255, 255, 255, 0.7);
+            background: transparent;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .category-btn:hover {
+            color: #ffd700;
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .category-btn.active {
+            color: #000;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border-color: #ffd700;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
         /* Controls Hint */
         .controls-hint {
             position: fixed;
@@ -212,6 +260,19 @@
                 letter-spacing: 2px;
             }
 
+            .category-nav {
+                top: 140px;
+                gap: 10px;
+                padding: 12px 20px;
+                flex-wrap: wrap;
+                max-width: 90%;
+            }
+
+            .category-btn {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+
             .dish-info {
                 bottom: 40px;
                 padding: 25px 30px;
@@ -250,6 +311,17 @@
                 font-size: 2rem;
             }
 
+            .category-nav {
+                top: 120px;
+                gap: 8px;
+                padding: 10px 15px;
+            }
+
+            .category-btn {
+                font-size: 0.9rem;
+                padding: 6px 12px;
+            }
+
             .dish-info {
                 bottom: 30px;
                 padding: 20px 25px;
@@ -283,11 +355,19 @@
         <p class="menu-subtitle">Luxury Cylindrical Menu</p>
     </div>
 
+    <!-- Category Navigation -->
+    <div class="category-nav">
+        <button class="category-btn active" data-category="starters">Starters</button>
+        <button class="category-btn" data-category="mains">Main Course</button>
+        <button class="category-btn" data-category="desserts">Desserts</button>
+        <button class="category-btn" data-category="beverages">Beverages</button>
+    </div>
+
     <!-- Dish Info Panel -->
     <div class="dish-info" id="dishInfo">
-        <h3 class="dish-name" id="dishName">Butter Chicken</h3>
-        <p class="dish-price" id="dishPrice">₹680</p>
-        <p class="dish-description" id="dishDescription">Tender chicken in rich tomato-based gravy with cream, butter, and aromatic spices</p>
+        <h3 class="dish-name" id="dishName">Tandoori Chicken Tikka</h3>
+        <p class="dish-price" id="dishPrice">₹450</p>
+        <p class="dish-description" id="dishDescription">Succulent chicken pieces marinated in yogurt and spices, grilled to perfection in our traditional tandoor</p>
     </div>
 
     <!-- Controls Hint -->
@@ -303,82 +383,212 @@
         let currentRotation = 0;
         let isDragging = false;
         let previousMouseX = 0;
+        let currentCategory = 'starters';
+        let isTransitioning = false;
 
-        // Featured dishes for cylindrical display
-        const featuredDishes = [
-            {
-                name: "Butter Chicken",
-                price: "₹680",
-                description: "Tender chicken in rich tomato-based gravy with cream, butter, and aromatic spices",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ff4500'/%3E%3Ccircle cx='150' cy='100' r='60' fill='%23ff6b35'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EButter Chicken%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Biryani (Chicken)",
-                price: "₹580",
-                description: "Fragrant basmati rice layered with spiced chicken, saffron, and caramelized onions",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffd700'/%3E%3Crect x='50' y='50' width='200' height='100' fill='%23daa520' rx='10'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EChicken Biryani%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Paneer Tikka",
-                price: "₹320",
-                description: "Cottage cheese cubes marinated in spiced yogurt and grilled with bell peppers and onions",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23fff8dc'/%3E%3Crect x='75' y='75' width='50' height='50' fill='%23f0f0f0' rx='5'/%3E%3Crect x='150' y='75' width='50' height='50' fill='%23f0f0f0' rx='5'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EPaneer Tikka%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Dal Makhani",
-                price: "₹420",
-                description: "Creamy black lentils slow-cooked overnight with butter, cream, and traditional spices",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23654321'/%3E%3Ccircle cx='150' cy='100' r='70' fill='%238b4513'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EDal Makhani%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Tandoori Chicken",
-                price: "₹450",
-                description: "Succulent chicken pieces marinated in yogurt and spices, grilled to perfection in our traditional tandoor",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ff6b35'/%3E%3Cellipse cx='150' cy='100' rx='80' ry='50' fill='%23d2691e'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='white' text-anchor='middle'%3ETandoori Chicken%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Gulab Jamun",
-                price: "₹240",
-                description: "Soft milk dumplings soaked in cardamom-flavored sugar syrup, served warm",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%238b4513'/%3E%3Ccircle cx='120' cy='100' r='25' fill='%23654321'/%3E%3Ccircle cx='180' cy='100' r='25' fill='%23654321'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EGulab Jamun%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Palak Paneer",
-                price: "₹480",
-                description: "Fresh cottage cheese cubes in creamy spinach gravy with garlic and ginger",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23228b22'/%3E%3Crect x='100' y='75' width='30' height='30' fill='%23f0f0f0' rx='3'/%3E%3Crect x='170' y='95' width='30' height='30' fill='%23f0f0f0' rx='3'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EPalak Paneer%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Masala Chai",
-                price: "₹120",
-                description: "Traditional spiced tea with cardamom, ginger, cinnamon, and fresh milk",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23d2691e'/%3E%3Crect x='120' y='60' width='60' height='80' fill='%238b4513' rx='30'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EMasala Chai%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Samosas",
-                price: "₹180",
-                description: "Crispy golden pastries filled with spiced potatoes, peas, and fresh coriander",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23daa520'/%3E%3Cpolygon points='100,120 150,70 200,120' fill='%23b8860b'/%3E%3Cpolygon points='100,120 150,170 200,120' fill='%23cd853f'/%3E%3Ctext x='150' y='190' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ESamosas%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Mango Lassi",
-                price: "₹180",
-                description: "Thick yogurt drink blended with fresh mango pulp and a hint of cardamom",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffa500'/%3E%3Crect x='130' y='50' width='40' height='100' fill='%23ff8c00' rx='20'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EMango Lassi%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Naan Bread",
-                price: "₹80",
-                description: "Traditional leavened flatbread baked in tandoor, soft and fluffy",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23f5deb3'/%3E%3Cellipse cx='150' cy='100' rx='80' ry='40' fill='%23deb887'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ENaan Bread%3C/text%3E%3C/svg%3E"
-            },
-            {
-                name: "Ras Malai",
-                price: "₹280",
-                description: "Delicate cottage cheese patties in sweetened, thickened milk with pistachios",
-                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23fffaf0'/%3E%3Ccircle cx='120' cy='100' r='30' fill='%23f0f8ff'/%3E%3Ccircle cx='180' cy='100' r='30' fill='%23f0f8ff'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ERas Malai%3C/text%3E%3C/svg%3E"
-            }
-        ];
+        // Category-specific dish collections for cylindrical display
+        const categoryDishes = {
+            starters: [
+                {
+                    name: "Tandoori Chicken Tikka",
+                    price: "₹450",
+                    description: "Succulent chicken pieces marinated in yogurt and spices, grilled to perfection in our traditional tandoor",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ff6b35'/%3E%3Cellipse cx='150' cy='100' rx='80' ry='50' fill='%23d2691e'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='white' text-anchor='middle'%3ETandoori Chicken%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Seekh Kebab",
+                    price: "₹380",
+                    description: "Aromatic minced lamb skewers seasoned with fresh herbs and spices, served with mint chutney",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%238b4513'/%3E%3Crect x='50' y='90' width='200' height='20' fill='%23654321' rx='10'/%3E%3Ctext x='150' y='140' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3ESheekh Kebab%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Paneer Tikka",
+                    price: "₹320",
+                    description: "Cottage cheese cubes marinated in spiced yogurt and grilled with bell peppers and onions",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23fff8dc'/%3E%3Crect x='75' y='75' width='50' height='50' fill='%23f0f0f0' rx='5'/%3E%3Crect x='150' y='75' width='50' height='50' fill='%23f0f0f0' rx='5'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EPaneer Tikka%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Samosas",
+                    price: "₹180",
+                    description: "Crispy golden pastries filled with spiced potatoes, peas, and fresh coriander",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23daa520'/%3E%3Cpolygon points='100,120 150,70 200,120' fill='%23b8860b'/%3E%3Cpolygon points='100,120 150,170 200,120' fill='%23cd853f'/%3E%3Ctext x='150' y='190' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ESamosas%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Aloo Tikki Chaat",
+                    price: "₹220",
+                    description: "Pan-fried potato patties topped with yogurt, chutneys, and pomegranate seeds",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23cd853f'/%3E%3Ccircle cx='150' cy='100' r='60' fill='%23daa520'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='white' text-anchor='middle'%3EAloo Tikki%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Fish Amritsari",
+                    price: "₹520",
+                    description: "Fresh fish fillets in spiced gram flour batter, deep-fried to golden perfection",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffa500'/%3E%3Cellipse cx='150' cy='100' rx='70' ry='40' fill='%23ff8c00'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='white' text-anchor='middle'%3EFish Amritsari%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Bhel Puri",
+                    price: "₹160",
+                    description: "Crispy puffed rice mixed with sev, chutneys, onions, and tomatoes - Mumbai's favorite street snack",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23f5deb3'/%3E%3Ccircle cx='120' cy='80' r='15' fill='%23daa520'/%3E%3Ccircle cx='180' cy='100' r='12' fill='%23cd853f'/%3E%3Ccircle cx='150' cy='120' r='18' fill='%23b8860b'/%3E%3Ctext x='150' y='170' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EBhel Puri%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Chicken 65",
+                    price: "₹390",
+                    description: "Spicy deep-fried chicken cubes with curry leaves, green chilies, and South Indian spices",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ff4500'/%3E%3Crect x='100' y='80' width='30' height='30' fill='%23dc143c' rx='5'/%3E%3Crect x='150' y='100' width='30' height='30' fill='%23dc143c' rx='5'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EChicken 65%3C/text%3E%3C/svg%3E"
+                }
+            ],
+            mains: [
+                {
+                    name: "Butter Chicken",
+                    price: "₹680",
+                    description: "Tender chicken in rich tomato-based gravy with cream, butter, and aromatic spices",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ff4500'/%3E%3Ccircle cx='150' cy='100' r='60' fill='%23ff6b35'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EButter Chicken%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Dal Makhani",
+                    price: "₹420",
+                    description: "Creamy black lentils slow-cooked overnight with butter, cream, and traditional spices",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23654321'/%3E%3Ccircle cx='150' cy='100' r='70' fill='%238b4513'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EDal Makhani%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Biryani (Chicken)",
+                    price: "₹580",
+                    description: "Fragrant basmati rice layered with spiced chicken, saffron, and caramelized onions",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffd700'/%3E%3Crect x='50' y='50' width='200' height='100' fill='%23daa520' rx='10'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EChicken Biryani%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Palak Paneer",
+                    price: "₹480",
+                    description: "Fresh cottage cheese cubes in creamy spinach gravy with garlic and ginger",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23228b22'/%3E%3Crect x='100' y='75' width='30' height='30' fill='%23f0f0f0' rx='3'/%3E%3Crect x='170' y='95' width='30' height='30' fill='%23f0f0f0' rx='3'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EPalak Paneer%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Rogan Josh",
+                    price: "₹750",
+                    description: "Tender lamb curry in aromatic gravy with Kashmiri spices and yogurt",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%238b0000'/%3E%3Ccircle cx='150' cy='100' r='65' fill='%23dc143c'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3ERogan Josh%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Chole Bhature",
+                    price: "₹350",
+                    description: "Spicy chickpea curry served with fluffy deep-fried bread and pickled onions",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23f4a460'/%3E%3Ccircle cx='120' cy='100' r='40' fill='%23daa520'/%3E%3Cellipse cx='200' cy='100' rx='30' ry='50' fill='%23f5deb3'/%3E%3Ctext x='150' y='170' font-family='serif' font-size='14' fill='%23333' text-anchor='middle'%3EChole Bhature%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Malai Kofta",
+                    price: "₹520",
+                    description: "Cottage cheese and potato dumplings in rich cashew and tomato gravy",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffe4e1'/%3E%3Ccircle cx='120' cy='90' r='25' fill='%23f0f0f0'/%3E%3Ccircle cx='180' cy='110' r='25' fill='%23f0f0f0'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EMalai Kofta%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Fish Curry (Kerala)",
+                    price: "₹620",
+                    description: "Fresh fish cooked in coconut milk with curry leaves, green chilies, and traditional spices",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23fff8dc'/%3E%3Cellipse cx='150' cy='100' rx='70' ry='45' fill='%23ffa500'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='white' text-anchor='middle'%3EFish Curry%3C/text%3E%3C/svg%3E"
+                }
+            ],
+            desserts: [
+                {
+                    name: "Gulab Jamun",
+                    price: "₹240",
+                    description: "Soft milk dumplings soaked in cardamom-flavored sugar syrup, served warm",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%238b4513'/%3E%3Ccircle cx='120' cy='100' r='25' fill='%23654321'/%3E%3Ccircle cx='180' cy='100' r='25' fill='%23654321'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EGulab Jamun%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Ras Malai",
+                    price: "₹280",
+                    description: "Delicate cottage cheese patties in sweetened, thickened milk with pistachios",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23fffaf0'/%3E%3Ccircle cx='120' cy='100' r='30' fill='%23f0f8ff'/%3E%3Ccircle cx='180' cy='100' r='30' fill='%23f0f8ff'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ERas Malai%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Kulfi Falooda",
+                    price: "₹320",
+                    description: "Traditional ice cream with vermicelli, rose syrup, and chopped nuts",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffb6c1'/%3E%3Crect x='130' y='50' width='40' height='100' fill='%23ff69b4' rx='20'/%3E%3Ctext x='150' y='170' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EKulfi Falooda%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Gajar Ka Halwa",
+                    price: "₹260",
+                    description: "Rich carrot pudding with milk, ghee, and cardamom, garnished with almonds",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ff8c00'/%3E%3Ccircle cx='150' cy='100' r='60' fill='%23ffa500'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='white' text-anchor='middle'%3EGajar Halwa%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Jalebi with Rabri",
+                    price: "₹300",
+                    description: "Crispy golden spirals in sugar syrup served with thick sweetened milk",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffd700'/%3E%3Cpath d='M100,100 Q150,70 200,100 Q150,130 100,100' fill='%23ff8c00'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EJalebi%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Kheer (Rice Pudding)",
+                    price: "₹220",
+                    description: "Creamy rice pudding with milk, sugar, cardamom, and garnished with almonds and raisins",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23fff8dc'/%3E%3Ccircle cx='150' cy='100' r='70' fill='%23f5f5dc'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EKheer%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Rasgulla",
+                    price: "₹200",
+                    description: "Spongy cottage cheese balls soaked in light sugar syrup, a Bengali classic",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffffff'/%3E%3Ccircle cx='120' cy='100' r='30' fill='%23f8f8ff'/%3E%3Ccircle cx='180' cy='100' r='30' fill='%23f8f8ff'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ERasgulla%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Kaju Katli",
+                    price: "₹480",
+                    description: "Diamond-shaped cashew fudge with silver leaf, premium Diwali sweet",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23c0c0c0'/%3E%3Cpolygon points='150,70 180,100 150,130 120,100' fill='%23e6e6fa'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EKaju Katli%3C/text%3E%3C/svg%3E"
+                }
+            ],
+            beverages: [
+                {
+                    name: "Masala Chai",
+                    price: "₹120",
+                    description: "Traditional spiced tea with cardamom, ginger, cinnamon, and fresh milk",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23d2691e'/%3E%3Crect x='120' y='60' width='60' height='80' fill='%238b4513' rx='30'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EMasala Chai%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Fresh Lime Water",
+                    price: "₹80",
+                    description: "Refreshing lime juice with mint, black salt, and a touch of sugar",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%2390ee90'/%3E%3Crect x='130' y='50' width='40' height='100' fill='%2398fb98' rx='20'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='%23333' text-anchor='middle'%3ELime Water%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Mango Lassi",
+                    price: "₹180",
+                    description: "Thick yogurt drink blended with fresh mango pulp and a hint of cardamom",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffa500'/%3E%3Crect x='130' y='50' width='40' height='100' fill='%23ff8c00' rx='20'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EMango Lassi%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Filter Coffee",
+                    price: "₹140",
+                    description: "South Indian filter coffee with chicory, served with hot milk and sugar",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%233c1810'/%3E%3Crect x='120' y='60' width='60' height='80' fill='%23654321' rx='30'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EFilter Coffee%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Rose Lassi",
+                    price: "₹160",
+                    description: "Creamy yogurt drink flavored with rose water and garnished with rose petals",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffb6c1'/%3E%3Crect x='130' y='50' width='40' height='100' fill='%23ffc0cb' rx='20'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ERose Lassi%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Sugarcane Juice",
+                    price: "₹100",
+                    description: "Fresh pressed sugarcane juice with ginger and lime for a refreshing treat",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%2390ee90'/%3E%3Crect x='130' y='50' width='40' height='100' fill='%239acd32' rx='20'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='%23333' text-anchor='middle'%3ESugarcane%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Thandai",
+                    price: "₹220",
+                    description: "Traditional Holi drink with milk, almonds, pistachios, and aromatic spices",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23f0f8ff'/%3E%3Crect x='130' y='50' width='40' height='100' fill='%23e0ffff' rx='20'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EThandai%3C/text%3E%3C/svg%3E"
+                },
+                {
+                    name: "Coconut Water",
+                    price: "₹90",
+                    description: "Fresh tender coconut water served chilled, naturally refreshing and healthy",
+                    imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffffff'/%3E%3Ccircle cx='150' cy='100' r='60' fill='%23f5f5dc'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='%23333' text-anchor='middle'%3ECoconut Water%3C/text%3E%3C/svg%3E"
+                }
+            ]
+        };
 
         // Menu data (keeping original structure for potential future use)
         const menuData = {
@@ -801,11 +1011,27 @@
         }
 
         function createCylindricalMenu() {
+            loadCategoryDishes(currentCategory);
+        }
+
+        function loadCategoryDishes(category) {
+            // Clear existing dishes
+            dishPlanes.forEach(plane => {
+                cylinderGroup.remove(plane);
+                if (plane.material.map) {
+                    plane.material.map.dispose();
+                }
+                plane.material.dispose();
+                plane.geometry.dispose();
+            });
+            dishPlanes = [];
+
+            const dishes = categoryDishes[category];
             const radius = 8;
-            const dishCount = featuredDishes.length;
+            const dishCount = dishes.length;
 
             for (let i = 0; i < dishCount; i++) {
-                const dish = featuredDishes[i];
+                const dish = dishes[i];
                 const angle = (i / dishCount) * Math.PI * 2;
 
                 // Create plane geometry for dish image
@@ -820,7 +1046,8 @@
                 const planeMaterial = new THREE.MeshLambertMaterial({
                     map: texture,
                     transparent: true,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    opacity: 0.7
                 });
 
                 const dishPlane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -846,19 +1073,28 @@
                 cylinderGroup.add(dishPlane);
             }
 
+            // Reset rotation and dish index
+            currentDishIndex = 0;
+            targetRotation = 0;
+            currentRotation = 0;
+            cylinderGroup.rotation.y = 0;
+
             // Update initial active dish
             updateActiveDish();
         }
 
         function updateActiveDish() {
+            const dishes = categoryDishes[currentCategory];
+            if (!dishes || dishes.length === 0) return;
+
             // Determine which dish is closest to center (facing user)
-            const dishCount = featuredDishes.length;
+            const dishCount = dishes.length;
             const normalizedRotation = ((currentRotation % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
             const dishAngle = (Math.PI * 2) / dishCount;
             currentDishIndex = Math.round(normalizedRotation / dishAngle) % dishCount;
 
             // Update dish info
-            const activeDish = featuredDishes[currentDishIndex];
+            const activeDish = dishes[currentDishIndex];
             document.getElementById('dishName').textContent = activeDish.name;
             document.getElementById('dishPrice').textContent = activeDish.price;
             document.getElementById('dishDescription').textContent = activeDish.description;
@@ -894,8 +1130,50 @@
         function setupEventListeners() {
             const canvas = document.getElementById('menu-canvas');
 
+            // Category button listeners
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isTransitioning) return;
+
+                    const newCategory = btn.dataset.category;
+                    if (newCategory === currentCategory) return;
+
+                    isTransitioning = true;
+
+                    // Update active state
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Fade out effect
+                    dishPlanes.forEach(plane => {
+                        plane.material.opacity = 0;
+                    });
+
+                    setTimeout(() => {
+                        currentCategory = newCategory;
+                        loadCategoryDishes(currentCategory);
+                        
+                        // Fade in effect
+                        setTimeout(() => {
+                            dishPlanes.forEach(plane => {
+                                const targetOpacity = plane.userData.index === currentDishIndex ? 1.0 : 0.7;
+                                const fadeIn = () => {
+                                    if (plane.material.opacity < targetOpacity) {
+                                        plane.material.opacity += 0.05;
+                                        requestAnimationFrame(fadeIn);
+                                    }
+                                };
+                                fadeIn();
+                            });
+                            isTransitioning = false;
+                        }, 200);
+                    }, 300);
+                });
+            });
+
             // Mouse wheel rotation
             canvas.addEventListener('wheel', (e) => {
+                if (isTransitioning) return;
                 e.preventDefault();
                 const rotationSpeed = 0.005;
                 rotateCylinder(e.deltaY * rotationSpeed);
@@ -907,6 +1185,7 @@
 
             // Mouse events
             canvas.addEventListener('mousedown', (e) => {
+                if (isTransitioning) return;
                 isDragging = true;
                 startX = e.clientX;
                 startRotation = targetRotation;
@@ -915,7 +1194,7 @@
             });
 
             document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
+                if (!isDragging || isTransitioning) return;
                 
                 const deltaX = e.clientX - previousMouseX;
                 const rotationSpeed = 0.01;
@@ -930,6 +1209,7 @@
 
             // Touch events
             canvas.addEventListener('touchstart', (e) => {
+                if (isTransitioning) return;
                 isDragging = true;
                 startX = e.touches[0].clientX;
                 startRotation = targetRotation;
@@ -938,7 +1218,7 @@
 
             canvas.addEventListener('touchmove', (e) => {
                 e.preventDefault();
-                if (!isDragging) return;
+                if (!isDragging || isTransitioning) return;
                 
                 const deltaX = e.touches[0].clientX - previousMouseX;
                 const rotationSpeed = 0.01;
@@ -952,6 +1232,7 @@
 
             // Keyboard controls
             document.addEventListener('keydown', (e) => {
+                if (isTransitioning) return;
                 const rotationSpeed = 0.5;
                 switch(e.key) {
                     case 'ArrowLeft':
