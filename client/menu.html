@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Spoons - Authentic Indian Cuisine Menu</title>
-    <meta name="description" content="Explore our authentic Indian cuisine in immersive 3D - Golden Spoons fine dining experience with traditional flavors">
+    <title>Golden Spoons - 3D Culinary Journey</title>
+    <meta name="description" content="Experience authentic Indian cuisine in luxury 3D - Golden Spoons cylindrical menu showcase">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
@@ -19,9 +19,14 @@
         body {
             font-family: 'Cormorant Garamond', serif;
             overflow: hidden;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a0606 50%, #2d0a0a 100%);
+            background: linear-gradient(135deg, #000000 0%, #1a0606 30%, #2d0a0a 70%, #0a0a0a 100%);
             color: #ffffff;
             height: 100vh;
+            cursor: grab;
+        }
+
+        body.dragging {
+            cursor: grabbing;
         }
 
         /* Three.js Canvas */
@@ -37,7 +42,7 @@
         /* Header */
         .menu-header {
             position: fixed;
-            top: 30px;
+            top: 40px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
@@ -46,149 +51,108 @@
 
         .menu-title {
             font-family: 'Playfair Display', serif;
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 900;
-            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
-            background-size: 200% 200%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700, #b8860b);
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: titleShimmer 3s ease-in-out infinite;
-            margin-bottom: 10px;
+            animation: luxuryShimmer 4s ease-in-out infinite;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
         }
 
         .menu-subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 300;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
-        @keyframes titleShimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* Category Navigation */
-        .category-nav {
-            position: fixed;
-            top: 150px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            gap: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px 25px;
-            border-radius: 50px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .category-btn {
-            color: rgba(255, 255, 255, 0.7);
-            background: transparent;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            letter-spacing: 1px;
-        }
-
-        .category-btn:hover,
-        .category-btn.active {
-            color: #ffd700;
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        @keyframes luxuryShimmer {
+            0%, 100% { 
+                background-position: 0% 50%;
+            }
+            50% { 
+                background-position: 100% 50%;
+            }
         }
 
         /* Dish Info Panel */
         .dish-info {
             position: fixed;
-            bottom: 50px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
             text-align: center;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 25px 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            opacity: 0;
-            transition: all 0.5s ease;
-            max-width: 500px;
-        }
-
-        .dish-info.active {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(26, 6, 6, 0.6) 100%);
+            padding: 30px 50px;
+            border-radius: 25px;
+            backdrop-filter: blur(25px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-width: 600px;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .dish-name {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: #ffd700;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #b8860b);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: luxuryShimmer 3s ease-in-out infinite;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
         }
 
         .dish-price {
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: #ffed4e;
-            font-weight: 600;
-            margin-bottom: 15px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(255, 237, 78, 0.3);
         }
 
         .dish-description {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.7;
             font-style: italic;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        /* Navigation Controls */
-        .nav-controls {
+        /* Controls Hint */
+        .controls-hint {
             position: fixed;
-            bottom: 50%;
+            top: 50%;
+            left: 30px;
+            transform: translateY(-50%);
             z-index: 100;
-            transform: translateY(50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            letter-spacing: 2px;
+            opacity: 0.7;
+            animation: fadeInOut 3s ease-in-out infinite;
         }
 
-        .nav-btn {
-            width: 60px;
-            height: 60px;
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 50%;
-            color: #ffd700;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
+        .controls-hint-right {
+            left: auto;
+            right: 30px;
         }
 
-        .nav-btn:hover {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            transform: scale(1.1);
-        }
-
-        .nav-prev {
-            left: 50px;
-        }
-
-        .nav-next {
-            right: 50px;
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
         }
 
         /* Loading Screen */
@@ -240,43 +204,63 @@
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .menu-title {
+                font-size: 2.5rem;
+            }
+
+            .menu-subtitle {
+                font-size: 1rem;
+                letter-spacing: 2px;
+            }
+
+            .dish-info {
+                bottom: 40px;
+                padding: 25px 30px;
+                max-width: 90%;
+                border-radius: 20px;
+            }
+
+            .dish-name {
+                font-size: 2.2rem;
+            }
+
+            .dish-price {
+                font-size: 1.6rem;
+            }
+
+            .dish-description {
+                font-size: 1.1rem;
+            }
+
+            .controls-hint {
+                left: 15px;
+                font-size: 0.8rem;
+            }
+
+            .controls-hint-right {
+                right: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-header {
+                top: 30px;
+            }
+
+            .menu-title {
                 font-size: 2rem;
-            }
-
-            .category-nav {
-                gap: 10px;
-                padding: 10px 15px;
-                flex-wrap: wrap;
-                top: 120px;
-            }
-
-            .category-btn {
-                font-size: 0.9rem;
-                padding: 6px 15px;
             }
 
             .dish-info {
                 bottom: 30px;
                 padding: 20px 25px;
-                max-width: 90%;
             }
 
             .dish-name {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
             }
 
-            .nav-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-
-            .nav-prev {
-                left: 20px;
-            }
-
-            .nav-next {
-                right: 20px;
+            .controls-hint {
+                display: none;
             }
         }
     </style>
@@ -295,38 +279,108 @@
 
     <!-- Header -->
     <div class="menu-header">
-        <h1 class="menu-title">Indian Culinary Journey</h1>
-        <p class="menu-subtitle">Authentic Flavors • Traditional Spices • Royal Heritage</p>
-    </div>
-
-    <!-- Category Navigation -->
-    <div class="category-nav">
-        <button class="category-btn active" data-category="starters">Starters</button>
-        <button class="category-btn" data-category="mains">Main Course</button>
-        <button class="category-btn" data-category="desserts">Desserts</button>
-        <button class="category-btn" data-category="beverages">Beverages</button>
+        <h1 class="menu-title">Golden Spoons</h1>
+        <p class="menu-subtitle">Luxury Cylindrical Menu</p>
     </div>
 
     <!-- Dish Info Panel -->
     <div class="dish-info" id="dishInfo">
-        <h3 class="dish-name" id="dishName">Select a dish to explore</h3>
-        <p class="dish-price" id="dishPrice"></p>
-        <p class="dish-description" id="dishDescription"></p>
+        <h3 class="dish-name" id="dishName">Butter Chicken</h3>
+        <p class="dish-price" id="dishPrice">₹680</p>
+        <p class="dish-description" id="dishDescription">Tender chicken in rich tomato-based gravy with cream, butter, and aromatic spices</p>
     </div>
 
-    <!-- Navigation Controls -->
-    <button class="nav-controls nav-btn nav-prev" onclick="previousDish()">‹</button>
-    <button class="nav-controls nav-btn nav-next" onclick="nextDish()">›</button>
+    <!-- Controls Hint -->
+    <div class="controls-hint">SCROLL OR DRAG</div>
+    <div class="controls-hint controls-hint-right">TO ROTATE</div>
 
     <script>
         // Three.js variables
-        let scene, camera, renderer, carousel, particles, particleSystem;
-        let dishes = [];
+        let scene, camera, renderer, cylinderGroup, particles, particleSystem;
+        let dishPlanes = [];
         let currentDishIndex = 0;
-        let currentCategory = 'starters';
-        let isTransitioning = false;
+        let targetRotation = 0;
+        let currentRotation = 0;
+        let isDragging = false;
+        let previousMouseX = 0;
 
-        // Menu data
+        // Featured dishes for cylindrical display
+        const featuredDishes = [
+            {
+                name: "Butter Chicken",
+                price: "₹680",
+                description: "Tender chicken in rich tomato-based gravy with cream, butter, and aromatic spices",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ff4500'/%3E%3Ccircle cx='150' cy='100' r='60' fill='%23ff6b35'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EButter Chicken%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Biryani (Chicken)",
+                price: "₹580",
+                description: "Fragrant basmati rice layered with spiced chicken, saffron, and caramelized onions",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffd700'/%3E%3Crect x='50' y='50' width='200' height='100' fill='%23daa520' rx='10'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EChicken Biryani%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Paneer Tikka",
+                price: "₹320",
+                description: "Cottage cheese cubes marinated in spiced yogurt and grilled with bell peppers and onions",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23fff8dc'/%3E%3Crect x='75' y='75' width='50' height='50' fill='%23f0f0f0' rx='5'/%3E%3Crect x='150' y='75' width='50' height='50' fill='%23f0f0f0' rx='5'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3EPaneer Tikka%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Dal Makhani",
+                price: "₹420",
+                description: "Creamy black lentils slow-cooked overnight with butter, cream, and traditional spices",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23654321'/%3E%3Ccircle cx='150' cy='100' r='70' fill='%238b4513'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EDal Makhani%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Tandoori Chicken",
+                price: "₹450",
+                description: "Succulent chicken pieces marinated in yogurt and spices, grilled to perfection in our traditional tandoor",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ff6b35'/%3E%3Cellipse cx='150' cy='100' rx='80' ry='50' fill='%23d2691e'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='14' fill='white' text-anchor='middle'%3ETandoori Chicken%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Gulab Jamun",
+                price: "₹240",
+                description: "Soft milk dumplings soaked in cardamom-flavored sugar syrup, served warm",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%238b4513'/%3E%3Ccircle cx='120' cy='100' r='25' fill='%23654321'/%3E%3Ccircle cx='180' cy='100' r='25' fill='%23654321'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EGulab Jamun%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Palak Paneer",
+                price: "₹480",
+                description: "Fresh cottage cheese cubes in creamy spinach gravy with garlic and ginger",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23228b22'/%3E%3Crect x='100' y='75' width='30' height='30' fill='%23f0f0f0' rx='3'/%3E%3Crect x='170' y='95' width='30' height='30' fill='%23f0f0f0' rx='3'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EPalak Paneer%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Masala Chai",
+                price: "₹120",
+                description: "Traditional spiced tea with cardamom, ginger, cinnamon, and fresh milk",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23d2691e'/%3E%3Crect x='120' y='60' width='60' height='80' fill='%238b4513' rx='30'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EMasala Chai%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Samosas",
+                price: "₹180",
+                description: "Crispy golden pastries filled with spiced potatoes, peas, and fresh coriander",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23daa520'/%3E%3Cpolygon points='100,120 150,70 200,120' fill='%23b8860b'/%3E%3Cpolygon points='100,120 150,170 200,120' fill='%23cd853f'/%3E%3Ctext x='150' y='190' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ESamosas%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Mango Lassi",
+                price: "₹180",
+                description: "Thick yogurt drink blended with fresh mango pulp and a hint of cardamom",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffa500'/%3E%3Crect x='130' y='50' width='40' height='100' fill='%23ff8c00' rx='20'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='white' text-anchor='middle'%3EMango Lassi%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Naan Bread",
+                price: "₹80",
+                description: "Traditional leavened flatbread baked in tandoor, soft and fluffy",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23f5deb3'/%3E%3Cellipse cx='150' cy='100' rx='80' ry='40' fill='%23deb887'/%3E%3Ctext x='150' y='110' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ENaan Bread%3C/text%3E%3C/svg%3E"
+            },
+            {
+                name: "Ras Malai",
+                price: "₹280",
+                description: "Delicate cottage cheese patties in sweetened, thickened milk with pistachios",
+                imageUrl: "data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23fffaf0'/%3E%3Ccircle cx='120' cy='100' r='30' fill='%23f0f8ff'/%3E%3Ccircle cx='180' cy='100' r='30' fill='%23f0f8ff'/%3E%3Ctext x='150' y='160' font-family='serif' font-size='16' fill='%23333' text-anchor='middle'%3ERas Malai%3C/text%3E%3C/svg%3E"
+            }
+        ];
+
+        // Menu data (keeping original structure for potential future use)
         const menuData = {
             starters: [
                 {
@@ -621,15 +675,15 @@
         };
 
         function init() {
-            console.log("🍽️ Initializing 3D Menu...");
+            console.log("🍽️ Initializing 3D Cylindrical Menu...");
 
             // Scene
             scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0x0a0a0a, 15, 40);
+            scene.fog = new THREE.Fog(0x000000, 20, 50);
 
             // Camera
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 2, 8);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 12);
 
             // Renderer
             renderer = new THREE.WebGLRenderer({
@@ -642,20 +696,20 @@
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
+            renderer.toneMappingExposure = 1.0;
 
             // Lighting
             setupLighting();
 
-            // Create carousel
-            carousel = new THREE.Group();
-            scene.add(carousel);
+            // Create cylinder group
+            cylinderGroup = new THREE.Group();
+            scene.add(cylinderGroup);
 
             // Create particles
             createParticles();
 
-            // Load initial dishes
-            loadDishes(currentCategory);
+            // Create cylindrical dish layout
+            createCylindricalMenu();
 
             // Event listeners
             setupEventListeners();
@@ -671,66 +725,74 @@
                 }, 1000);
             }, 2000);
 
-            console.log("🍽️ Menu initialized successfully");
+            console.log("🍽️ Cylindrical Menu initialized successfully");
         }
 
         function setupLighting() {
             // Ambient light
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
             scene.add(ambientLight);
 
-            // Main spotlight
-            const spotlight = new THREE.SpotLight(0xffffff, 2);
-            spotlight.position.set(0, 10, 5);
+            // Main spotlight for active dish
+            const spotlight = new THREE.SpotLight(0xffd700, 3);
+            spotlight.position.set(0, 8, 10);
+            spotlight.target.position.set(0, 0, 0);
             spotlight.castShadow = true;
             spotlight.shadow.mapSize.width = 2048;
             spotlight.shadow.mapSize.height = 2048;
-            spotlight.angle = Math.PI / 6;
-            spotlight.penumbra = 0.3;
+            spotlight.angle = Math.PI / 8;
+            spotlight.penumbra = 0.5;
             scene.add(spotlight);
+            scene.add(spotlight.target);
 
-            // Golden accent light
-            const accentLight = new THREE.PointLight(0xffd700, 1.5, 20);
-            accentLight.position.set(0, 5, 0);
-            scene.add(accentLight);
-
-            // Rim lights
-            const rimLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
-            rimLight1.position.set(-5, 3, -5);
+            // Rim lighting
+            const rimLight1 = new THREE.DirectionalLight(0xffd700, 0.8);
+            rimLight1.position.set(-10, 5, 5);
             scene.add(rimLight1);
 
-            const rimLight2 = new THREE.DirectionalLight(0xffd700, 0.3);
-            rimLight2.position.set(5, -2, 5);
+            const rimLight2 = new THREE.DirectionalLight(0xff6b35, 0.4);
+            rimLight2.position.set(10, -3, -5);
             scene.add(rimLight2);
+
+            // Soft fill light
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.2);
+            fillLight.position.set(0, -5, 8);
+            scene.add(fillLight);
         }
 
         function createParticles() {
-            const particleCount = 150;
+            const particleCount = 200;
             particles = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
             const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
 
             for (let i = 0; i < particleCount; i++) {
-                positions[i * 3] = (Math.random() - 0.5) * 40;
-                positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-                positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+                // Distribute particles in a larger space
+                positions[i * 3] = (Math.random() - 0.5) * 60;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 40;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 60;
 
+                // Golden particle colors
                 const color = new THREE.Color();
-                color.setHSL(0.15, 0.8, Math.random() * 0.5 + 0.5);
+                color.setHSL(0.15, 0.9, Math.random() * 0.4 + 0.6);
                 colors[i * 3] = color.r;
                 colors[i * 3 + 1] = color.g;
                 colors[i * 3 + 2] = color.b;
+
+                sizes[i] = Math.random() * 2 + 0.5;
             }
 
             particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            particles.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
             const particleMaterial = new THREE.PointsMaterial({
-                size: 1.5,
+                size: 2,
                 sizeAttenuation: true,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.6,
+                opacity: 0.7,
                 blending: THREE.AdditiveBlending
             });
 
@@ -738,206 +800,167 @@
             scene.add(particleSystem);
         }
 
-        function createDish(dishData, index, total) {
-            const dishGroup = new THREE.Group();
+        function createCylindricalMenu() {
+            const radius = 8;
+            const dishCount = featuredDishes.length;
 
-            // Main dish geometry (stylized as a cylinder with variations)
-            const dishGeometry = new THREE.CylinderGeometry(1.2, 1, 0.3, 16);
-            const dishMaterial = new THREE.MeshPhysicalMaterial({
-                color: dishData.color,
-                metalness: 0.3,
-                roughness: 0.2,
-                clearcoat: 0.8,
-                clearcoatRoughness: 0.1
-            });
+            for (let i = 0; i < dishCount; i++) {
+                const dish = featuredDishes[i];
+                const angle = (i / dishCount) * Math.PI * 2;
 
-            const dish = new THREE.Mesh(dishGeometry, dishMaterial);
-            dish.castShadow = true;
-            dish.receiveShadow = true;
-            dishGroup.add(dish);
+                // Create plane geometry for dish image
+                const planeGeometry = new THREE.PlaneGeometry(4, 3);
+                
+                // Load dish image as texture
+                const loader = new THREE.TextureLoader();
+                const texture = loader.load(dish.imageUrl);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
 
-            // Add garnish elements
-            const garnishGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-            const garnishMaterial = new THREE.MeshPhysicalMaterial({
-                color: 0x228b22,
-                metalness: 0.1,
-                roughness: 0.8
-            });
+                const planeMaterial = new THREE.MeshLambertMaterial({
+                    map: texture,
+                    transparent: true,
+                    side: THREE.DoubleSide
+                });
 
-            for (let i = 0; i < 3; i++) {
-                const garnish = new THREE.Mesh(garnishGeometry, garnishMaterial);
-                garnish.position.set(
-                    (Math.random() - 0.5) * 1.5,
-                    0.2,
-                    (Math.random() - 0.5) * 1.5
+                const dishPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+                
+                // Position on cylinder
+                dishPlane.position.set(
+                    Math.cos(angle) * radius,
+                    0,
+                    Math.sin(angle) * radius
                 );
-                dishGroup.add(garnish);
+
+                // Face the center (billboard effect)
+                dishPlane.lookAt(0, 0, 0);
+
+                // Store dish data
+                dishPlane.userData = {
+                    dish: dish,
+                    index: i,
+                    originalScale: { x: 1, y: 1, z: 1 }
+                };
+
+                dishPlanes.push(dishPlane);
+                cylinderGroup.add(dishPlane);
             }
 
-            // Position in carousel
-            const angle = (index / total) * Math.PI * 2;
-            dishGroup.position.set(
-                Math.cos(angle) * 5,
-                0,
-                Math.sin(angle) * 5
-            );
-            dishGroup.rotation.y = -angle + Math.PI / 2;
-
-            // Store dish data
-            dishGroup.userData = {
-                originalPosition: dishGroup.position.clone(),
-                originalRotation: dishGroup.rotation.clone(),
-                dishData: dishData,
-                index: index
-            };
-
-            return dishGroup;
+            // Update initial active dish
+            updateActiveDish();
         }
 
-        function loadDishes(category) {
-            // Clear existing dishes
-            dishes.forEach(dish => {
-                carousel.remove(dish);
-            });
-            dishes = [];
+        function updateActiveDish() {
+            // Determine which dish is closest to center (facing user)
+            const dishCount = featuredDishes.length;
+            const normalizedRotation = ((currentRotation % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+            const dishAngle = (Math.PI * 2) / dishCount;
+            currentDishIndex = Math.round(normalizedRotation / dishAngle) % dishCount;
 
-            // Create new dishes
-            const categoryData = menuData[category];
-            categoryData.forEach((dishData, index) => {
-                const dish = createDish(dishData, index, categoryData.length);
-                dishes.push(dish);
-                carousel.add(dish);
-            });
+            // Update dish info
+            const activeDish = featuredDishes[currentDishIndex];
+            document.getElementById('dishName').textContent = activeDish.name;
+            document.getElementById('dishPrice').textContent = activeDish.price;
+            document.getElementById('dishDescription').textContent = activeDish.description;
 
-            currentDishIndex = 0;
-            updateDishInfo();
-        }
-
-        function updateDishInfo() {
-            if (dishes.length === 0) return;
-
-            const currentDish = dishes[currentDishIndex];
-            const dishData = currentDish.userData.dishData;
-
-            document.getElementById('dishName').textContent = dishData.name;
-            document.getElementById('dishPrice').textContent = dishData.price;
-            document.getElementById('dishDescription').textContent = dishData.description;
-            document.getElementById('dishInfo').classList.add('active');
-
-            // Highlight current dish
-            dishes.forEach((dish, index) => {
-                const scale = index === currentDishIndex ? 1.2 : 1;
-                const targetScale = new THREE.Vector3(scale, scale, scale);
+            // Update dish scales and highlighting
+            dishPlanes.forEach((plane, index) => {
+                const isActive = index === currentDishIndex;
+                const targetScale = isActive ? 1.3 : 1.0;
                 
                 // Smooth scale transition
-                const currentScale = dish.scale;
-                currentScale.lerp(targetScale, 0.1);
+                plane.scale.x += (targetScale - plane.scale.x) * 0.1;
+                plane.scale.y += (targetScale - plane.scale.y) * 0.1;
+                plane.scale.z += (targetScale - plane.scale.z) * 0.1;
+
+                // Material opacity for non-active dishes
+                plane.material.opacity = isActive ? 1.0 : 0.7;
             });
         }
 
-        function nextDish() {
-            if (isTransitioning || dishes.length === 0) return;
+        function rotateCylinder(deltaRotation) {
+            targetRotation += deltaRotation;
             
-            isTransitioning = true;
-            currentDishIndex = (currentDishIndex + 1) % dishes.length;
+            // Smooth rotation with easing
+            const rotationDiff = targetRotation - currentRotation;
+            const easedRotation = rotationDiff * 0.1;
             
-            // Rotate carousel
-            const targetRotation = -(currentDishIndex / dishes.length) * Math.PI * 2;
-            animateCarouselRotation(targetRotation);
-            
-            setTimeout(() => {
-                updateDishInfo();
-                isTransitioning = false;
-            }, 800);
-        }
+            currentRotation += easedRotation;
+            cylinderGroup.rotation.y = currentRotation;
 
-        function previousDish() {
-            if (isTransitioning || dishes.length === 0) return;
-            
-            isTransitioning = true;
-            currentDishIndex = currentDishIndex === 0 ? dishes.length - 1 : currentDishIndex - 1;
-            
-            // Rotate carousel
-            const targetRotation = -(currentDishIndex / dishes.length) * Math.PI * 2;
-            animateCarouselRotation(targetRotation);
-            
-            setTimeout(() => {
-                updateDishInfo();
-                isTransitioning = false;
-            }, 800);
-        }
-
-        function animateCarouselRotation(targetRotation) {
-            const startRotation = carousel.rotation.y;
-            const rotationDiff = targetRotation - startRotation;
-            let startTime = Date.now();
-            const duration = 800;
-
-            function animate() {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const easeProgress = 1 - Math.pow(1 - progress, 3);
-
-                carousel.rotation.y = startRotation + rotationDiff * easeProgress;
-
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                }
-            }
-
-            animate();
+            updateActiveDish();
         }
 
         function setupEventListeners() {
-            // Category buttons
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    if (isTransitioning) return;
+            const canvas = document.getElementById('menu-canvas');
 
-                    // Update active state
-                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
+            // Mouse wheel rotation
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const rotationSpeed = 0.005;
+                rotateCylinder(e.deltaY * rotationSpeed);
+            });
 
-                    // Load new category
-                    currentCategory = btn.dataset.category;
-                    isTransitioning = true;
+            // Touch/Mouse drag rotation
+            let startX = 0;
+            let startRotation = 0;
 
-                    // Fade out effect
-                    carousel.traverse(child => {
-                        if (child.isMesh) {
-                            child.material.transparent = true;
-                            const fadeOut = () => {
-                                child.material.opacity -= 0.05;
-                                if (child.material.opacity > 0) {
-                                    requestAnimationFrame(fadeOut);
-                                }
-                            };
-                            fadeOut();
-                        }
-                    });
+            // Mouse events
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startRotation = targetRotation;
+                previousMouseX = e.clientX;
+                document.body.classList.add('dragging');
+            });
 
-                    setTimeout(() => {
-                        loadDishes(currentCategory);
-                        
-                        // Fade in effect
-                        carousel.traverse(child => {
-                            if (child.isMesh) {
-                                child.material.opacity = 0;
-                                const fadeIn = () => {
-                                    child.material.opacity += 0.05;
-                                    if (child.material.opacity < 1) {
-                                        requestAnimationFrame(fadeIn);
-                                    } else {
-                                        child.material.transparent = false;
-                                    }
-                                };
-                                fadeIn();
-                            }
-                        });
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - previousMouseX;
+                const rotationSpeed = 0.01;
+                rotateCylinder(deltaX * rotationSpeed);
+                previousMouseX = e.clientX;
+            });
 
-                        isTransitioning = false;
-                    }, 500);
-                });
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                document.body.classList.remove('dragging');
+            });
+
+            // Touch events
+            canvas.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startRotation = targetRotation;
+                previousMouseX = e.touches[0].clientX;
+            });
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isDragging) return;
+                
+                const deltaX = e.touches[0].clientX - previousMouseX;
+                const rotationSpeed = 0.01;
+                rotateCylinder(deltaX * rotationSpeed);
+                previousMouseX = e.touches[0].clientX;
+            });
+
+            canvas.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                const rotationSpeed = 0.5;
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        rotateCylinder(-rotationSpeed);
+                        break;
+                    case 'ArrowRight':
+                        rotateCylinder(rotationSpeed);
+                        break;
+                }
             });
 
             // Window resize
@@ -946,20 +969,6 @@
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
-
-            // Mouse interaction
-            let mouseX = 0, mouseY = 0;
-            document.addEventListener('mousemove', (e) => {
-                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-            });
-
-            // Update camera based on mouse
-            setInterval(() => {
-                camera.position.x += (mouseX * 2 - camera.position.x) * 0.02;
-                camera.position.y += (-mouseY * 2 + 2 - camera.position.y) * 0.02;
-                camera.lookAt(scene.position);
-            }, 16);
         }
 
         function animate() {
@@ -967,24 +976,39 @@
 
             const time = Date.now() * 0.001;
 
+            // Smooth rotation interpolation
+            if (!isDragging) {
+                const rotationDiff = targetRotation - currentRotation;
+                currentRotation += rotationDiff * 0.05;
+                cylinderGroup.rotation.y = currentRotation;
+                
+                if (Math.abs(rotationDiff) > 0.001) {
+                    updateActiveDish();
+                }
+            }
+
             // Animate particles
             if (particleSystem) {
-                particleSystem.rotation.y += 0.002;
+                particleSystem.rotation.y += 0.001;
+                particleSystem.rotation.z += 0.0005;
+                
                 const positions = particles.attributes.position.array;
-                
                 for (let i = 0; i < positions.length; i += 3) {
-                    positions[i + 1] += Math.sin(time + positions[i]) * 0.005;
+                    positions[i + 1] += Math.sin(time + positions[i] * 0.01) * 0.008;
+                    positions[i] += Math.cos(time + positions[i + 2] * 0.01) * 0.002;
                 }
-                
                 particles.attributes.position.needsUpdate = true;
             }
 
-            // Gentle dish rotation
-            dishes.forEach((dish, index) => {
-                if (index === currentDishIndex) {
-                    dish.rotation.y += 0.01;
-                }
+            // Billboard effect - keep dishes facing camera
+            dishPlanes.forEach(plane => {
+                const position = plane.position.clone();
+                position.y = 0; // Keep y-axis aligned
+                plane.lookAt(camera.position.x, 0, camera.position.z);
             });
+
+            // Gentle camera movement
+            camera.position.y += Math.sin(time * 0.5) * 0.01;
 
             renderer.render(scene, camera);
         }
