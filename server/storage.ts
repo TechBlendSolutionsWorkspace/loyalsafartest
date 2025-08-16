@@ -48,15 +48,6 @@ export interface IStorage {
   createUser(user: UpsertUser): Promise<User>;
   updateUser(id: string, user: UpsertUser): Promise<User>;
   deleteUser(id: string): Promise<void>;
-
-  // Admin analytics - optional methods
-  getAdminStats?(days?: number): Promise<any>;
-  getRevenueChartData?(days?: number): Promise<any[]>;
-  getOrdersChartData?(days?: number): Promise<any[]>;
-  getProductsChartData?(days?: number): Promise<any[]>;
-  getTopProducts?(days?: number): Promise<any[]>;
-  getRecentOrders?(limit?: number): Promise<any[]>;
-  getAnalytics?(days?: number): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -69,27 +60,7 @@ export class MemStorage implements IStorage {
   private users: User[] = [];
 
   constructor() {
-    this.seedData();
-  }
-
-  private async seedData() {
-    // Seed basic categories only for live business
-    this.categories = [
-      { id: "ott", name: "OTT Subscriptions", slug: "ott", description: "Premium video streaming platforms", icon: "fas fa-play-circle" },
-      { id: "vpn", name: "VPN Services", slug: "vpn", description: "Secure browsing solutions", icon: "fas fa-shield-alt" },
-      { id: "cloud", name: "Cloud Storage", slug: "cloud", description: "Cloud storage solutions", icon: "fas fa-cloud" },
-      { id: "streaming", name: "Streaming Services", slug: "streaming", description: "Music and audio streaming", icon: "fas fa-music" },
-    ];
-
-    // Empty data for live business deployment
-    this.products = [];
-    this.orders = [];
-    this.testimonials = [];
-    this.blogPosts = [];
-    this.reviews = [];
-    this.users = [];
-
-
+    // Clean slate - no seed data
   }
 
   // Product methods
@@ -102,16 +73,16 @@ export class MemStorage implements IStorage {
   }
 
   async getProductsByCategory(category: string): Promise<Product[]> {
-    return this.products.filter(p => p.category === category);
+    return this.products.filter(p => p.categoryId === category);
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
     const newProduct: Product = {
-      id: nanoid(),
       ...product,
+      id: nanoid(),
       createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+      updatedAt: new Date()
+    } as Product;
     this.products.push(newProduct);
     return newProduct;
   }
@@ -150,7 +121,20 @@ export class MemStorage implements IStorage {
   async createCategory(category: InsertCategory): Promise<Category> {
     const newCategory: Category = {
       id: nanoid(),
-      ...category,
+      name: category.name,
+      slug: category.slug,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      description: category.description || null,
+      icon: category.icon || null,
+      image: category.image || null,
+      isSubcategory: category.isSubcategory || null,
+      parentCategoryId: category.parentCategoryId || null,
+      sortOrder: category.sortOrder || null,
+      isActive: category.isActive || null,
+      bannerImage: category.bannerImage || null,
+      bannerTitle: category.bannerTitle || null,
+      bannerSubtitle: category.bannerSubtitle || null
     };
     this.categories.push(newCategory);
     return newCategory;
@@ -165,6 +149,7 @@ export class MemStorage implements IStorage {
     this.categories[index] = {
       ...this.categories[index],
       ...category,
+      updatedAt: new Date(),
     };
     return this.categories[index];
   }
@@ -185,24 +170,33 @@ export class MemStorage implements IStorage {
   async createOrder(order: InsertOrder): Promise<Order> {
     const newOrder: Order = {
       id: nanoid(),
-      ...order,
+      customerName: order.customerName,
+      customerEmail: order.customerEmail,
+      customerPhone: order.customerPhone,
+      productId: order.productId,
+      productName: order.productName,
+      productPrice: order.productPrice,
+      totalAmount: order.totalAmount,
+      paymentMethod: order.paymentMethod,
+      orderStatus: order.orderStatus,
       createdAt: new Date(),
+      updatedAt: new Date(),
+      notes: order.notes ?? null,
+      deliveryDetails: order.deliveryDetails || null
     };
     this.orders.push(newOrder);
     return newOrder;
   }
 
   async updateOrderStatus(id: string, status: string): Promise<Order> {
-    const index = this.orders.findIndex(o => o.id === id);
-    if (index === -1) {
+    const order = this.orders.find(o => o.id === id);
+    if (!order) {
       throw new Error('Order not found');
     }
     
-    this.orders[index] = {
-      ...this.orders[index],
-      status,
-    };
-    return this.orders[index];
+    order.orderStatus = status;
+    order.updatedAt = new Date();
+    return order;
   }
 
   // Testimonial methods
@@ -211,7 +205,7 @@ export class MemStorage implements IStorage {
   }
 
   async getFeaturedTestimonials(): Promise<Testimonial[]> {
-    return this.testimonials.filter(t => t.isPublished);
+    return this.testimonials.filter(t => t.isActive);
   }
 
   // Blog methods
@@ -220,7 +214,7 @@ export class MemStorage implements IStorage {
   }
 
   async getFeaturedBlogPosts(): Promise<BlogPost[]> {
-    return this.blogPosts.filter(b => b.featured);
+    return this.blogPosts;
   }
 
   // Review methods
@@ -233,27 +227,37 @@ export class MemStorage implements IStorage {
   }
 
   async getPublishedReviews(): Promise<Review[]> {
-    return this.reviews.filter(r => r.isPublished);
+    return this.reviews.filter(r => r.isApproved);
   }
 
   async getPublishedReviewsByProduct(productId: string): Promise<Review[]> {
-    return this.reviews.filter(r => r.productId === productId && r.isPublished);
+    return this.reviews.filter(r => r.productId === productId && r.isApproved);
   }
 
   async createReview(review: InsertReview): Promise<Review> {
     const newReview: Review = {
       id: nanoid(),
-      ...review,
+      customerName: review.customerName,
+      productId: review.productId,
+      rating: review.rating,
+      comment: review.comment,
       createdAt: new Date(),
+      updatedAt: new Date(),
+      title: review.title || null,
+      customerEmail: review.customerEmail || null,
+      isVerified: review.isVerified || null,
+      isApproved: review.isApproved || null,
+      helpfulCount: review.helpfulCount || null
     };
     this.reviews.push(newReview);
     return newReview;
   }
 
   async updateReviewStatus(id: string, isPublished: boolean): Promise<void> {
-    const index = this.reviews.findIndex(r => r.id === id);
-    if (index !== -1) {
-      this.reviews[index].isPublished = isPublished;
+    const review = this.reviews.find(r => r.id === id);
+    if (review) {
+      review.isApproved = isPublished;
+      review.updatedAt = new Date();
     }
   }
 
@@ -263,308 +267,247 @@ export class MemStorage implements IStorage {
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.find(user => user.id === id);
+    return this.users.find(u => u.id === id);
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return this.users.find(user => user.email === email);
+    return this.users.find(u => u.email === email);
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const existingIndex = this.users.findIndex(user => user.id === userData.id);
+  async upsertUser(user: UpsertUser): Promise<User> {
+    const existingUser = user.email ? await this.getUserByEmail(user.email) : undefined;
     
-    if (existingIndex !== -1) {
-      this.users[existingIndex] = {
-        ...this.users[existingIndex],
-        ...userData,
-        updatedAt: new Date(),
-      };
-      return this.users[existingIndex];
+    if (existingUser) {
+      return this.updateUser(existingUser.id, user);
     } else {
-      const newUser: User = {
-        ...userData,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      this.users.push(newUser);
-      return newUser;
+      return this.createUser(user);
     }
   }
 
-  async createUser(userData: UpsertUser): Promise<User> {
+  async createUser(user: UpsertUser): Promise<User> {
     const newUser: User = {
-      ...userData,
+      id: user.id || nanoid(),
+      email: user.email || null,
+      firstName: user.firstName || null,
+      lastName: user.lastName || null,
+      profileImageUrl: user.profileImageUrl || null,
+      role: user.role || null,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     };
     this.users.push(newUser);
     return newUser;
   }
 
-  async updateUser(id: string, userData: UpsertUser): Promise<User> {
-    const userIndex = this.users.findIndex(user => user.id === id);
-    if (userIndex === -1) {
+  async updateUser(id: string, user: UpsertUser): Promise<User> {
+    const index = this.users.findIndex(u => u.id === id);
+    if (index === -1) {
       throw new Error('User not found');
     }
     
-    this.users[userIndex] = {
-      ...this.users[userIndex],
-      ...userData,
+    this.users[index] = {
+      ...this.users[index],
+      ...user,
       updatedAt: new Date(),
     };
-    
-    return this.users[userIndex];
+    return this.users[index];
   }
 
   async deleteUser(id: string): Promise<void> {
-    const userIndex = this.users.findIndex(user => user.id === id);
-    if (userIndex === -1) {
-      throw new Error('User not found');
-    }
-    this.users.splice(userIndex, 1);
+    this.users = this.users.filter(u => u.id !== id);
   }
 }
 
-// Create DatabaseStorage that uses actual database
+// Database storage implementation
+import { db } from "./db";
+import { categories, products, orders, testimonials, blogPosts, reviews, users } from "@shared/schema";
+import { eq, desc } from "drizzle-orm";
+
 export class DatabaseStorage implements IStorage {
-  // Database connection handled by db.ts
-  
-  // Categories - fetch from database
-  async getCategories(): Promise<Category[]> {
-    const { db } = await import('./db');
-    const { categories } = await import('@shared/schema');
-    const result = await db.select().from(categories);
-    return result;
-  }
-
-  async getCategory(id: string): Promise<Category | undefined> {
-    const { db } = await import('./db');
-    const { categories } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
-    const [result] = await db.select().from(categories).where(eq(categories.id, id));
-    return result;
-  }
-
-  async createCategory(categoryData: InsertCategory): Promise<Category> {
-    const { db } = await import('./db');
-    const { categories } = await import('@shared/schema');
-    const id = categoryData.id || nanoid();
-    const [result] = await db.insert(categories).values({
-      ...categoryData,
-      id,
-    }).returning();
-    return result;
-  }
-
-  async updateCategory(id: string, categoryData: InsertCategory): Promise<Category> {
-    const { db } = await import('./db');
-    const { categories } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
-    const [result] = await db.update(categories)
-      .set(categoryData)
-      .where(eq(categories.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteCategory(id: string): Promise<void> {
-    const { db } = await import('./db');
-    const { categories } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
-    await db.delete(categories).where(eq(categories.id, id));
-  }
-
-  // Products - fetch from database
   async getProducts(): Promise<Product[]> {
-    const { db } = await import('./db');
-    const { products } = await import('@shared/schema');
-    const result = await db.select().from(products);
-    return result;
+    console.log("📦 Fetching products from storage...");
+    return await db.select().from(products).orderBy(desc(products.createdAt));
   }
 
   async getProduct(id: string): Promise<Product | undefined> {
-    const { db } = await import('./db');
-    const { products } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
-    const [result] = await db.select().from(products).where(eq(products.id, id));
-    return result;
+    const result = await db.select().from(products).where(eq(products.id, id));
+    return result[0];
   }
 
-  async getProductsByCategory(category: string): Promise<Product[]> {
-    const { db } = await import('./db');
-    const { products } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
-    const result = await db.select().from(products).where(eq(products.category, category));
-    return result;
+  async getProductsByCategory(categoryId: string): Promise<Product[]> {
+    return await db.select().from(products).where(eq(products.categoryId, categoryId));
   }
 
-  async createProduct(productData: InsertProduct): Promise<Product> {
-    const { db } = await import('./db');
-    const { products } = await import('@shared/schema');
-    const id = productData.id || nanoid();
-    const [result] = await db.insert(products).values({
-      ...productData,
-      id,
-    }).returning();
-    return result;
+  async createProduct(product: InsertProduct): Promise<Product> {
+    const result = await db.insert(products).values(product).returning();
+    return result[0];
   }
 
-  async updateProduct(id: string, productData: InsertProduct): Promise<Product> {
-    const { db } = await import('./db');
-    const { products } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
-    const [result] = await db.update(products)
-      .set(productData)
-      .where(eq(products.id, id))
-      .returning();
-    return result;
+  async updateProduct(id: string, product: InsertProduct): Promise<Product> {
+    const result = await db.update(products).set(product).where(eq(products.id, id)).returning();
+    if (result.length === 0) {
+      throw new Error('Product not found');
+    }
+    return result[0];
   }
 
   async deleteProduct(id: string): Promise<void> {
-    const { db } = await import('./db');
-    const { products } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
     await db.delete(products).where(eq(products.id, id));
   }
 
   async deleteAllProducts(): Promise<void> {
-    const { db } = await import('./db');
-    const { products } = await import('@shared/schema');
     await db.delete(products);
   }
 
-  // Implement all other required methods with database queries
+  async getCategories(): Promise<Category[]> {
+    console.log("📂 Fetching categories from storage...");
+    const result = await db.select().from(categories).orderBy(categories.sortOrder);
+    console.log(`✅ Found ${result.length} categories`);
+    return result;
+  }
+
+  async getCategory(id: string): Promise<Category | undefined> {
+    const result = await db.select().from(categories).where(eq(categories.id, id));
+    return result[0];
+  }
+
+  async createCategory(category: InsertCategory): Promise<Category> {
+    const result = await db.insert(categories).values(category).returning();
+    return result[0];
+  }
+
+  async updateCategory(id: string, category: InsertCategory): Promise<Category> {
+    const result = await db.update(categories).set(category).where(eq(categories.id, id)).returning();
+    if (result.length === 0) {
+      throw new Error('Category not found');
+    }
+    return result[0];
+  }
+
+  async deleteCategory(id: string): Promise<void> {
+    await db.delete(categories).where(eq(categories.id, id));
+  }
+
   async getOrders(): Promise<Order[]> {
-    const { db } = await import('./db');
-    const { orders } = await import('@shared/schema');
-    return await db.select().from(orders);
+    return await db.select().from(orders).orderBy(desc(orders.createdAt));
   }
 
   async getOrder(id: string): Promise<Order | undefined> {
-    const { db } = await import('./db');
-    const { orders } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
-    const [result] = await db.select().from(orders).where(eq(orders.id, id));
-    return result;
+    const result = await db.select().from(orders).where(eq(orders.id, id));
+    return result[0];
   }
 
-  async createOrder(orderData: InsertOrder): Promise<Order> {
-    const { db } = await import('./db');
-    const { orders } = await import('@shared/schema');
-    const id = orderData.id || nanoid();
-    const [result] = await db.insert(orders).values({
-      ...orderData,
-      id,
-    }).returning();
-    return result;
+  async createOrder(order: InsertOrder): Promise<Order> {
+    const result = await db.insert(orders).values(order).returning();
+    return result[0];
   }
 
-  async updateOrderStatus(id: string, status: string): Promise<Order> {
-    const { db } = await import('./db');
-    const { orders } = await import('@shared/schema');
-    const { eq } = await import('drizzle-orm');
-    const [result] = await db.update(orders)
-      .set({ status })
-      .where(eq(orders.id, id))
-      .returning();
-    return result;
+  async updateOrderStatus(id: string, orderStatus: string): Promise<Order> {
+    const result = await db.update(orders).set({ orderStatus }).where(eq(orders.id, id)).returning();
+    if (result.length === 0) {
+      throw new Error('Order not found');
+    }
+    return result[0];
   }
 
-  // Testimonials - fallback to empty arrays for now
   async getTestimonials(): Promise<Testimonial[]> {
-    return [];
+    return await db.select().from(testimonials).orderBy(testimonials.sortOrder);
   }
 
   async getFeaturedTestimonials(): Promise<Testimonial[]> {
-    return [];
+    return await db.select().from(testimonials).where(eq(testimonials.isActive, true)).orderBy(testimonials.sortOrder);
   }
 
-  // Blog Posts - fallback to empty arrays for now  
   async getBlogPosts(): Promise<BlogPost[]> {
-    return [];
+    return await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
   }
 
   async getFeaturedBlogPosts(): Promise<BlogPost[]> {
-    return [];
+    return await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
   }
 
-  // Reviews - fallback to empty arrays for now
   async getReviews(): Promise<Review[]> {
-    return [];
+    return await db.select().from(reviews).orderBy(desc(reviews.createdAt));
   }
 
   async getReviewsByProduct(productId: string): Promise<Review[]> {
-    return [];
+    return await db.select().from(reviews).where(eq(reviews.productId, productId)).orderBy(desc(reviews.createdAt));
   }
 
   async getPublishedReviews(): Promise<Review[]> {
-    return [];
+    return await db.select().from(reviews).where(eq(reviews.isApproved, true)).orderBy(desc(reviews.createdAt));
   }
 
   async getPublishedReviewsByProduct(productId: string): Promise<Review[]> {
-    return [];
+    return await db.select().from(reviews)
+      .where(eq(reviews.productId, productId))
+      .orderBy(desc(reviews.createdAt));
   }
 
-  async createReview(reviewData: InsertReview): Promise<Review> {
-    const id = nanoid();
-    return {
-      ...reviewData,
-      id,
-      createdAt: new Date(),
-      isVerified: false,
-      isPublished: false,
-    };
+  async createReview(review: InsertReview): Promise<Review> {
+    const result = await db.insert(reviews).values(review).returning();
+    return result[0];
   }
 
-  async updateReviewStatus(id: string, isPublished: boolean): Promise<void> {
-    // Placeholder implementation
+  async updateReviewStatus(id: string, isApproved: boolean): Promise<void> {
+    await db.update(reviews).set({ isApproved }).where(eq(reviews.id, id));
   }
 
-  // Users - fallback to empty implementations for now
   async getAllUsers(): Promise<User[]> {
-    return [];
+    return await db.select().from(users).orderBy(desc(users.createdAt));
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    return undefined;
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return undefined;
+    const result = await db.select().from(users).where(eq(users.email, email));
+    return result[0];
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const id = userData.id || nanoid();
-    return {
-      ...userData,
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  async upsertUser(user: UpsertUser): Promise<User> {
+    const existingUser = user.email ? await this.getUserByEmail(user.email) : undefined;
+    
+    if (existingUser) {
+      return this.updateUser(existingUser.id, user);
+    } else {
+      return this.createUser(user);
+    }
   }
 
-  async createUser(userData: UpsertUser): Promise<User> {
-    const id = userData.id || nanoid();
-    return {
-      ...userData,
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  async createUser(user: UpsertUser): Promise<User> {
+    const result = await db.insert(users).values(user).returning();
+    return result[0];
   }
 
-  async updateUser(id: string, userData: UpsertUser): Promise<User> {
-    return {
-      ...userData,
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  async updateUser(id: string, user: UpsertUser): Promise<User> {
+    const result = await db.update(users).set(user).where(eq(users.id, id)).returning();
+    if (result.length === 0) {
+      throw new Error('User not found');
+    }
+    return result[0];
   }
 
   async deleteUser(id: string): Promise<void> {
-    // Placeholder implementation
+    await db.delete(users).where(eq(users.id, id));
   }
 }
 
-export const storage = new DatabaseStorage();
+// Create storage instance
+
+// Check if database is available and create appropriate storage
+let storage: IStorage;
+
+try {
+  // Try to use database storage
+  storage = new DatabaseStorage();
+  console.log("🔄 Initializing storage with Replit database");
+} catch (error) {
+  // Fallback to memory storage if database is not available
+  console.log("⚠️ Database not available, using memory storage");
+  storage = new MemStorage();
+}
+
+export { storage };

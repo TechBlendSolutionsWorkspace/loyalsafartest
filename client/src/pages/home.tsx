@@ -1,62 +1,66 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import EnhancedHeader from "@/components/enhanced-header";
-import VideoHero from "@/components/video-hero";
-import ProductGrid from "@/components/product-grid";
-import ProfessionalStats from "@/components/professional-stats";
-import FloatingElements from "@/components/floating-elements";
-import Testimonials from "@/components/testimonials";
-import FAQ from "@/components/faq";
-import About from "@/components/about";
-import Blog from "@/components/blog";
-import Footer from "@/components/footer";
-
-import { Product, Category } from "@shared/schema";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
-  const [, setLocation] = useLocation();
-  
-  const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
-  });
-
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
-  });
-
-
-
   return (
-    <div className="min-h-screen bg-background relative">
-      <FloatingElements />
-      <EnhancedHeader />
-      <VideoHero />
-      <ProductGrid 
-        products={products} 
-        categories={categories}
-        isLoading={productsLoading || categoriesLoading}
-      />
-      <ProfessionalStats />
-      <Testimonials />
-      <FAQ />
-      <About />
-      <Blog />
-      <Footer />
-      
-      {/* WhatsApp Float Button */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <a 
-          href="https://wa.me/917496067495" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors animate-bounce-soft"
-        >
-          <i className="fab fa-whatsapp text-2xl"></i>
-        </a>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Welcome to Your New App
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+            Start building something amazing!
+          </p>
+          <Button size="lg" className="text-lg px-8 py-3">
+            Get Started
+          </Button>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-2xl">🚀</span>
+                Ready to Build
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 dark:text-gray-300">
+                Your app structure is clean and ready for development. Add your features and make it yours!
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-2xl">⚡</span>
+                Modern Stack
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 dark:text-gray-300">
+                Built with React, TypeScript, Tailwind CSS, and PostgreSQL. Everything you need for a professional app.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-2xl">🎨</span>
+                Beautiful UI
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 dark:text-gray-300">
+                Includes Shadcn/ui components, dark mode support, and responsive design out of the box.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-
     </div>
   );
 }
