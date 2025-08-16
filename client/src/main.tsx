@@ -7,7 +7,7 @@ import App from "./App";
 import "./index.css";
 
 // Add error handling for the app initialization
-console.log("🚀 MTS Digital Services - Starting React App");
+console.log("🚀 Clean Starter App - Starting React App");
 
 try {
   const rootElement = document.getElementById("root");

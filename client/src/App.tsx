@@ -7,6 +7,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Home from "@/pages/home";
 
 function App() {
+  console.log("🚀 Clean Starter App - Starting React App");
+  console.log("✅ React App initialized successfully");
+  
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="app-theme">
@@ -14,6 +17,8 @@ function App() {
           <Toaster />
           <Switch>
             <Route path="/" component={Home} />
+            <Route path="/home" component={Home} />
+            <Route component={Home} />
           </Switch>
         </TooltipProvider>
       </ThemeProvider>
