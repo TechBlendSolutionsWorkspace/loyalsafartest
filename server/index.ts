@@ -19,6 +19,12 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Menu page route
+app.get("/menu", (req, res) => {
+  console.log("📄 Serving 3D menu page");
+  res.sendFile(path.join(process.cwd(), 'client', 'menu.html'));
+});
+
 // Serve static files
 app.use(express.static('client'));
 

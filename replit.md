@@ -57,12 +57,12 @@ The database schema includes ready-to-use tables for:
 All tables are currently empty and ready for your new application data.
 
 ### Recent Changes (August 16, 2025)
-- ✅ **3D GOLDEN SPOONS LANDING PAGE** - Built immersive Three.js landing page for fine-dining restaurant with luxury design
-- ✅ **THREE.JS INTEGRATION** - Rotating golden spoon 3D object with metallic materials, cinematic lighting, and mouse interaction
-- ✅ **PREMIUM VISUAL DESIGN** - Dark luxury gradient background, golden particle system, elegant typography with glow effects
-- ✅ **SMOOTH ANIMATIONS** - Camera zoom intro, title glow, particle floating motion, mouse-reactive spoon rotation
-- ✅ **RESPONSIVE NAVIGATION** - Top-right menu with golden shimmer hover effects and smooth transitions
-- ✅ **MOBILE OPTIMIZATION** - Fully responsive design working across desktop and mobile devices
+- ✅ **3D INTERACTIVE MENU PAGE** - Built immersive Three.js menu with rotating dish carousel, realistic textures, and cinematic lighting
+- ✅ **DISH CAROUSEL SYSTEM** - 3D food models in rotating carousel with hover zoom, rotation, and detailed info panels
+- ✅ **CATEGORY FILTERING** - Interactive buttons for Starters, Main Course, Desserts, Beverages with smooth transitions
+- ✅ **PREMIUM INTERACTIONS** - Dish hover effects, golden text overlays, spotlight on active items, floating particles
+- ✅ **3D GOLDEN SPOONS LANDING** - Luxury homepage with rotating golden spoon, premium typography, and mouse interaction
+- ✅ **RESPONSIVE NAVIGATION** - Linked menu system between landing page and 3D menu experience
 
 ### Recent Changes (August 6, 2025) 
 - ✅ **PRODUCTION MODE ONLY DEPLOYMENT** - Application now runs exclusively in production mode (NODE_ENV=production) with optimized performance and minified assets

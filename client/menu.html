@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Spoons - Interactive Menu</title>
+    <meta name="description" content="Explore our exquisite menu in immersive 3D - Golden Spoons fine dining experience">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0606 50%, #2d0a0a 100%);
+            color: #ffffff;
+            height: 100vh;
+        }
+
+        /* Three.js Canvas */
+        #menu-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Header */
+        .menu-header {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            text-align: center;
+        }
+
+        .menu-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShimmer 3s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+
+        .menu-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleShimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Category Navigation */
+        .category-nav {
+            position: fixed;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .category-btn {
+            color: rgba(255, 255, 255, 0.7);
+            background: transparent;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            letter-spacing: 1px;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            color: #ffd700;
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Dish Info Panel */
+        .dish-info {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            opacity: 0;
+            transition: all 0.5s ease;
+            max-width: 500px;
+        }
+
+        .dish-info.active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .dish-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .dish-price {
+            font-size: 1.5rem;
+            color: #ffed4e;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .dish-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        /* Navigation Controls */
+        .nav-controls {
+            position: fixed;
+            bottom: 50%;
+            z-index: 100;
+            transform: translateY(50%);
+        }
+
+        .nav-btn {
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            color: #ffd700;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            transform: scale(1.1);
+        }
+
+        .nav-prev {
+            left: 50px;
+        }
+
+        .nav-next {
+            right: 50px;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0606 50%, #2d0a0a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 1s ease-out;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShimmer 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .menu-title {
+                font-size: 2rem;
+            }
+
+            .category-nav {
+                gap: 10px;
+                padding: 10px 15px;
+                flex-wrap: wrap;
+                top: 120px;
+            }
+
+            .category-btn {
+                font-size: 0.9rem;
+                padding: 6px 15px;
+            }
+
+            .dish-info {
+                bottom: 30px;
+                padding: 20px 25px;
+                max-width: 90%;
+            }
+
+            .dish-name {
+                font-size: 1.5rem;
+            }
+
+            .nav-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .nav-prev {
+                left: 20px;
+            }
+
+            .nav-next {
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-text">Preparing Menu</div>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Three.js Canvas -->
+    <canvas id="menu-canvas"></canvas>
+
+    <!-- Header -->
+    <div class="menu-header">
+        <h1 class="menu-title">Culinary Journey</h1>
+        <p class="menu-subtitle">Golden Spoons Menu Experience</p>
+    </div>
+
+    <!-- Category Navigation -->
+    <div class="category-nav">
+        <button class="category-btn active" data-category="starters">Starters</button>
+        <button class="category-btn" data-category="mains">Main Course</button>
+        <button class="category-btn" data-category="desserts">Desserts</button>
+        <button class="category-btn" data-category="beverages">Beverages</button>
+    </div>
+
+    <!-- Dish Info Panel -->
+    <div class="dish-info" id="dishInfo">
+        <h3 class="dish-name" id="dishName">Select a dish to explore</h3>
+        <p class="dish-price" id="dishPrice"></p>
+        <p class="dish-description" id="dishDescription"></p>
+    </div>
+
+    <!-- Navigation Controls -->
+    <button class="nav-controls nav-btn nav-prev" onclick="previousDish()">‹</button>
+    <button class="nav-controls nav-btn nav-next" onclick="nextDish()">›</button>
+
+    <script>
+        // Three.js variables
+        let scene, camera, renderer, carousel, particles, particleSystem;
+        let dishes = [];
+        let currentDishIndex = 0;
+        let currentCategory = 'starters';
+        let isTransitioning = false;
+
+        // Menu data
+        const menuData = {
+            starters: [
+                {
+                    name: "Truffle Arancini",
+                    price: "$18",
+                    description: "Crispy saffron risotto balls with black truffle and aged parmesan, served with wild mushroom foam",
+                    color: 0xdaa520
+                },
+                {
+                    name: "Seared Scallops",
+                    price: "$24",
+                    description: "Pan-seared diver scallops with cauliflower purée, crispy pancetta, and micro herbs",
+                    color: 0xf4e4bc
+                },
+                {
+                    name: "Wagyu Carpaccio",
+                    price: "$32",
+                    description: "Thinly sliced A5 wagyu with rocket, aged balsamic, and shaved truffle",
+                    color: 0x8b0000
+                }
+            ],
+            mains: [
+                {
+                    name: "Duck Breast Confit",
+                    price: "$45",
+                    description: "Slow-cooked duck breast with cherry gastrique, fondant potato, and seasonal vegetables",
+                    color: 0x654321
+                },
+                {
+                    name: "Lobster Thermidor",
+                    price: "$58",
+                    description: "Fresh lobster tail with cognac cream sauce, gruyère cheese, and herb butter",
+                    color: 0xff6b35
+                },
+                {
+                    name: "Beef Wellington",
+                    price: "$65",
+                    description: "Prime beef tenderloin wrapped in puff pastry with duxelles and foie gras",
+                    color: 0x8b4513
+                }
+            ],
+            desserts: [
+                {
+                    name: "Chocolate Soufflé",
+                    price: "$16",
+                    description: "Warm dark chocolate soufflé with vanilla bean ice cream and gold leaf",
+                    color: 0x3c1810
+                },
+                {
+                    name: "Crème Brûlée",
+                    price: "$14",
+                    description: "Classic vanilla custard with caramelized sugar and fresh berries",
+                    color: 0xffd700
+                },
+                {
+                    name: "Tiramisu",
+                    price: "$15",
+                    description: "Traditional Italian dessert with espresso-soaked ladyfingers and mascarpone",
+                    color: 0xdeb887
+                }
+            ],
+            beverages: [
+                {
+                    name: "Dom Pérignon 2012",
+                    price: "$45",
+                    description: "Prestigious champagne with notes of white fruit, citrus, and toasted brioche",
+                    color: 0xffffff
+                },
+                {
+                    name: "Aged Single Malt",
+                    price: "$28",
+                    description: "25-year-old Scotch whisky with hints of honey, vanilla, and oak",
+                    color: 0xb8860b
+                },
+                {
+                    name: "House Blend Coffee",
+                    price: "$8",
+                    description: "Artisanal coffee blend with notes of dark chocolate and caramel",
+                    color: 0x3c1810
+                }
+            ]
+        };
+
+        function init() {
+            console.log("🍽️ Initializing 3D Menu...");
+
+            // Scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x0a0a0a, 15, 40);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 2, 8);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('menu-canvas'),
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+
+            // Lighting
+            setupLighting();
+
+            // Create carousel
+            carousel = new THREE.Group();
+            scene.add(carousel);
+
+            // Create particles
+            createParticles();
+
+            // Load initial dishes
+            loadDishes(currentCategory);
+
+            // Event listeners
+            setupEventListeners();
+
+            // Start animation
+            animate();
+
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 1000);
+            }, 2000);
+
+            console.log("🍽️ Menu initialized successfully");
+        }
+
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+
+            // Main spotlight
+            const spotlight = new THREE.SpotLight(0xffffff, 2);
+            spotlight.position.set(0, 10, 5);
+            spotlight.castShadow = true;
+            spotlight.shadow.mapSize.width = 2048;
+            spotlight.shadow.mapSize.height = 2048;
+            spotlight.angle = Math.PI / 6;
+            spotlight.penumbra = 0.3;
+            scene.add(spotlight);
+
+            // Golden accent light
+            const accentLight = new THREE.PointLight(0xffd700, 1.5, 20);
+            accentLight.position.set(0, 5, 0);
+            scene.add(accentLight);
+
+            // Rim lights
+            const rimLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+            rimLight1.position.set(-5, 3, -5);
+            scene.add(rimLight1);
+
+            const rimLight2 = new THREE.DirectionalLight(0xffd700, 0.3);
+            rimLight2.position.set(5, -2, 5);
+            scene.add(rimLight2);
+        }
+
+        function createParticles() {
+            const particleCount = 150;
+            particles = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 40;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+
+                const color = new THREE.Color();
+                color.setHSL(0.15, 0.8, Math.random() * 0.5 + 0.5);
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+            }
+
+            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 1.5,
+                sizeAttenuation: true,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+
+            particleSystem = new THREE.Points(particles, particleMaterial);
+            scene.add(particleSystem);
+        }
+
+        function createDish(dishData, index, total) {
+            const dishGroup = new THREE.Group();
+
+            // Main dish geometry (stylized as a cylinder with variations)
+            const dishGeometry = new THREE.CylinderGeometry(1.2, 1, 0.3, 16);
+            const dishMaterial = new THREE.MeshPhysicalMaterial({
+                color: dishData.color,
+                metalness: 0.3,
+                roughness: 0.2,
+                clearcoat: 0.8,
+                clearcoatRoughness: 0.1
+            });
+
+            const dish = new THREE.Mesh(dishGeometry, dishMaterial);
+            dish.castShadow = true;
+            dish.receiveShadow = true;
+            dishGroup.add(dish);
+
+            // Add garnish elements
+            const garnishGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+            const garnishMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x228b22,
+                metalness: 0.1,
+                roughness: 0.8
+            });
+
+            for (let i = 0; i < 3; i++) {
+                const garnish = new THREE.Mesh(garnishGeometry, garnishMaterial);
+                garnish.position.set(
+                    (Math.random() - 0.5) * 1.5,
+                    0.2,
+                    (Math.random() - 0.5) * 1.5
+                );
+                dishGroup.add(garnish);
+            }
+
+            // Position in carousel
+            const angle = (index / total) * Math.PI * 2;
+            dishGroup.position.set(
+                Math.cos(angle) * 5,
+                0,
+                Math.sin(angle) * 5
+            );
+            dishGroup.rotation.y = -angle + Math.PI / 2;
+
+            // Store dish data
+            dishGroup.userData = {
+                originalPosition: dishGroup.position.clone(),
+                originalRotation: dishGroup.rotation.clone(),
+                dishData: dishData,
+                index: index
+            };
+
+            return dishGroup;
+        }
+
+        function loadDishes(category) {
+            // Clear existing dishes
+            dishes.forEach(dish => {
+                carousel.remove(dish);
+            });
+            dishes = [];
+
+            // Create new dishes
+            const categoryData = menuData[category];
+            categoryData.forEach((dishData, index) => {
+                const dish = createDish(dishData, index, categoryData.length);
+                dishes.push(dish);
+                carousel.add(dish);
+            });
+
+            currentDishIndex = 0;
+            updateDishInfo();
+        }
+
+        function updateDishInfo() {
+            if (dishes.length === 0) return;
+
+            const currentDish = dishes[currentDishIndex];
+            const dishData = currentDish.userData.dishData;
+
+            document.getElementById('dishName').textContent = dishData.name;
+            document.getElementById('dishPrice').textContent = dishData.price;
+            document.getElementById('dishDescription').textContent = dishData.description;
+            document.getElementById('dishInfo').classList.add('active');
+
+            // Highlight current dish
+            dishes.forEach((dish, index) => {
+                const scale = index === currentDishIndex ? 1.2 : 1;
+                const targetScale = new THREE.Vector3(scale, scale, scale);
+                
+                // Smooth scale transition
+                const currentScale = dish.scale;
+                currentScale.lerp(targetScale, 0.1);
+            });
+        }
+
+        function nextDish() {
+            if (isTransitioning || dishes.length === 0) return;
+            
+            isTransitioning = true;
+            currentDishIndex = (currentDishIndex + 1) % dishes.length;
+            
+            // Rotate carousel
+            const targetRotation = -(currentDishIndex / dishes.length) * Math.PI * 2;
+            animateCarouselRotation(targetRotation);
+            
+            setTimeout(() => {
+                updateDishInfo();
+                isTransitioning = false;
+            }, 800);
+        }
+
+        function previousDish() {
+            if (isTransitioning || dishes.length === 0) return;
+            
+            isTransitioning = true;
+            currentDishIndex = currentDishIndex === 0 ? dishes.length - 1 : currentDishIndex - 1;
+            
+            // Rotate carousel
+            const targetRotation = -(currentDishIndex / dishes.length) * Math.PI * 2;
+            animateCarouselRotation(targetRotation);
+            
+            setTimeout(() => {
+                updateDishInfo();
+                isTransitioning = false;
+            }, 800);
+        }
+
+        function animateCarouselRotation(targetRotation) {
+            const startRotation = carousel.rotation.y;
+            const rotationDiff = targetRotation - startRotation;
+            let startTime = Date.now();
+            const duration = 800;
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+                carousel.rotation.y = startRotation + rotationDiff * easeProgress;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+
+            animate();
+        }
+
+        function setupEventListeners() {
+            // Category buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isTransitioning) return;
+
+                    // Update active state
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Load new category
+                    currentCategory = btn.dataset.category;
+                    isTransitioning = true;
+
+                    // Fade out effect
+                    carousel.traverse(child => {
+                        if (child.isMesh) {
+                            child.material.transparent = true;
+                            const fadeOut = () => {
+                                child.material.opacity -= 0.05;
+                                if (child.material.opacity > 0) {
+                                    requestAnimationFrame(fadeOut);
+                                }
+                            };
+                            fadeOut();
+                        }
+                    });
+
+                    setTimeout(() => {
+                        loadDishes(currentCategory);
+                        
+                        // Fade in effect
+                        carousel.traverse(child => {
+                            if (child.isMesh) {
+                                child.material.opacity = 0;
+                                const fadeIn = () => {
+                                    child.material.opacity += 0.05;
+                                    if (child.material.opacity < 1) {
+                                        requestAnimationFrame(fadeIn);
+                                    } else {
+                                        child.material.transparent = false;
+                                    }
+                                };
+                                fadeIn();
+                            }
+                        });
+
+                        isTransitioning = false;
+                    }, 500);
+                });
+            });
+
+            // Window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Mouse interaction
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            // Update camera based on mouse
+            setInterval(() => {
+                camera.position.x += (mouseX * 2 - camera.position.x) * 0.02;
+                camera.position.y += (-mouseY * 2 + 2 - camera.position.y) * 0.02;
+                camera.lookAt(scene.position);
+            }, 16);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+
+            // Animate particles
+            if (particleSystem) {
+                particleSystem.rotation.y += 0.002;
+                const positions = particles.attributes.position.array;
+                
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i + 1] += Math.sin(time + positions[i]) * 0.005;
+                }
+                
+                particles.attributes.position.needsUpdate = true;
+            }
+
+            // Gentle dish rotation
+            dishes.forEach((dish, index) => {
+                if (index === currentDishIndex) {
+                    dish.rotation.y += 0.01;
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+
+        console.log("🍽️ 3D Menu system loaded");
+    </script>
+</body>
+</html>
