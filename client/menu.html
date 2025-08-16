@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Spoons - Interactive Menu</title>
-    <meta name="description" content="Explore our exquisite menu in immersive 3D - Golden Spoons fine dining experience">
+    <title>Golden Spoons - Authentic Indian Cuisine Menu</title>
+    <meta name="description" content="Explore our authentic Indian cuisine in immersive 3D - Golden Spoons fine dining experience with traditional flavors">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
@@ -295,8 +295,8 @@
 
     <!-- Header -->
     <div class="menu-header">
-        <h1 class="menu-title">Culinary Journey</h1>
-        <p class="menu-subtitle">Golden Spoons Menu Experience</p>
+        <h1 class="menu-title">Indian Culinary Journey</h1>
+        <p class="menu-subtitle">Authentic Flavors • Traditional Spices • Royal Heritage</p>
     </div>
 
     <!-- Category Navigation -->
@@ -330,81 +330,147 @@
         const menuData = {
             starters: [
                 {
-                    name: "Truffle Arancini",
-                    price: "$18",
-                    description: "Crispy saffron risotto balls with black truffle and aged parmesan, served with wild mushroom foam",
+                    name: "Tandoori Chicken Tikka",
+                    price: "₹450",
+                    description: "Succulent chicken pieces marinated in yogurt and spices, grilled to perfection in our traditional tandoor",
+                    color: 0xff6b35
+                },
+                {
+                    name: "Seekh Kebab",
+                    price: "₹380",
+                    description: "Aromatic minced lamb skewers seasoned with fresh herbs and spices, served with mint chutney",
+                    color: 0x8b4513
+                },
+                {
+                    name: "Paneer Tikka",
+                    price: "₹320",
+                    description: "Cottage cheese cubes marinated in spiced yogurt and grilled with bell peppers and onions",
+                    color: 0xfff8dc
+                },
+                {
+                    name: "Samosas",
+                    price: "₹180",
+                    description: "Crispy golden pastries filled with spiced potatoes, peas, and fresh coriander",
                     color: 0xdaa520
                 },
                 {
-                    name: "Seared Scallops",
-                    price: "$24",
-                    description: "Pan-seared diver scallops with cauliflower purée, crispy pancetta, and micro herbs",
-                    color: 0xf4e4bc
+                    name: "Aloo Tikki Chaat",
+                    price: "₹220",
+                    description: "Pan-fried potato patties topped with yogurt, chutneys, and pomegranate seeds",
+                    color: 0xcd853f
                 },
                 {
-                    name: "Wagyu Carpaccio",
-                    price: "$32",
-                    description: "Thinly sliced A5 wagyu with rocket, aged balsamic, and shaved truffle",
-                    color: 0x8b0000
+                    name: "Fish Amritsari",
+                    price: "₹520",
+                    description: "Fresh fish fillets in spiced gram flour batter, deep-fried to golden perfection",
+                    color: 0xffa500
                 }
             ],
             mains: [
                 {
-                    name: "Duck Breast Confit",
-                    price: "$45",
-                    description: "Slow-cooked duck breast with cherry gastrique, fondant potato, and seasonal vegetables",
+                    name: "Butter Chicken",
+                    price: "₹680",
+                    description: "Tender chicken in rich tomato-based gravy with cream, butter, and aromatic spices",
+                    color: 0xff4500
+                },
+                {
+                    name: "Dal Makhani",
+                    price: "₹420",
+                    description: "Creamy black lentils slow-cooked overnight with butter, cream, and traditional spices",
                     color: 0x654321
                 },
                 {
-                    name: "Lobster Thermidor",
-                    price: "$58",
-                    description: "Fresh lobster tail with cognac cream sauce, gruyère cheese, and herb butter",
-                    color: 0xff6b35
+                    name: "Biryani (Chicken)",
+                    price: "₹580",
+                    description: "Fragrant basmati rice layered with spiced chicken, saffron, and caramelized onions",
+                    color: 0xffd700
                 },
                 {
-                    name: "Beef Wellington",
-                    price: "$65",
-                    description: "Prime beef tenderloin wrapped in puff pastry with duxelles and foie gras",
-                    color: 0x8b4513
+                    name: "Palak Paneer",
+                    price: "₹480",
+                    description: "Fresh cottage cheese cubes in creamy spinach gravy with garlic and ginger",
+                    color: 0x228b22
+                },
+                {
+                    name: "Rogan Josh",
+                    price: "₹750",
+                    description: "Tender lamb curry in aromatic gravy with Kashmiri spices and yogurt",
+                    color: 0x8b0000
+                },
+                {
+                    name: "Chole Bhature",
+                    price: "₹350",
+                    description: "Spicy chickpea curry served with fluffy deep-fried bread and pickled onions",
+                    color: 0xf4a460
+                },
+                {
+                    name: "Malai Kofta",
+                    price: "₹520",
+                    description: "Cottage cheese and potato dumplings in rich cashew and tomato gravy",
+                    color: 0xffe4e1
                 }
             ],
             desserts: [
                 {
-                    name: "Chocolate Soufflé",
-                    price: "$16",
-                    description: "Warm dark chocolate soufflé with vanilla bean ice cream and gold leaf",
-                    color: 0x3c1810
+                    name: "Gulab Jamun",
+                    price: "₹240",
+                    description: "Soft milk dumplings soaked in cardamom-flavored sugar syrup, served warm",
+                    color: 0x8b4513
                 },
                 {
-                    name: "Crème Brûlée",
-                    price: "$14",
-                    description: "Classic vanilla custard with caramelized sugar and fresh berries",
+                    name: "Ras Malai",
+                    price: "₹280",
+                    description: "Delicate cottage cheese patties in sweetened, thickened milk with pistachios",
+                    color: 0xfffaf0
+                },
+                {
+                    name: "Kulfi Falooda",
+                    price: "₹320",
+                    description: "Traditional ice cream with vermicelli, rose syrup, and chopped nuts",
+                    color: 0xffb6c1
+                },
+                {
+                    name: "Gajar Ka Halwa",
+                    price: "₹260",
+                    description: "Rich carrot pudding with milk, ghee, and cardamom, garnished with almonds",
+                    color: 0xff8c00
+                },
+                {
+                    name: "Jalebi with Rabri",
+                    price: "₹300",
+                    description: "Crispy golden spirals in sugar syrup served with thick sweetened milk",
                     color: 0xffd700
-                },
-                {
-                    name: "Tiramisu",
-                    price: "$15",
-                    description: "Traditional Italian dessert with espresso-soaked ladyfingers and mascarpone",
-                    color: 0xdeb887
                 }
             ],
             beverages: [
                 {
-                    name: "Dom Pérignon 2012",
-                    price: "$45",
-                    description: "Prestigious champagne with notes of white fruit, citrus, and toasted brioche",
-                    color: 0xffffff
+                    name: "Masala Chai",
+                    price: "₹120",
+                    description: "Traditional spiced tea with cardamom, ginger, cinnamon, and fresh milk",
+                    color: 0x8b4513
                 },
                 {
-                    name: "Aged Single Malt",
-                    price: "$28",
-                    description: "25-year-old Scotch whisky with hints of honey, vanilla, and oak",
-                    color: 0xb8860b
+                    name: "Fresh Lime Water",
+                    price: "₹80",
+                    description: "Refreshing lime juice with mint, black salt, and a touch of sugar",
+                    color: 0x90ee90
                 },
                 {
-                    name: "House Blend Coffee",
-                    price: "$8",
-                    description: "Artisanal coffee blend with notes of dark chocolate and caramel",
+                    name: "Mango Lassi",
+                    price: "₹180",
+                    description: "Thick yogurt drink blended with fresh mango pulp and a hint of cardamom",
+                    color: 0xffa500
+                },
+                {
+                    name: "Badam Milk",
+                    price: "₹200",
+                    description: "Rich almond milk with saffron, cardamom, and crushed pistachios",
+                    color: 0xf5deb3
+                },
+                {
+                    name: "Filter Coffee",
+                    price: "₹140",
+                    description: "South Indian filter coffee with chicory, served with hot milk and sugar",
                     color: 0x3c1810
                 }
             ]
