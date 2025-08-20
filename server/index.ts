@@ -40,14 +40,37 @@ async function startServer() {
   try {
     console.log(`📦 Environment: ${process.env.NODE_ENV}`);
     
-    // Serve static files temporarily (bypass Vite for now)
-    console.log("📁 Serving static files from client directory");
-    app.use(express.static(path.resolve(import.meta.dirname, "..", "client")));
+    // Temporarily force production mode to serve built files
+    console.log("🏭 Serving static build files");
     
-    // SPA fallback
+    // Serve static files from dist/public if available, otherwise from client
+    const distPath = path.resolve(import.meta.dirname, "..", "dist", "public");
+    const clientPath = path.resolve(import.meta.dirname, "..", "client");
+    
+    try {
+      if (require('fs').existsSync(distPath)) {
+        console.log("📦 Serving from dist/public");
+        app.use(express.static(distPath));
+      } else {
+        console.log("📁 Serving from client directory");
+        app.use(express.static(clientPath));
+      }
+    } catch (err) {
+      console.log("📁 Fallback to client directory");
+      app.use(express.static(clientPath));
+    }
+    
+    // SPA fallback - serve index.html for all non-API routes
     app.get('*', (req, res) => {
       if (!req.originalUrl.startsWith('/api')) {
-        res.sendFile(path.resolve(import.meta.dirname, "..", "client", "index.html"));
+        try {
+          const indexPath = require('fs').existsSync(distPath) 
+            ? path.join(distPath, 'index.html')
+            : path.join(clientPath, 'index.html');
+          res.sendFile(indexPath);
+        } catch (err) {
+          res.status(500).json({ error: 'Unable to serve application' });
+        }
       }
     });
 
