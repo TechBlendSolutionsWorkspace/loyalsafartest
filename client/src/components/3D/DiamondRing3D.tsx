@@ -27,7 +27,7 @@ export const DiamondRing3D: React.FC<DiamondRing3DProps> = ({
   } | null>(null);
 
   const createDiamondGeometry = useCallback(() => {
-    const geometry = new THREE.ConeGeometry(0.3, 0.8, 8);
+    const geometry = new THREE.ConeGeometry(0.3, 0.8, 6); // Changed from 8 to 6 for hexagonal shape
     const material = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       metalness: 0,

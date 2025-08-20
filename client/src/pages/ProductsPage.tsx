@@ -8,43 +8,43 @@ import { ShimmerBackground } from '../components/3D/ShimmerBackground';
 const SAMPLE_PRODUCTS = [
   {
     id: '1',
-    name: 'Eternal Diamond Ring',
-    price: '$5,299',
+    name: 'Rajkumari Diamond Ring',
+    price: '₹4,77,000',
     image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
     category: 'ring'
   },
   {
     id: '2',
-    name: 'Celestial Necklace',
-    price: '$3,899',
+    name: 'Devika Celestial Necklace',
+    price: '₹3,51,000',
     image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
     category: 'necklace'
   },
   {
     id: '3',
-    name: 'Platinum Tennis Bracelet',
-    price: '$2,799',
+    name: 'Ananya Platinum Bracelet',
+    price: '₹2,52,000',
     image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=400&fit=crop',
     category: 'bracelet'
   },
   {
     id: '4',
-    name: 'Royal Crown Ring',
-    price: '$4,599',
+    name: 'Priyanka Royal Ring',
+    price: '₹4,14,000',
     image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
     category: 'ring'
   },
   {
     id: '5',
-    name: 'Aurora Diamond Necklace',
-    price: '$6,299',
+    name: 'Shreya Aurora Necklace',
+    price: '₹5,67,000',
     image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
     category: 'necklace'
   },
   {
     id: '6',
-    name: 'Imperial Gold Bracelet',
-    price: '$3,299',
+    name: 'Ishita Gold Bracelet',
+    price: '₹2,97,000',
     image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=400&fit=crop',
     category: 'bracelet'
   },

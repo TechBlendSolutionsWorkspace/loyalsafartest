@@ -15,33 +15,33 @@ export default function HomePage() {
 
   const luxuryCollections = [
     {
-      name: 'Signature Engagement Rings',
+      name: 'Rajwada Engagement Rings',
       description: 'Timeless elegance with masterfully cut diamonds',
-      price: 'From $5,000',
+      price: 'From ₹4,50,000',
       image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=400&fit=crop',
       href: '/products?category=rings&type=engagement',
       icon: Gem
     },
     {
-      name: 'Luxury Diamond Necklaces',
+      name: 'Maharani Diamond Necklaces',
       description: 'Statement pieces crafted with precision',
-      price: 'From $3,500',
+      price: 'From ₹3,15,000',
       image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&h=400&fit=crop',
       href: '/products?category=necklaces&material=diamond',
       icon: Sparkles
     },
     {
-      name: 'Platinum Tennis Bracelets',
+      name: 'Kundan Tennis Bracelets',
       description: 'Sophisticated designs for the modern connoisseur',
-      price: 'From $2,800',
+      price: 'From ₹2,52,000',
       image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&h=400&fit=crop',
       href: '/products?category=bracelets&material=platinum',
       icon: Crown
     },
     {
-      name: 'Bespoke Pearl Earrings',
+      name: 'Meenakari Pearl Earrings',
       description: 'Custom-designed luxury for discerning tastes',
-      price: 'From $1,200',
+      price: 'From ₹1,08,000',
       image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&h=400&fit=crop',
       href: '/products?category=earrings&material=pearl',
       icon: Star
@@ -77,19 +77,19 @@ export default function HomePage() {
 
   const testimonials = [
     {
-      name: 'Sarah Johnson',
+      name: 'Priya Sharma',
       text: 'The most beautiful engagement ring! The craftsmanship is exceptional and the service was outstanding.',
       rating: 5,
       image: 'https://images.unsplash.com/photo-1494790108755-2616b612b372?w=100&h=100&fit=crop&crop=face'
     },
     {
-      name: 'Michael Chen',
+      name: 'Arjun Patel',
       text: 'Perfect anniversary gift. The custom necklace exceeded all expectations. Highly recommend!',
       rating: 5,
       image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'
     },
     {
-      name: 'Emily Rodriguez',
+      name: 'Kavya Reddy',
       text: 'Luxurious quality and stunning designs. The team helped me find the perfect wedding set.',
       rating: 5,
       image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face'
@@ -296,7 +296,7 @@ export default function HomePage() {
               className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-black font-semibold px-12 py-4 text-xl shadow-2xl transform hover:scale-105 transition-all"
               data-testid="button-join-vip"
             >
-              Join VIP Gold Club
+              Join VIP Gold Club - ₹50,000/year
             </Button>
           </div>
         </div>
