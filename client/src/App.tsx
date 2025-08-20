@@ -3,7 +3,7 @@ import { Router, Route, Switch } from 'wouter';
 import { Toaster } from './components/ui/toaster';
 
 // Pages
-import SimpleHomePage from './pages/SimpleHomePage';
+import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 
 // Components
@@ -26,7 +26,7 @@ function App() {
           <Header />
           <main className="flex-1">
             <Switch>
-              <Route path="/" component={SimpleHomePage} />
+              <Route path="/" component={HomePage} />
               <Route path="/products" component={ProductsPage} />
               <Route>
                 <div className="container mx-auto px-4 py-16 text-center">
