@@ -1,0 +1,38 @@
+⚠️ REWRITE INSTRUCTION ⚠️
+
+Completely wipe out all irrelevant and exhausting code and design from the current repository. 
+This project is no longer for its old purpose. Redesign and restructure the entire website to function as a **modern, high-end jewellery e-commerce platform**. 
+
+🔹 FRONTEND:
+- Elegant, luxury-styled UI with gold/black/white color palette.
+- Product catalog with categories like Rings, Necklaces, Bracelets, Earrings, Bridal, Custom.
+- Dynamic product detail pages with HD image zoom, price, add-to-cart, wishlist.
+- Advanced search + filtering by material (gold, silver, platinum, diamond), price range, and type.
+- Mobile-first responsive layout with smooth animations.
+- Include a luxury-brand styled landing page with hero banner, featured products, testimonials, and trust badges.
+
+🔹 BACKEND & LOGIC:
+- Rebuild backend functions and logic from scratch for jewellery e-commerce.
+- Implement secure authentication (JWT).
+- Shopping cart, wishlist, and checkout APIs.
+- Order management with statuses (pending, shipped, delivered, cancelled).
+- Payment gateway integration logic (Razorpay/Stripe placeholder).
+- Inventory management system with stock tracking.
+- User profile with order history and address book.
+- Admin dashboard logic for managing products, orders, and users.
+
+🔹 DATABASE:
+- Products: id, name, description, category, price, stock, material, images.
+- Users: id, name, email, password (hashed), role, addresses.
+- Orders: id, userId, products[], total, status, paymentStatus, createdAt.
+- Wishlist: userId, productId.
+- Cart: userId, productId, quantity.
+
+🔹 FUNCTIONAL REQUIREMENTS:
+- All old logic should be scrapped and replaced with this new jewellery e-commerce system.
+- Optimize for scalability, performance, and clean architecture.
+- Keep code modular, readable, and easy to extend.
+- No leftover clutter or unrelated code from the previous project.
+
+🔥 FINAL GOAL:
+A fresh, sleek, fully functional **Jewellery E-Commerce website** with updated design, new functions, and restructured backend logic—ready for production and future scaling.

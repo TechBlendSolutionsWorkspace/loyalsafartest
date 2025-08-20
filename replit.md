@@ -1,8 +1,8 @@
-# Famous Indian Restaurant Website - Replit Configuration
+# Luxury Jewellery E-Commerce Platform - Replit Configuration
 
 ## Overview
 
-This is a completely fresh, clean full-stack web application built with React, TypeScript, and PostgreSQL specifically for a famous Indian restaurant website. All previous e-commerce functionality, digital services integrations, and complex backend systems have been completely removed. The database is clean and the app structure is minimal, ready for restaurant-specific features.
+This is a modern, high-end jewellery e-commerce platform built with React, TypeScript, and PostgreSQL. The platform features a luxury gold/black/white design aesthetic, comprehensive product catalog, secure authentication, shopping cart functionality, and admin management system. The entire codebase has been restructured from scratch to serve as a premium jewellery shopping experience.
 
 ## User Preferences
 
@@ -57,13 +57,13 @@ The database schema includes ready-to-use tables for:
 All tables are currently empty and ready for your new application data.
 
 ### Recent Changes (August 16, 2025)
-- ✅ **LUXURY 3D HOMEPAGE** - Complete cinematic Indian fine-dining homepage with Three.js featuring golden spoon hovering over biryani dish, steam particle effects, orbiting spices (saffron, cardamom, chili, mint), and royal golden text animations
-- ✅ **CINEMATIC ENTRY EXPERIENCE** - Camera zoom-in animation, progressive text fade-ins, shimming golden title "Golden Spoons" with tagline "Where Flavors Meet Royalty", and immersive 3D environment
-- ✅ **INTERACTIVE ELEMENTS** - 3D golden "View Menu" button with pulse glow, spice hover scatter effects, floating reservation button, and mouse parallax camera movement
-- ✅ **PROFESSIONAL TOUCHES** - Award badges strip, steam rising from hot dish, background golden spark particles, molten-gold gradient background (black to maroon), and premium typography
-- ✅ **3D CATEGORIZED MENU PAGE** - Enhanced cylindrical menu with 32 authentic Indian dishes across 4 categories (Starters, Main Course, Desserts, Beverages) with smooth category transitions
-- ✅ **OPTIMIZED PERFORMANCE** - Memory management for category switching, resource cleanup, fade effects, and responsive design across desktop and mobile
-- ✅ **SEAMLESS NAVIGATION** - Direct link from homepage "View Menu" button to categorized 3D cylindrical menu experience
+- ✅ **COMPLETE PROJECT RESTRUCTURE** - Completely rebuilt from scratch as luxury jewellery e-commerce platform, removing all restaurant-related code and design
+- ✅ **NEW DATABASE SCHEMA** - Designed fresh schema for products, users, orders, cart, wishlist, and inventory management with proper relationships
+- ✅ **LUXURY UI DESIGN** - Implemented elegant gold/black/white color palette with premium typography and smooth animations
+- ✅ **PRODUCT CATALOG SYSTEM** - Built comprehensive catalog with categories (Rings, Necklaces, Bracelets, Earrings, Bridal, Custom) and advanced filtering
+- ✅ **AUTHENTICATION & SECURITY** - Implemented JWT-based secure authentication with user roles and session management
+- ✅ **E-COMMERCE FUNCTIONALITY** - Added shopping cart, wishlist, checkout flow, and order management system
+- ✅ **ADMIN DASHBOARD** - Created admin panel for product, order, and user management with role-based access control
 
 ### Recent Changes (August 6, 2025) 
 - ✅ **PRODUCTION MODE ONLY DEPLOYMENT** - Application now runs exclusively in production mode (NODE_ENV=production) with optimized performance and minified assets
