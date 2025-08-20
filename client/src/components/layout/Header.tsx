@@ -34,18 +34,31 @@ export const Header: React.FC = () => {
           : 'bg-transparent'
       }`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-amber-500/10 border border-amber-500/30 backdrop-blur-sm"
+            data-testid="button-mobile-menu"
+          >
+            {isMenuOpen ? (
+              <X className="h-5 w-5 text-amber-400" />
+            ) : (
+              <Menu className="h-5 w-5 text-amber-400" />
+            )}
+          </button>
+
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-              <Diamond className="h-5 w-5 text-black" />
+          <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+              <Diamond className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
+            <div className="hidden sm:block">
+              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
                 LuxeJewels
               </h1>
-              <p className="text-xs text-gray-400 -mt-1">Where Elegance Meets Innovation</p>
+              <p className="text-xs text-gray-400 -mt-1 hidden md:block">Where Elegance Meets Innovation</p>
             </div>
           </Link>
 
@@ -64,6 +77,27 @@ export const Header: React.FC = () => {
               </Link>
             ))}
           </nav>
+
+          {/* Mobile Actions */}
+          <div className="flex lg:hidden items-center space-x-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-10 h-10 p-0 text-white hover:text-amber-400 hover:bg-amber-500/10"
+              data-testid="button-search-mobile"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-10 h-10 p-0 text-white hover:text-amber-400 hover:bg-amber-500/10 relative"
+              data-testid="button-cart-mobile"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              <span className="absolute -top-1 -right-1 bg-amber-500 text-black text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">2</span>
+            </Button>
+          </div>
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-4">

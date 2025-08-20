@@ -52,6 +52,7 @@ const SAMPLE_PRODUCTS = [
 
 export default function ProductsPage() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);

@@ -1,0 +1,41 @@
+🎯 OBJECTIVE:
+Optimize the entire jewellery e-commerce website layout for **mobile-first responsiveness** with flawless sizing, padding, spacing, and alignment to ensure it looks premium and perfectly polished on all mobile devices.  
+
+🔹 REQUIREMENTS:
+1. **Responsive Grid & Layouts**
+   - Convert all desktop grids into single-column or dual-column layouts for small screens.  
+   - Ensure consistent spacing between sections (no overlapping or cut-off content).  
+   - Use flexbox/grid with % or rem units instead of fixed px where possible.  
+
+2. **Typography & Readability**
+   - Scale down headings proportionally but keep a luxury, bold look.  
+   - Ensure body text is legible at 14–16px minimum.  
+   - Adjust line-height and letter-spacing for clean readability.  
+
+3. **Images & 3D Models**
+   - Jewellery images and 3D models should auto-scale while maintaining aspect ratio.  
+   - Implement responsive image containers with max-width: 100%.  
+   - Ensure zoom/rotation controls are touch-friendly.  
+
+4. **Padding & Margins**
+   - Apply consistent spacing between sections (16–24px standard).  
+   - Buttons must have minimum 12–16px internal padding for comfortable tap targets.  
+   - No element should touch screen edges—always maintain at least 16px safe margin.  
+
+5. **Navigation & Menus**
+   - Replace desktop navbar with a clean **mobile hamburger menu**.  
+   - Ensure smooth slide-out drawer animation.  
+   - Sticky bottom navigation (Cart, Wishlist, Profile) for easier thumb reach.  
+
+6. **Buttons & CTAs**
+   - All interactive elements must be **thumb-friendly** (min 44px touch area).  
+   - CTA buttons should span 80–90% of screen width with rounded corners.  
+   - High-contrast design for tap visibility.  
+
+7. **Checkout Flow**
+   - Mobile-first, step-by-step vertical checkout layout.  
+   - Input fields full width with generous spacing.  
+   - Easy-to-tap radio buttons & dropdowns.  
+
+🔹 GOAL:
+The website must feel **custom-crafted for mobile users**, with **perfectly balanced sizing, padding, and alignment**, giving a premium, smooth, and elegant jewellery shopping experience on every mobile device.  
