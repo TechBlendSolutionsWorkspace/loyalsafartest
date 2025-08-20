@@ -1,271 +1,226 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Filter, Grid, List, Search } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Filter, Grid, List, Search, SlidersHorizontal } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
 import { Card, CardContent } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import ProductCard from '../components/ProductCard';
+import { Product3DGrid } from '../components/3D/Product3DGrid';
+import { ShimmerBackground } from '../components/3D/ShimmerBackground';
+
+const SAMPLE_PRODUCTS = [
+  {
+    id: '1',
+    name: 'Eternal Diamond Ring',
+    price: '$5,299',
+    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
+    category: 'ring'
+  },
+  {
+    id: '2',
+    name: 'Celestial Necklace',
+    price: '$3,899',
+    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
+    category: 'necklace'
+  },
+  {
+    id: '3',
+    name: 'Platinum Tennis Bracelet',
+    price: '$2,799',
+    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=400&fit=crop',
+    category: 'bracelet'
+  },
+  {
+    id: '4',
+    name: 'Royal Crown Ring',
+    price: '$4,599',
+    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
+    category: 'ring'
+  },
+  {
+    id: '5',
+    name: 'Aurora Diamond Necklace',
+    price: '$6,299',
+    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
+    category: 'necklace'
+  },
+  {
+    id: '6',
+    name: 'Imperial Gold Bracelet',
+    price: '$3,299',
+    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=400&fit=crop',
+    category: 'bracelet'
+  },
+];
 
 export default function ProductsPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedMaterial, setSelectedMaterial] = useState('');
-  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-  const [sortBy, setSortBy] = useState('featured');
+  const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [showFilters, setShowFilters] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [sortBy, setSortBy] = useState<string>('featured');
 
-  // Fetch products
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ['products', { 
-      search: searchTerm, 
-      category: selectedCategory,
-      material: selectedMaterial,
-      minPrice: priceRange.min,
-      maxPrice: priceRange.max,
-      sort: sortBy
-    }],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (searchTerm) params.append('search', searchTerm);
-      if (selectedCategory) params.append('category', selectedCategory);
-      if (selectedMaterial) params.append('material', selectedMaterial);
-      if (priceRange.min) params.append('minPrice', priceRange.min);
-      if (priceRange.max) params.append('maxPrice', priceRange.max);
-      if (sortBy === 'featured') params.append('featured', 'true');
-      
-      const response = await fetch(`/api/products?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch products');
-      return response.json();
-    },
-  });
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
-  // Fetch categories
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      const response = await fetch('/api/categories');
-      if (!response.ok) throw new Error('Failed to fetch categories');
-      return response.json();
-    },
-  });
-
-  const materials = ['gold', 'silver', 'platinum', 'diamond', 'gemstone', 'pearl'];
-  const sortOptions = [
-    { value: 'featured', label: 'Featured' },
-    { value: 'price-low', label: 'Price: Low to High' },
-    { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'newest', label: 'Newest' },
-    { value: 'popular', label: 'Most Popular' },
+  const categories = [
+    { id: 'all', name: 'All Categories' },
+    { id: 'ring', name: 'Rings' },
+    { id: 'necklace', name: 'Necklaces' },
+    { id: 'bracelet', name: 'Bracelets' },
+    { id: 'earring', name: 'Earrings' },
   ];
 
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('');
-    setSelectedMaterial('');
-    setPriceRange({ min: '', max: '' });
-    setSortBy('featured');
-  };
+  const sortOptions = [
+    { id: 'featured', name: 'Featured' },
+    { id: 'price-low', name: 'Price: Low to High' },
+    { id: 'price-high', name: 'Price: High to Low' },
+    { id: 'newest', name: 'Newest Arrivals' },
+    { id: 'popular', name: 'Most Popular' },
+  ];
 
-  const activeFiltersCount = [
-    searchTerm,
-    selectedCategory,
-    selectedMaterial,
-    priceRange.min,
-    priceRange.max
-  ].filter(Boolean).length;
+  const filteredProducts = SAMPLE_PRODUCTS.filter(product => 
+    selectedCategory === 'all' || product.category === selectedCategory
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container-luxury py-8">
+    <div className="relative min-h-screen bg-black text-white">
+      {/* Background */}
+      <ShimmerBackground />
+      
+      <div className="relative z-10 pt-24">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">
-            Luxury <span className="text-gold-gradient">Jewelry Collection</span>
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Discover our exquisite collection of handcrafted jewelry pieces.
-          </p>
-        </div>
-
-        {/* Search and View Toggle */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search jewelry..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden"
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-              {activeFiltersCount > 0 && (
-                <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                  {activeFiltersCount}
-                </Badge>
-              )}
-            </Button>
-            
-            <div className="flex border rounded-lg">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="rounded-r-none"
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-l-none"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
+        <div className="container mx-auto px-4 mb-12">
+          <div className={`text-center space-y-4 transform transition-all duration-1000 ${
+            isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+          }`}>
+            <h1 className="text-6xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
+              Luxury Collections
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Discover our complete range of exquisite jewelry pieces, each crafted with uncompromising attention to detail and premium materials.
+            </p>
           </div>
         </div>
 
-        <div className="flex gap-8">
-          {/* Filters Sidebar */}
-          <div className={`w-64 space-y-6 ${showFilters ? 'block' : 'hidden'} lg:block`}>
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Filters</h3>
-                {activeFiltersCount > 0 && (
-                  <Button variant="ghost" size="sm" onClick={clearFilters}>
-                    Clear all
+        {/* Filters and Controls */}
+        <div className="container mx-auto px-4 mb-8">
+          <div className="bg-gradient-to-r from-gray-900/80 to-black/80 backdrop-blur-xl rounded-2xl p-6 border border-amber-500/20">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              {/* Category Filters */}
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={selectedCategory === category.id 
+                      ? 'bg-gradient-to-r from-amber-500 to-yellow-600 text-black font-semibold' 
+                      : 'border-amber-500/30 text-amber-400 hover:bg-amber-500/10'
+                    }
+                    data-testid={`filter-${category.id}`}
+                  >
+                    {category.name}
                   </Button>
-                )}
-              </div>
-
-              {/* Categories */}
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">Category</h4>
-                <div className="space-y-2">
-                  {categories.map((category: any) => (
-                    <label key={category.id} className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        name="category"
-                        value={category.slug}
-                        checked={selectedCategory === category.slug}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="w-4 h-4 text-yellow-500"
-                      />
-                      <span className="text-sm">{category.name}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Materials */}
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">Material</h4>
-                <div className="space-y-2">
-                  {materials.map((material) => (
-                    <label key={material} className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        name="material"
-                        value={material}
-                        checked={selectedMaterial === material}
-                        onChange={(e) => setSelectedMaterial(e.target.value)}
-                        className="w-4 h-4 text-yellow-500"
-                      />
-                      <span className="text-sm capitalize">{material}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Range */}
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">Price Range</h4>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Min"
-                    type="number"
-                    value={priceRange.min}
-                    onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                    className="text-sm"
-                  />
-                  <Input
-                    placeholder="Max"
-                    type="number"
-                    value={priceRange.max}
-                    onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                    className="text-sm"
-                  />
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Products Grid */}
-          <div className="flex-1">
-            {/* Sort and Results Count */}
-            <div className="flex justify-between items-center mb-6">
-              <p className="text-gray-600 dark:text-gray-400">
-                {products.length} products found
-              </p>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
                 ))}
-              </select>
-            </div>
+              </div>
 
-            {/* Products */}
-            {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <Card key={i} className="animate-pulse">
-                    <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-t-lg"></div>
-                    <CardContent className="p-4 space-y-2">
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+              {/* Controls */}
+              <div className="flex items-center gap-4">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search jewelry..."
+                    className="pl-10 pr-4 py-2 bg-black/50 border border-amber-500/30 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:outline-none"
+                    data-testid="input-search"
+                  />
+                </div>
+
+                {/* Sort */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-4 py-2 bg-black/50 border border-amber-500/30 rounded-lg text-white focus:border-amber-500 focus:outline-none"
+                  data-testid="select-sort"
+                >
+                  {sortOptions.map((option) => (
+                    <option key={option.id} value={option.id} className="bg-black">
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* View Mode */}
+                <div className="flex border border-amber-500/30 rounded-lg overflow-hidden">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                    className={viewMode === 'grid' ? 'bg-amber-500 text-black' : 'text-amber-400'}
+                    data-testid="button-grid-view"
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                    className={viewMode === 'list' ? 'bg-amber-500 text-black' : 'text-amber-400'}
+                    data-testid="button-list-view"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                  data-testid="button-filters"
+                >
+                  <SlidersHorizontal className="h-4 w-4 mr-2" />
+                  Filters
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Products Grid */}
+        <div className="container mx-auto px-4 pb-20">
+          <div className={`transform transition-all duration-1000 delay-300 ${
+            isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+          }`}>
+            {viewMode === 'grid' ? (
+              <Product3DGrid products={filteredProducts} />
+            ) : (
+              <div className="space-y-6">
+                {filteredProducts.map((product) => (
+                  <Card key={product.id} className="bg-gradient-to-r from-gray-900/80 to-black/80 backdrop-blur-xl border-amber-500/20 hover:border-amber-400/60 transition-all duration-500">
+                    <CardContent className="p-6">
+                      <div className="flex items-center space-x-6">
+                        <div className="w-32 h-32 bg-gradient-to-br from-amber-500/20 to-yellow-600/20 rounded-lg flex items-center justify-center">
+                          <img src={product.image} alt={product.name} className="w-24 h-24 object-cover rounded-lg" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-2xl font-bold text-white hover:text-amber-400 transition-colors">
+                            {product.name}
+                          </h3>
+                          <p className="text-amber-400 font-semibold text-xl mt-2">{product.price}</p>
+                          <p className="text-gray-300 mt-2">Handcrafted with premium materials and exceptional attention to detail.</p>
+                        </div>
+                        <div className="flex flex-col space-y-3">
+                          <Button className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-black font-semibold px-8">
+                            View Details
+                          </Button>
+                          <Button variant="outline" className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 px-8">
+                            Add to Cart
+                          </Button>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            ) : products.length === 0 ? (
-              <div className="text-center py-16">
-                <h3 className="text-xl font-semibold mb-2">No products found</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Try adjusting your filters or search terms.
-                </p>
-                <Button onClick={clearFilters}>Clear all filters</Button>
-              </div>
-            ) : (
-              <div className={viewMode === 'grid' 
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-                : 'space-y-4'
-              }>
-                {products.map((product: any) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    viewMode={viewMode}
-                  />
                 ))}
               </div>
             )}

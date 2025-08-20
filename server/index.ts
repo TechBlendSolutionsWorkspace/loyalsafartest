@@ -19,6 +19,12 @@ console.log("💎 Starting Luxury Jewellery E-Commerce Server");
 // API routes
 app.use('/api', apiRoutes);
 
+// Temporary test route
+app.get("/test", (req, res) => {
+  console.log("🧪 Test route accessed");
+  res.sendFile(path.resolve(import.meta.dirname, "..", "test.html"));
+});
+
 // API health check
 app.get("/api/health", (req, res) => {
   console.log("✅ Health check requested");
@@ -29,14 +35,33 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Setup Vite dev server for proper TypeScript/React compilation
-if (process.env.NODE_ENV === "production") {
-  serveStatic(app);
-} else {
-  await setupVite(app, server);
+// Setup and start server
+async function startServer() {
+  try {
+    console.log(`📦 Environment: ${process.env.NODE_ENV}`);
+    
+    // Serve static files temporarily (bypass Vite for now)
+    console.log("📁 Serving static files from client directory");
+    app.use(express.static(path.resolve(import.meta.dirname, "..", "client")));
+    
+    // SPA fallback
+    app.get('*', (req, res) => {
+      if (!req.originalUrl.startsWith('/api')) {
+        res.sendFile(path.resolve(import.meta.dirname, "..", "client", "index.html"));
+      }
+    });
+
+    server.listen(port, "0.0.0.0", () => {
+      console.log(`🚀 Luxury Jewellery E-Commerce Server running on port ${port}`);
+      console.log(`🌐 Visit: http://localhost:${port}`);
+    }).on('error', (err) => {
+      console.error(`❌ Server failed to start:`, err);
+      process.exit(1);
+    });
+  } catch (error) {
+    console.error("❌ Error starting server:", error);
+    process.exit(1);
+  }
 }
 
-server.listen(port, "0.0.0.0", () => {
-  console.log(`🚀 Luxury Jewellery E-Commerce Server running on port ${port}`);
-  console.log(`🌐 Visit: http://localhost:${port}`);
-});
+startServer().catch(console.error);
