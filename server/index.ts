@@ -1,10 +1,13 @@
 import express from "express";
+import { createServer } from "http";
 import path from "path";
 import cors from "cors";
 import apiRoutes from "./routes";
+import { setupVite, serveStatic } from "./vite";
 
 const app = express();
 const port = parseInt(process.env.PORT || "5000", 10);
+const server = createServer(app);
 
 // Middleware
 app.use(cors());
@@ -26,16 +29,14 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Serve static files
-app.use(express.static('client'));
+// Setup Vite dev server for proper TypeScript/React compilation
+if (process.env.NODE_ENV === "production") {
+  serveStatic(app);
+} else {
+  await setupVite(app, server);
+}
 
-// SPA fallback - serve React app for all non-API routes
-app.get("*", (req, res) => {
-  console.log(`📄 Serving page for: ${req.path}`);
-  res.sendFile(path.join(process.cwd(), 'client', 'index.html'));
-});
-
-app.listen(port, "0.0.0.0", () => {
+server.listen(port, "0.0.0.0", () => {
   console.log(`🚀 Luxury Jewellery E-Commerce Server running on port ${port}`);
   console.log(`🌐 Visit: http://localhost:${port}`);
 });

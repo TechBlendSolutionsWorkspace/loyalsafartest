@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from './AuthContext';
-import { useToast } from '@/hooks/use-toast';
+// import { useToast } from '@/hooks/use-toast';
 
 interface CartItem {
   id: string;
@@ -43,7 +43,7 @@ interface CartProviderProps {
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const { user, token } = useAuth();
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Fetch cart items
@@ -97,17 +97,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast({
-        title: 'Added to cart',
-        description: 'Item has been added to your cart successfully.',
-      });
+      console.log('Added to cart successfully');
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      console.error('Error adding to cart:', error.message);
     },
   });
 
@@ -137,11 +130,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      console.error('Error updating cart:', error.message);
     },
   });
 
@@ -168,17 +157,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast({
-        title: 'Removed from cart',
-        description: 'Item has been removed from your cart.',
-      });
+      console.log('Removed from cart successfully');
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      console.error('Error removing from cart:', error.message);
     },
   });
 
