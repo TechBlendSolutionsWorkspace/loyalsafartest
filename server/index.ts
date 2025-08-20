@@ -2,11 +2,12 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import cors from "cors";
+import fs from "fs";
 import apiRoutes from "./routes";
 import { setupVite, serveStatic } from "./vite";
 
 const app = express();
-const port = parseInt(process.env.PORT || "5000", 10);
+const port = parseInt(process.env.PORT || "5001", 10);
 const server = createServer(app);
 
 // Middleware
@@ -47,16 +48,22 @@ async function startServer() {
     const distPath = path.resolve(import.meta.dirname, "..", "dist", "public");
     const clientPath = path.resolve(import.meta.dirname, "..", "client");
     
-    try {
-      if (require('fs').existsSync(distPath)) {
-        console.log("📦 Serving from dist/public");
-        app.use(express.static(distPath));
-      } else {
-        console.log("📁 Serving from client directory");
-        app.use(express.static(clientPath));
-      }
-    } catch (err) {
-      console.log("📁 Fallback to client directory");
+    if (fs.existsSync(distPath)) {
+      console.log("📦 Serving from dist/public (production build)");
+      app.use(express.static(distPath, {
+        setHeaders: (res, filePath) => {
+          console.log(`Serving file: ${filePath}`);
+          if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+          } else if (filePath.endsWith('.mjs')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+          } else if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
+          }
+        }
+      }));
+    } else {
+      console.log("📁 Serving from client directory (fallback)");
       app.use(express.static(clientPath));
     }
     
@@ -64,7 +71,7 @@ async function startServer() {
     app.get('*', (req, res) => {
       if (!req.originalUrl.startsWith('/api')) {
         try {
-          const indexPath = require('fs').existsSync(distPath) 
+          const indexPath = fs.existsSync(distPath) 
             ? path.join(distPath, 'index.html')
             : path.join(clientPath, 'index.html');
           res.sendFile(indexPath);
