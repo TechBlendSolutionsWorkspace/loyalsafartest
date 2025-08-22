@@ -1,22 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Driver\DriverController;
-use App\Http\Controllers\Driver\RideController as DriverRideController;
-use App\Http\Controllers\Driver\EarningsController;
-use App\Http\Controllers\Passenger\PassengerController;
-use App\Http\Controllers\Passenger\RideController as PassengerRideController;
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\RideController as AdminRideController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\RiderController;
+use App\Http\Controllers\DriverController;
+use App\Http\Controllers\AdminController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
 
 // Public Routes
 Route::get('/', function () {
@@ -24,82 +13,75 @@ Route::get('/', function () {
 })->name('home');
 
 // Authentication Routes
-require __DIR__.'/auth.php';
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected Routes
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     
-    // Dashboard Route - redirects based on user role
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // General Dashboard Route - redirects based on role
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            case 'driver':
+                return redirect()->route('driver.dashboard');
+            case 'passenger':
+                return redirect()->route('rider.dashboard');
+            default:
+                return redirect('/');
+        }
+    })->name('dashboard');
     
-    // Profile Routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Rider Routes
+    Route::middleware(['role:passenger'])->prefix('rider')->name('rider.')->group(function () {
+        Route::get('/dashboard', [RiderController::class, 'dashboard'])->name('dashboard');
+        Route::get('/book-ride', [RiderController::class, 'bookRide'])->name('book-ride');
+        Route::post('/calculate-fare', [RiderController::class, 'calculateFare'])->name('calculate-fare');
+        Route::post('/store-ride', [RiderController::class, 'storeRide'])->name('store-ride');
+        Route::get('/ride-status/{ride}', [RiderController::class, 'rideStatus'])->name('ride-status');
+        Route::post('/verify-otp/{ride}', [RiderController::class, 'verifyOtp'])->name('verify-otp');
+        Route::get('/track-ride/{ride}', [RiderController::class, 'trackRide'])->name('track-ride');
+        Route::post('/share-ride/{ride}', [RiderController::class, 'shareRide'])->name('share-ride');
+        Route::post('/emergency-alert/{ride}', [RiderController::class, 'emergencyAlert'])->name('emergency-alert');
+    });
     
     // Driver Routes
     Route::middleware(['role:driver'])->prefix('driver')->name('driver.')->group(function () {
         Route::get('/dashboard', [DriverController::class, 'dashboard'])->name('dashboard');
-        Route::get('/profile', [DriverController::class, 'profile'])->name('profile');
-        Route::post('/toggle-status', [DriverController::class, 'toggleStatus'])->name('toggle-status');
-        Route::post('/update-location', [DriverController::class, 'updateLocation'])->name('update-location');
-        
-        // Driver Ride Management
-        Route::get('/rides', [DriverRideController::class, 'index'])->name('rides');
-        Route::get('/rides/{ride}', [DriverRideController::class, 'show'])->name('rides.show');
-        Route::post('/rides/{ride}/accept', [DriverRideController::class, 'accept'])->name('rides.accept');
-        Route::post('/rides/{ride}/decline', [DriverRideController::class, 'decline'])->name('rides.decline');
-        Route::post('/rides/{ride}/start', [DriverRideController::class, 'start'])->name('rides.start');
-        Route::post('/rides/{ride}/complete', [DriverRideController::class, 'complete'])->name('rides.complete');
-        Route::post('/rides/{ride}/cancel', [DriverRideController::class, 'cancel'])->name('rides.cancel');
-        
-        // Driver Earnings
-        Route::get('/earnings', [EarningsController::class, 'index'])->name('earnings');
-        Route::get('/earnings/export', [EarningsController::class, 'export'])->name('earnings.export');
-    });
-    
-    // Passenger Routes
-    Route::middleware(['role:passenger'])->prefix('passenger')->name('passenger.')->group(function () {
-        Route::get('/dashboard', [PassengerController::class, 'dashboard'])->name('dashboard');
-        Route::get('/book-ride', [PassengerController::class, 'bookRide'])->name('book-ride');
-        Route::post('/book-ride', [PassengerController::class, 'storeRide'])->name('store-ride');
-        
-        // Passenger Ride Management
-        Route::get('/rides', [PassengerRideController::class, 'index'])->name('rides');
-        Route::get('/rides/{ride}', [PassengerRideController::class, 'show'])->name('rides.show');
-        Route::post('/rides/{ride}/cancel', [PassengerRideController::class, 'cancel'])->name('rides.cancel');
-        Route::post('/rides/{ride}/rate', [PassengerRideController::class, 'rate'])->name('rides.rate');
+        Route::get('/wallet', [DriverController::class, 'wallet'])->name('wallet');
+        Route::post('/accept-ride/{ride}', [DriverController::class, 'acceptRide'])->name('accept-ride');
+        Route::post('/start-ride/{ride}', [DriverController::class, 'startRide'])->name('start-ride');
+        Route::post('/complete-ride/{ride}', [DriverController::class, 'completeRide'])->name('complete-ride');
+        Route::post('/instant-payout', [DriverController::class, 'instantPayout'])->name('instant-payout');
+        Route::get('/leaderboard', [DriverController::class, 'leaderboard'])->name('leaderboard');
     });
     
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        
-        // User Management
-        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-        Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
-        Route::post('/users/{user}/verify', [AdminUserController::class, 'verify'])->name('users.verify');
-        Route::post('/users/{user}/block', [AdminUserController::class, 'block'])->name('users.block');
-        
-        // Driver Management
-        Route::get('/drivers', [AdminController::class, 'drivers'])->name('drivers');
-        Route::post('/drivers/{driver}/approve', [AdminController::class, 'approveDriver'])->name('drivers.approve');
-        Route::post('/drivers/{driver}/reject', [AdminController::class, 'rejectDriver'])->name('drivers.reject');
-        
-        // Ride Management
-        Route::get('/rides', [AdminRideController::class, 'index'])->name('rides.index');
-        Route::get('/rides/{ride}', [AdminRideController::class, 'show'])->name('rides.show');
-        
-        // Reports
+        Route::get('/areas', [AdminController::class, 'areas'])->name('areas');
+        Route::get('/commission-slabs', [AdminController::class, 'commissionSlabs'])->name('commission-slabs');
+        Route::post('/commission-slabs', [AdminController::class, 'createCommissionSlab'])->name('commission-slabs.store');
+        Route::put('/commission-slabs/{slab}', [AdminController::class, 'updateCommissionSlab'])->name('commission-slabs.update');
+        Route::get('/coupons', [AdminController::class, 'coupons'])->name('coupons');
         Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
-        Route::get('/reports/earnings', [AdminController::class, 'earningsReport'])->name('reports.earnings');
-        Route::get('/reports/rides', [AdminController::class, 'ridesReport'])->name('reports.rides');
+        Route::get('/reports/driver-wallet', [AdminController::class, 'driverWalletReport'])->name('reports.driver-wallet');
+        Route::get('/reports/company-wallet', [AdminController::class, 'companyWalletReport'])->name('reports.company-wallet');
+        Route::get('/reports/coupon-usage', [AdminController::class, 'couponUsageReport'])->name('reports.coupon-usage');
+        Route::get('/reports/ride-shares', [AdminController::class, 'rideSharesReport'])->name('reports.ride-shares');
+        Route::get('/drivers', [AdminController::class, 'drivers'])->name('drivers');
+        Route::post('/verify-driver/{driver}', [AdminController::class, 'verifyDriver'])->name('verify-driver');
+        Route::post('/block-driver/{driver}', [AdminController::class, 'blockDriver'])->name('block-driver');
     });
 });
 
-// API Routes for real-time updates
-Route::middleware(['auth:sanctum'])->prefix('api')->group(function () {
-    Route::get('/driver/nearby-rides', [DriverController::class, 'getNearbyRides'])->name('api.driver.nearby-rides');
-    Route::get('/ride/{ride}/status', [DriverRideController::class, 'getStatus'])->name('api.ride.status');
-    Route::post('/ride/{ride}/update-location', [DriverRideController::class, 'updateRideLocation'])->name('api.ride.update-location');
-});
+// Public ride tracking (no auth required)
+Route::get('/track/{token}', function ($token) {
+    $ride = \App\Models\Ride::where('share_token', $token)->firstOrFail();
+    return view('public.track-ride', compact('ride'));
+})->name('public.track-ride');

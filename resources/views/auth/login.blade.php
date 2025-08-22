@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Login - RideBook')
+@section('title', 'Login - Loyal Safar')
 
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-lg border-0 mt-5">
-                <div class="card-header bg-primary text-white text-center">
+                <div class="card-header text-center" style="background: var(--indrive-green); color: var(--indrive-white);">
                     <h4 class="mb-0">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Login to RideBook
+                        <i class="fas fa-car mr-2"></i>Login to Loyal Safar
                     </h4>
                 </div>
                 <div class="card-body p-5">
@@ -72,7 +72,7 @@
                         </div>
                         
                         <div class="form-group mb-0">
-                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                            <button type="submit" class="btn btn-ride btn-lg btn-block">
                                 <i class="fas fa-sign-in-alt mr-2"></i>Login
                             </button>
                         </div>

@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Welcome to RideBook - Professional Ride Booking Platform')
+@section('title', 'Welcome to Loyal Safar - Your Trusted Ride Partner')
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section bg-primary text-white py-5">
+<section class="hero-section text-white py-5" style="background: var(--indrive-gradient)">
     <div class="container">
         <div class="row align-items-center min-vh-50">
             <div class="col-lg-6">
                 <h1 class="display-4 font-weight-bold mb-4">
-                    Professional Ride Booking Platform
+                    Loyal Safar - Your Trusted Ride Partner
                 </h1>
                 <p class="lead mb-4">
-                    Connect drivers and passengers with our advanced ride-booking ecosystem. 
-                    Built with Laravel, Bootstrap, and modern web technologies.
+                    Professional taxi booking platform for Kolkata/Howrah with advanced commission management, 
+                    driver wallets, and eco-friendly transportation solutions.
                 </p>
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -233,8 +233,8 @@
             <div class="col-lg-8 mx-auto">
                 <h2 class="display-5 font-weight-bold mb-4">Ready to Get Started?</h2>
                 <p class="lead mb-4">
-                    Join thousands of drivers and passengers who trust RideBook 
-                    for their daily transportation needs.
+                    Join thousands of drivers and passengers who trust Loyal Safar 
+                    for their daily transportation needs in Kolkata and Howrah.
                 </p>
                 <div class="row">
                     <div class="col-md-6 mb-3">

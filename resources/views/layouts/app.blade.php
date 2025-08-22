@@ -244,7 +244,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ route('dashboard') }}">
-                <i class="fas fa-car mr-2"></i>RideBook
+                <i class="fas fa-car mr-2"></i>Loyal Safar
             </a>
             
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
@@ -332,7 +332,7 @@
     <!-- Footer -->
     <footer class="bg-dark text-light py-4 mt-5">
         <div class="container text-center">
-            <p>&copy; {{ date('Y') }} RideBook. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} Loyal Safar. All rights reserved.</p>
             <p class="mb-0">
                 <small>Built with Laravel, Bootstrap, and modern web technologies</small>
             </p>
@@ -398,7 +398,7 @@
             const toast = `
                 <div class="toast" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
                     <div class="toast-header bg-${type} text-white">
-                        <strong class="mr-auto">RideBook</strong>
+                        <strong class="mr-auto">Loyal Safar</strong>
                         <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">
                             <span>&times;</span>
                         </button>

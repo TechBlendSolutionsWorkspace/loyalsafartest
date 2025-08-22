@@ -17,6 +17,7 @@ class Ride extends Model
         'ride_id',
         'passenger_id',
         'driver_id',
+        'area_id',
         'pickup_address',
         'pickup_latitude',
         'pickup_longitude',
@@ -25,6 +26,8 @@ class Ride extends Model
         'destination_longitude',
         'estimated_fare',
         'actual_fare',
+        'total_fare',
+        'final_fare',
         'distance',
         'estimated_duration',
         'actual_duration',
@@ -34,6 +37,13 @@ class Ride extends Model
         'pickup_time',
         'completed_at',
         'cancellation_reason',
+        'coupon_code',
+        'coupon_discount',
+        'commission_amount',
+        'commission_type',
+        'driver_payout',
+        'payment_status',
+        'share_token',
     ];
 
     protected $casts = [
@@ -43,7 +53,12 @@ class Ride extends Model
         'destination_longitude' => 'decimal:8',
         'estimated_fare' => 'decimal:2',
         'actual_fare' => 'decimal:2',
+        'total_fare' => 'decimal:2',
+        'final_fare' => 'decimal:2',
         'distance' => 'decimal:2',
+        'coupon_discount' => 'decimal:2',
+        'commission_amount' => 'decimal:2',
+        'driver_payout' => 'decimal:2',
         'requested_at' => 'datetime',
         'accepted_at' => 'datetime',
         'pickup_time' => 'datetime',
@@ -67,6 +82,11 @@ class Ride extends Model
     public function driver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'driver_id');
+    }
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(Area::class);
     }
 
     public function payment(): HasOne
