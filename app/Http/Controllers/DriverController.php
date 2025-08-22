@@ -4,56 +4,176 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Ride;
+use App\Models\User;
+use App\Models\DriverEarning;
+use App\Models\DriverWallet;
+use App\Models\Area;
+use App\Models\Coupon;
+use App\Services\CommissionService;
+use Carbon\Carbon;
 
 class DriverController extends Controller
 {
+    protected $commissionService;
+
+    public function __construct(CommissionService $commissionService)
+    {
+        $this->commissionService = $commissionService;
+    }
+
     public function dashboard()
     {
-        $user = Auth::user();
+        $driver = Auth::user();
         
-        // Create a driver object with online status
-        $driver = (object) [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'status' => 'online', // Default to online for demo
-            'is_online' => true
+        // Enhanced stats with transparent commission breakdown
+        $totalRides = Ride::where('driver_id', $driver->id)->count();
+        $completedRides = Ride::where('driver_id', $driver->id)
+            ->where('payment_status', 'completed')
+            ->count();
+        
+        $todayRides = Ride::where('driver_id', $driver->id)
+            ->whereDate('created_at', today())
+            ->count();
+        
+        // Wallet and earnings transparency
+        $walletBalance = $driver->getWalletBalance();
+        $pendingBalance = $driver->getPendingWalletBalance();
+        
+        $todayEarnings = DriverWallet::where('driver_id', $driver->id)
+            ->where('transaction_type', 'credit')
+            ->whereDate('created_at', today())
+            ->sum('amount');
+            
+        $weeklyEarnings = DriverWallet::where('driver_id', $driver->id)
+            ->where('transaction_type', 'credit')
+            ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+            ->sum('amount');
+            
+        $monthlyEarnings = DriverWallet::where('driver_id', $driver->id)
+            ->where('transaction_type', 'credit')
+            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->sum('amount');
+        
+        // Commission breakdown with transparency
+        $commissionBreakdown = $this->commissionService->getDriverCommissionBreakdown($driver);
+        
+        // Recent rides with commission details
+        $recentRides = Ride::where('driver_id', $driver->id)
+            ->with(['passenger', 'area', 'coupon'])
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+            
+        // Recent wallet transactions for transparency
+        $recentTransactions = DriverWallet::where('driver_id', $driver->id)
+            ->with('ride')
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+            
+        // Performance metrics
+        $performanceMetrics = [
+            'avg_rating' => $driver->rating ?? 0,
+            'completion_rate' => $totalRides > 0 ? ($completedRides / $totalRides) * 100 : 0,
+            'coupon_rides_count' => Ride::where('driver_id', $driver->id)
+                ->whereNotNull('coupon_code')
+                ->count(),
+            'green_rides_count' => Ride::where('driver_id', $driver->id)
+                ->where('is_green_ride', true)
+                ->count() ?? 0
         ];
         
-        // Basic stats for the driver
+        // Areas performance
+        $areasPerformance = Ride::where('driver_id', $driver->id)
+            ->where('payment_status', 'completed')
+            ->with('area')
+            ->get()
+            ->groupBy('area_id')
+            ->map(function ($rides, $areaId) {
+                $area = $rides->first()->area;
+                return [
+                    'area_name' => $area->name ?? 'Unknown',
+                    'ride_count' => $rides->count(),
+                    'total_earnings' => $rides->sum('driver_payout'),
+                    'avg_commission_rate' => $rides->avg('commission_amount') / $rides->avg('total_fare') * 100
+                ];
+            })
+            ->values();
+            
+        // For backward compatibility, keep the old structure
         $stats = [
-            'total_earnings' => 0,
-            'total_rides' => 0,
-            'rating' => $user->rating ?? 4.5,
-            'wallet_balance' => 0,
+            'total_earnings' => $walletBalance,
+            'total_rides' => $totalRides,
+            'rating' => $driver->rating ?? 4.5,
+            'wallet_balance' => $walletBalance,
             'status' => 'online'
         ];
         
-        // Mock pending ride requests
+        // Mock pending ride requests (until real-time system is implemented)
         $pendingRides = [
             ['id' => 1, 'passenger' => 'Amit Sharma', 'pickup' => 'Kolkata Central', 'dropoff' => 'Howrah Station', 'fare' => 120, 'distance' => '8.5 km'],
             ['id' => 2, 'passenger' => 'Priya Das', 'pickup' => 'Salt Lake', 'dropoff' => 'Park Street', 'fare' => 95, 'distance' => '6.2 km']
         ];
         
-        // Mock recent rides data
-        $recentRides = [
-            ['id' => 3, 'passenger' => 'Raj Kumar', 'pickup' => 'Esplanade', 'dropoff' => 'Garia', 'status' => 'completed', 'fare' => 150, 'date' => '2025-08-22'],
-            ['id' => 4, 'passenger' => 'Sneha Roy', 'pickup' => 'Howrah', 'dropoff' => 'Sealdah', 'status' => 'completed', 'fare' => 110, 'date' => '2025-08-21'],
-            ['id' => 5, 'passenger' => 'Arjun Das', 'pickup' => 'Park Street', 'dropoff' => 'New Market', 'status' => 'completed', 'fare' => 80, 'date' => '2025-08-21']
-        ];
-        
-        return view('driver.dashboard', compact('stats', 'driver', 'pendingRides', 'recentRides'));
+        return view('driver.dashboard', compact(
+            'stats', 
+            'driver',
+            'pendingRides',
+            'totalRides', 
+            'completedRides',
+            'todayRides', 
+            'walletBalance',
+            'pendingBalance',
+            'todayEarnings',
+            'weeklyEarnings', 
+            'monthlyEarnings',
+            'recentRides',
+            'recentTransactions',
+            'commissionBreakdown',
+            'performanceMetrics',
+            'areasPerformance'
+        ));
     }
     
     public function wallet()
     {
-        $user = Auth::user();
+        $driver = Auth::user();
         
+        // Real wallet data with commission transparency
+        $walletBalance = $driver->getWalletBalance();
+        $pendingBalance = $driver->getPendingWalletBalance();
+        
+        // Detailed transaction history
+        $transactions = DriverWallet::where('driver_id', $driver->id)
+            ->with(['ride.area', 'ride.passenger'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+            
+        // Earnings summary by source
+        $earningsSummary = DriverWallet::where('driver_id', $driver->id)
+            ->where('transaction_type', 'credit')
+            ->selectRaw('source, COUNT(*) as count, SUM(amount) as total')
+            ->groupBy('source')
+            ->get()
+            ->pluck('total', 'source');
+            
+        // Weekly earnings chart data
+        $weeklyEarnings = DriverWallet::where('driver_id', $driver->id)
+            ->where('transaction_type', 'credit')
+            ->whereBetween('created_at', [now()->subWeeks(4), now()])
+            ->selectRaw('DATE(created_at) as date, SUM(amount) as daily_earnings')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+            
         $walletData = [
-            'balance' => 0,
-            'pending_earnings' => 0,
-            'total_earnings' => 0,
-            'transactions' => []
+            'balance' => $walletBalance,
+            'pending_earnings' => $pendingBalance,
+            'total_earnings' => $earningsSummary->sum(),
+            'transactions' => $transactions,
+            'earnings_by_source' => $earningsSummary,
+            'weekly_chart_data' => $weeklyEarnings
         ];
         
         return view('driver.wallet', compact('walletData'));

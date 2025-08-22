@@ -11,11 +11,15 @@ class CompanyWallet extends Model
         'driver_id',
         'amount',
         'transaction_type',
-        'reason'
+        'reason',
+        'source',
+        'reference_id',
+        'metadata'
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'metadata' => 'array'
     ];
 
     public function ride()

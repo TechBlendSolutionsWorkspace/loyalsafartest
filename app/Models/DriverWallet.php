@@ -13,6 +13,7 @@ class DriverWallet extends Model
         'transaction_type',
         'reason',
         'source',
+        'status',
         'reference_id'
     ];
 

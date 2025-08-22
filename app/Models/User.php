@@ -87,6 +87,37 @@ class User extends Authenticatable
         return $this->hasMany(DriverEarning::class, 'driver_id');
     }
 
+    public function walletTransactions(): HasMany
+    {
+        return $this->hasMany(DriverWallet::class, 'driver_id');
+    }
+
+    public function couponRedemptions(): HasMany
+    {
+        return $this->hasMany(CouponRedemption::class);
+    }
+
+    /**
+     * Get driver's current wallet balance
+     */
+    public function getWalletBalance(): float
+    {
+        return $this->walletTransactions()
+            ->selectRaw('SUM(CASE WHEN transaction_type = "credit" THEN amount ELSE -amount END) as balance')
+            ->value('balance') ?? 0;
+    }
+
+    /**
+     * Get pending wallet balance (not yet paid out)
+     */
+    public function getPendingWalletBalance(): float
+    {
+        return $this->walletTransactions()
+            ->where('status', 'pending')
+            ->selectRaw('SUM(CASE WHEN transaction_type = "credit" THEN amount ELSE -amount END) as balance')
+            ->value('balance') ?? 0;
+    }
+
     public function isDriver(): bool
     {
         return $this->role === 'driver';

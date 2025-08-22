@@ -29,9 +29,12 @@ class Ride extends Model
         'total_fare',
         'final_fare',
         'distance',
+        'estimated_distance',
+        'actual_distance',
         'estimated_duration',
         'actual_duration',
         'status',
+        'ride_status',
         'requested_at',
         'accepted_at',
         'pickup_time',
@@ -44,6 +47,15 @@ class Ride extends Model
         'driver_payout',
         'payment_status',
         'share_token',
+        'otp',
+        'otp_verified_at',
+        'tracking_session_id',
+        'tracking_started_at',
+        'tracking_ended_at',
+        'share_count',
+        'shared_via',
+        'tracking_viewers',
+        'route_coordinates'
     ];
 
     protected $casts = [
@@ -56,6 +68,8 @@ class Ride extends Model
         'total_fare' => 'decimal:2',
         'final_fare' => 'decimal:2',
         'distance' => 'decimal:2',
+        'estimated_distance' => 'decimal:2',
+        'actual_distance' => 'decimal:2',
         'coupon_discount' => 'decimal:2',
         'commission_amount' => 'decimal:2',
         'driver_payout' => 'decimal:2',
@@ -63,6 +77,12 @@ class Ride extends Model
         'accepted_at' => 'datetime',
         'pickup_time' => 'datetime',
         'completed_at' => 'datetime',
+        'otp_verified_at' => 'datetime',
+        'tracking_started_at' => 'datetime',
+        'tracking_ended_at' => 'datetime',
+        'shared_via' => 'array',
+        'tracking_viewers' => 'array',
+        'route_coordinates' => 'array'
     ];
 
     protected static function boot()
@@ -107,6 +127,31 @@ class Ride extends Model
     public function driverEarning(): HasOne
     {
         return $this->hasOne(DriverEarning::class);
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class, 'coupon_code', 'code');
+    }
+
+    public function driverWalletTransactions(): HasMany
+    {
+        return $this->hasMany(DriverWallet::class);
+    }
+
+    public function companyWalletTransactions(): HasMany
+    {
+        return $this->hasMany(CompanyWallet::class);
+    }
+
+    public function couponRedemption(): HasOne
+    {
+        return $this->hasOne(CouponRedemption::class);
+    }
+
+    public function trackingSession(): HasOne
+    {
+        return $this->hasOne(RideTrackingSession::class);
     }
 
     public function isPending(): bool

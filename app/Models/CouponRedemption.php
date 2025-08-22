@@ -11,11 +11,16 @@ class CouponRedemption extends Model
         'ride_id',
         'coupon_code',
         'discount_amount',
-        'covered_by'
+        'covered_by',
+        'original_fare',
+        'final_fare',
+        'status'
     ];
 
     protected $casts = [
         'discount_amount' => 'decimal:2',
+        'original_fare' => 'decimal:2',
+        'final_fare' => 'decimal:2'
     ];
 
     public function user()
