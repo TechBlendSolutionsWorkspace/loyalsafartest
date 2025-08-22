@@ -11,6 +11,15 @@ class DriverController extends Controller
     {
         $user = Auth::user();
         
+        // Create a driver object with online status
+        $driver = (object) [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'status' => 'online', // Default to online for demo
+            'is_online' => true
+        ];
+        
         // Basic stats for the driver
         $stats = [
             'total_earnings' => 0,
@@ -19,7 +28,7 @@ class DriverController extends Controller
             'wallet_balance' => 0
         ];
         
-        return view('driver.dashboard', compact('stats'));
+        return view('driver.dashboard', compact('stats', 'driver'));
     }
     
     public function wallet()

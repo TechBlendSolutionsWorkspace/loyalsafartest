@@ -48,10 +48,10 @@
                             <input type="checkbox" 
                                    class="custom-control-input" 
                                    id="driverStatus" 
-                                   {{ $driver && $driver->isOnline() ? 'checked' : '' }}>
+                                   {{ $driver && $driver->is_online ? 'checked' : '' }}>
                             <label class="custom-control-label" for="driverStatus">
                                 <span class="status-text">
-                                    {{ $driver && $driver->isOnline() ? 'Online' : 'Offline' }}
+                                    {{ $driver && $driver->is_online ? 'Online' : 'Offline' }}
                                 </span>
                             </label>
                         </div>
@@ -343,7 +343,7 @@
         }
         
         // Initialize if driver is online
-        @if($driver && $driver->isOnline())
+        @if($driver && $driver->is_online)
             startLocationTracking();
             startRideRequestPolling();
         @endif
