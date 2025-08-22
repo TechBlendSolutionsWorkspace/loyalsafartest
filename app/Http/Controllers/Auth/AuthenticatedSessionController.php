@@ -22,7 +22,7 @@ class AuthenticatedSessionController extends Controller
 
         if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+            return redirect('/dashboard');
         }
 
         return back()->withErrors([

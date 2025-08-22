@@ -14,13 +14,13 @@ class DashboardController extends Controller
         // Redirect to role-specific dashboard
         switch ($user->role) {
             case 'driver':
-                return redirect()->route('driver.dashboard');
+                return redirect(route('driver.dashboard'));
             case 'passenger':
-                return redirect()->route('passenger.dashboard');
+                return redirect(route('passenger.dashboard'));
             case 'admin':
-                return redirect()->route('admin.dashboard');
+                return redirect(route('admin.dashboard'));
             default:
-                return redirect()->route('home');
+                return redirect(route('home'));
         }
     }
 }

@@ -1,0 +1,66 @@
+Wipe out all legacy codebases, frameworks, and dependencies (including Node.js, Express.js, or any JavaScript backend remnants). Rebuild the Ride-Booking Driver Application exclusively with the specified tech stack below. No exceptions.
+
+⸻
+
+✅ Approved Technology Stack
+	•	Backend Framework: Laravel (PHP)
+	•	Programming Language: PHP
+	•	UI Framework: Bootstrap (4.4.1)
+	•	Frontend Libraries:
+	•	jQuery (3.4.1)
+	•	List.js
+	•	Highlight.js
+	•	FancyBox (3.5.7)
+	•	Swiper
+	•	Flickity
+	•	core-js (3.2.1)
+	•	Font Awesome
+	•	Web Server: Apache HTTP Server (2.4.41)
+	•	Operating System: Ubuntu
+	•	Debugging Tools: PHPDebugBar
+
+⸻
+
+🔥 Hard Reset Instructions
+	1.	Remove All Legacy Tech
+	•	Delete Node.js, Express.js, npm modules, and any associated configs.
+	•	Clean up all old code files, unused routes, services, and APIs.
+	•	Reset version control (start a new clean repository).
+	2.	Database Reset
+	•	Drop all existing schemas.
+	•	Design a fresh relational schema for:
+	•	Users (passenger/driver)
+	•	Vehicles
+	•	Rides & Bookings
+	•	Payments & Transactions
+	•	Ratings/Feedback
+	•	Admin/Operations
+	3.	Core System Modules
+	•	Passenger App → Request ride, track ride, see history, process payments.
+	•	Driver App → Accept/decline rides, earnings dashboard, availability toggle.
+	•	Admin Dashboard → User management, driver verification, system monitoring, analytics.
+	4.	UI/Frontend Rules
+	•	Use Bootstrap 4.4.1 for all layout and styling.
+	•	Font Awesome for consistent icons.
+	•	Apply Swiper, Flickity, FancyBox for user-facing interactions.
+	•	Use List.js for filtering/search inside admin/user dashboards.
+	•	Highlight.js for admin-side code/log formatting (optional).
+	5.	Backend Rules
+	•	Strictly Laravel (PHP) – no Node.js, no Express.
+	•	RESTful API design for passenger ↔ driver ↔ admin communication.
+	•	Middleware for authentication & security.
+	•	Use Eloquent ORM for clean DB handling.
+	6.	Security & Optimization
+	•	Full CSRF, XSS, SQL Injection protection.
+	•	Role-based access control (Admin / Driver / Passenger).
+	•	Caching and queue system for ride-matching.
+	7.	Deployment Rules
+	•	Server: Ubuntu + Apache 2.4.41.
+	•	Continuous Integration pipeline with auto-build/test/deploy.
+	•	Zero reliance on Node.js or Express at any stage.
+
+⸻
+
+⚡ Directive
+
+Completely purge all old technologies (especially Node.js + Express). Rebuild from scratch with only the stack listed above. Deliver a clean, stable, production-ready ride-booking driver app that is modular, scalable, and future-proof.
