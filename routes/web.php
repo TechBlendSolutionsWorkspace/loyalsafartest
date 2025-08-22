@@ -53,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
     // Driver Routes
     Route::middleware(['role:driver'])->prefix('driver')->name('driver.')->group(function () {
         Route::get('/dashboard', [DriverController::class, 'dashboard'])->name('dashboard');
+        Route::get('/rides', [DriverController::class, 'rides'])->name('rides');
         Route::get('/wallet', [DriverController::class, 'wallet'])->name('wallet');
         Route::post('/accept-ride/{ride}', [DriverController::class, 'acceptRide'])->name('accept-ride');
         Route::post('/start-ride/{ride}', [DriverController::class, 'startRide'])->name('start-ride');

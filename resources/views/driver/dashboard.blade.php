@@ -22,11 +22,11 @@
                     <a class="nav-link" href="{{ route('driver.rides') }}">
                         <i class="fas fa-route mr-2"></i>My Rides
                     </a>
-                    <a class="nav-link" href="{{ route('driver.earnings') }}">
-                        <i class="fas fa-dollar-sign mr-2"></i>Earnings
+                    <a class="nav-link" href="{{ route('driver.wallet') }}">
+                        <i class="fas fa-wallet mr-2"></i>Wallet
                     </a>
-                    <a class="nav-link" href="{{ route('driver.profile') }}">
-                        <i class="fas fa-user mr-2"></i>Profile
+                    <a class="nav-link" href="{{ route('driver.leaderboard') }}">
+                        <i class="fas fa-trophy mr-2"></i>Leaderboard
                     </a>
                 </nav>
             </div>

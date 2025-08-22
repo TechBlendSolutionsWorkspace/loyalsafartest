@@ -36,6 +36,18 @@ class DriverController extends Controller
         return view('driver.wallet', compact('walletData'));
     }
     
+    public function rides()
+    {
+        // Mock rides data for the driver
+        $rides = [
+            ['id' => 1, 'passenger' => 'Amit Sharma', 'pickup' => 'Kolkata Central', 'dropoff' => 'Howrah Station', 'status' => 'completed', 'fare' => 120],
+            ['id' => 2, 'passenger' => 'Priya Das', 'pickup' => 'Salt Lake', 'dropoff' => 'Park Street', 'status' => 'completed', 'fare' => 95],
+            ['id' => 3, 'passenger' => 'Raj Kumar', 'pickup' => 'Esplanade', 'dropoff' => 'Garia', 'status' => 'pending', 'fare' => 150]
+        ];
+        
+        return view('driver.rides', compact('rides'));
+    }
+    
     public function leaderboard()
     {
         // Mock leaderboard data
