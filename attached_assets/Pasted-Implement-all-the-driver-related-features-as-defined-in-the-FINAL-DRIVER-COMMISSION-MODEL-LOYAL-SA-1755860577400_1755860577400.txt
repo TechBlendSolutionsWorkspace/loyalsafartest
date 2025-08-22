@@ -1,0 +1,92 @@
+Implement all the driver-related features as defined in the FINAL DRIVER COMMISSION MODEL — LOYAL SAFAR PDF.
+Not a single detail from the document should be missed.
+🔹 Technology Stack (must use)
+Backend: Laravel (PHP)
+Frontend: Bootstrap 5 + jQuery (responsive)
+Database: MySQL (Laravel migrations + seeders)
+Server: Apache (Ubuntu)
+🔹 Core Driver Features (from PDF – implement all)
+1️⃣ Driver Commission Model (Dynamic Slabs)
+Area-wise slab system: fixed or percentage commission.
+Database Tables Required:
+areas (id, name)
+commission_slabs (id, area_id, min_fare, max_fare, commission_type, commission_value, is_default, active)
+rides (id, ride_id, area_id, total_fare, commission_amount, commission_type, driver_payout)
+Rules:
+Commission applied based on min–max fare range.
+If no range matches → use default slab.
+Commission auto-calculated after ride completion.
+Driver payout = total_fare - commission_amount.
+Admin Panel:
+CRUD for commission slabs (no overlap allowed).
+Must have a default rule per area.
+Transparency report showing commission vs payout per ride.
+2️⃣ Ride Tracking & Share Feature
+Triggered only after OTP verification (ride start).
+Rider can share live ride tracking link via:
+WhatsApp
+SMS
+Saved Contacts
+Copy Link
+Shared Link Shows:
+Rider & driver details (masked contact for privacy).
+Vehicle details & driver rating.
+Live driver location on map (via Firebase/Socket session).
+Route line, pickup/drop pins, ETA, distance left.
+Backend Session Handling:
+One session per ride (linked to ride_id).
+JWT token for security, auto-expiry (ride end + buffer).
+Admin Panel Control:
+Logs of how many links shared.
+Logs of who viewed ride link (if possible).
+Session expiry auto-enforced.
+3️⃣ Coupons + Driver Payout Roadmap
+When coupon applied:
+User pays discounted fare.
+Driver always gets full fare payout.
+Discount absorbed from company wallet (marketing fund).
+Database Tables Required:
+rides → add: coupon_code, coupon_discount, final_fare, payment_status, ride_status.
+driver_wallets (id, driver_id, ride_id, amount, transaction_type, reason, source, created_at)
+coupon_redemptions (id, user_id, ride_id, coupon_code, discount_amount, covered_by, created_at)
+company_wallets (id, ride_id, driver_id, amount, transaction_type, reason, created_at)
+Workflow:
+User applies coupon → system validates.
+Ride fare recalculated (fare - discount).
+User pays discounted fare → driver credited with full fare.
+Company wallet debited for difference.
+Records saved in driver_wallets, company_wallets, coupon_redemptions.
+Admin Panel Reports:
+Total coupons given.
+Total company wallet debit.
+Driver payouts with “Coupon Covered” flag.
+Ride-wise coupon redemption history.
+Accounting Rule:
+Driver earnings remain untouched.
+Company bears discount cost.
+🔹 Implementation Requirements
+Migrations & Seeders:
+Pre-seed areas (e.g., Kolkata, Howrah).
+Pre-seed commission slabs (fixed + percentage).
+Pre-seed demo coupons.
+Driver Dashboard (Bootstrap):
+Wallet → shows live payouts & commission breakdown.
+Ride history → fare, commission, payout, coupon applied.
+Transparency: every ride shows commission & net payout clearly.
+Admin Panel (Bootstrap):
+Commission slabs CRUD (with overlap validation).
+Coupon management CRUD.
+Wallet reports (driver & company).
+Logs for shared ride links.
+UX:
+Every button, link, and form must work.
+Must redirect & save changes to DB (no dead UI).
+Panic button (for rider side) visible → triggers alert simulation.
+🔹 Deliverables
+Full Laravel MVP Project with working routes, controllers, models, migrations, Blade templates.
+Seeded database for demo rides, drivers, coupons, slabs.
+Fully functional Rider, Driver, and Admin flows.
+Responsive Bootstrap 5 design with InDrive-inspired color theme (green, white, gray, red for panic).
+README.md with setup instructions + demo credentials.
+⚡ End Goal:
+Deliver a fully functional driver ecosystem (commission, payouts, wallets, coupons, ride sharing, tracking) exactly as defined in the FINAL DRIVER COMMISSION MODEL PDF, with no detail skipped.

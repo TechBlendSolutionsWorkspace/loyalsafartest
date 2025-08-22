@@ -78,11 +78,11 @@ class DriverController extends Controller
         // In a real app, you would update the driver's online status in the database
         // For demo purposes, we'll just return a success response
         
-        return response()->json([
+        return response([
             'success' => true,
             'message' => 'Status updated successfully',
             'status' => $request->status === 'online' ? 'online' : 'offline'
-        ]);
+        ])->header('Content-Type', 'application/json');
     }
     
     public function updateLocation(Request $request)
@@ -92,12 +92,12 @@ class DriverController extends Controller
         // In a real app, you would update the driver's location in the database
         // For demo purposes, we'll just return a success response
         
-        return response()->json([
+        return response([
             'success' => true,
             'message' => 'Location updated successfully',
             'latitude' => $request->latitude,
             'longitude' => $request->longitude
-        ]);
+        ])->header('Content-Type', 'application/json');
     }
     
     public function leaderboard()
@@ -115,10 +115,10 @@ class DriverController extends Controller
     public function acceptRide(Request $request, $rideId)
     {
         // Mock ride acceptance
-        return response()->json([
+        return response([
             'success' => true,
             'message' => 'Ride accepted successfully!'
-        ]);
+        ])->header('Content-Type', 'application/json');
     }
     
     public function startRide(Request $request, $rideId)
@@ -128,19 +128,19 @@ class DriverController extends Controller
         ]);
         
         // Mock ride start
-        return response()->json([
+        return response([
             'success' => true,
             'message' => 'Ride started successfully!'
-        ]);
+        ])->header('Content-Type', 'application/json');
     }
     
     public function completeRide(Request $request, $rideId)
     {
         // Mock ride completion
-        return response()->json([
+        return response([
             'success' => true,
             'message' => 'Ride completed successfully!'
-        ]);
+        ])->header('Content-Type', 'application/json');
     }
     
     public function instantPayout(Request $request)
@@ -150,10 +150,10 @@ class DriverController extends Controller
         ]);
         
         // Mock instant payout
-        return response()->json([
+        return response([
             'success' => true,
             'message' => 'Payout request processed successfully!'
-        ]);
+        ])->header('Content-Type', 'application/json');
     }
     
     public function community()
