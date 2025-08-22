@@ -1,0 +1,71 @@
+Create a stunning MVP prototype for a taxi booking app (Loyal Safar) using Laravel (PHP), MySQL, Bootstrap, and jQuery. This MVP must include all core modules from the provided PDF and the enhanced features I outlined below.
+🔹 Technology Stack (must use)
+Backend: PHP (Laravel)
+Frontend: Bootstrap 5 + jQuery + Swiper/Flickity for UI
+Database: MySQL (Laravel Eloquent ORM)
+Server: Apache (Ubuntu)
+Real-time: Firebase / Pusher / Socket.IO (for live ride tracking)
+🔹 Database Schema (as per PDF + strategy)
+1. Driver Commission Model
+areas (id, name)
+commission_slabs (id, area_id, min_fare, max_fare, commission_type, commission_value, is_default, active)
+rides (id, user_id, driver_id, area_id, total_fare, commission_amount, commission_type, driver_payout, coupon_code, coupon_discount, final_fare, payment_status, ride_status)
+Logic:
+On ride completion → check fare range → apply slab rule → calculate commission → auto-credit driver payout.
+If no slab → apply default slab.
+2. Ride Tracking + Share Feature
+ride_sessions (id, ride_id, token, start_time, end_time, active)
+ride_shares (id, ride_id, shared_with, share_time, status)
+Logic:
+OTP verification → session starts.
+Rider can share tracking via WhatsApp, SMS, contact, or copy link.
+Shared link shows live driver location, masked number, ETA.
+Session auto-expires after ride.
+3. Coupon + Driver Payout Model
+driver_wallets (id, driver_id, ride_id, amount, transaction_type, reason, source, created_at)
+coupon_redemptions (id, user_id, ride_id, coupon_code, discount_amount, covered_by, created_at)
+company_wallets (id, ride_id, driver_id, amount, transaction_type, reason, created_at)
+Logic:
+User applies coupon → discount applied from company funds.
+Driver always receives full fare in wallet.
+Company ledger absorbs coupon discount.
+Reports must show: coupon usage, wallet debits, payouts.
+🔹 Enhanced Features (beyond PDF)
+Instant UPI Payouts for drivers → integrate RazorpayX or Cashfree API.
+Multi-language support (Hindi, Bengali, Tamil, Telugu, Marathi, English).
+Rider Loyalty Program → users earn points per ride, redeemable for discounts.
+Driver Community Section → forum/chat + leaderboard with incentives.
+Panic Button → sends SMS/WhatsApp alert to emergency contacts with live ride link.
+Tier-2/Tier-3 Optimization → offline booking mode + UPI-first payment focus.
+Eco-friendly Toggle → “Green Ride” option for EVs or shared rides with CO₂ tracker.
+🔹 Prototype Scope (Deliverables)
+Admin Panel (Bootstrap + Laravel Blade):
+Manage commission slabs
+Manage coupons
+View reports (driver payouts, company wallet debits, coupon usage, shared ride logs)
+Rider App (Prototype UI):
+Ride booking form
+Coupon apply option
+OTP verification → Start ride → Share ride link (WhatsApp/SMS/Contact)
+Panic button + live tracking page
+Driver App (Prototype UI):
+Wallet with instant payout view
+Leaderboard + rewards/incentives section
+Ride completion → auto-calculated commission & payout
+Database Seeding (Dummy Data):
+Example drivers, riders, rides, areas (Kolkata, Howrah)
+Example commission slabs (fixed/percentage)
+Example coupons
+Example ride session sharing links
+🔹 UI/UX Requirements
+Bootstrap 5 modern UI → clean, mobile-first, fast-loading.
+Use Swiper/Flickity for ride booking carousel.
+Use Fancybox for ride receipt & tracking popups.
+Simple but professional branding (blue/green theme for eco-friendly trust).
+🔹 Expected Output
+Fully functional Laravel project (MVP prototype).
+Pre-configured MySQL migrations for all tables.
+Blade templates for Admin, Rider, Driver dashboards.
+Dummy data + seeded rides to demonstrate commission slabs, coupon use, live ride sharing.
+Documentation (README.md) explaining setup + demo credentials.
+⚡ Build this as a stunning MVP that can be shown directly to investors or the business owner to demonstrate how Loyal Safar can outsmart Uber/Ola in India.
