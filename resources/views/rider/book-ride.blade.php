@@ -110,47 +110,47 @@
                                 <div class="swiper ride-options-swiper">
                                     <div class="swiper-wrapper">
                                         <div class="swiper-slide">
-                                            <div class="ride-option-card active" data-type="economy">
+                                            <div class="ride-option-card active" data-type="bike">
+                                                <div class="ride-icon">
+                                                    <i class="fas fa-motorcycle"></i>
+                                                </div>
+                                                <h6>BIKE</h6>
+                                                <p class="small">₹8/km</p>
+                                                <div class="eco-badge">
+                                                    <i class="fas fa-leaf"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="ride-option-card" data-type="mini_car">
                                                 <div class="ride-icon">
                                                     <i class="fas fa-car"></i>
                                                 </div>
-                                                <h6>Economy</h6>
-                                                <p class="small">₹15/km</p>
-                                                <div class="eco-badge">
-                                                    <i class="fas fa-leaf"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="ride-option-card" data-type="premium">
-                                                <div class="ride-icon">
-                                                    <i class="fas fa-crown"></i>
-                                                </div>
-                                                <h6>Premium</h6>
-                                                <p class="small">₹25/km</p>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="ride-option-card" data-type="shared">
-                                                <div class="ride-icon">
-                                                    <i class="fas fa-users"></i>
-                                                </div>
-                                                <h6>Shared</h6>
-                                                <p class="small">₹8/km</p>
-                                                <div class="eco-badge">
-                                                    <i class="fas fa-recycle"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
-                                            <div class="ride-option-card" data-type="green">
-                                                <div class="ride-icon">
-                                                    <i class="fas fa-leaf"></i>
-                                                </div>
-                                                <h6>Green Ride</h6>
+                                                <h6>MINI CAR</h6>
                                                 <p class="small">₹12/km</p>
-                                                <div class="eco-badge bg-success">
-                                                    <i class="fas fa-battery-three-quarters"></i>
+                                                <div class="eco-badge">
+                                                    <i class="fas fa-leaf"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="ride-option-card" data-type="sedan_car">
+                                                <div class="ride-icon">
+                                                    <i class="fas fa-car-side"></i>
+                                                </div>
+                                                <h6>SEDAN CAR</h6>
+                                                <p class="small">₹18/km</p>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="ride-option-card" data-type="suv">
+                                                <div class="ride-icon">
+                                                    <i class="fas fa-truck"></i>
+                                                </div>
+                                                <h6>SUV</h6>
+                                                <p class="small">₹25/km</p>
+                                                <div class="eco-badge bg-warning">
+                                                    <i class="fas fa-crown"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -679,11 +679,11 @@
                 let rate;
                 
                 switch(rideType) {
-                    case 'economy': rate = 15; break;
-                    case 'premium': rate = 25; break;
-                    case 'shared': rate = 8; break;
-                    case 'green': rate = 12; break;
-                    default: rate = 15;
+                    case 'bike': rate = 8; break;
+                    case 'mini_car': rate = 12; break;
+                    case 'sedan_car': rate = 18; break;
+                    case 'suv': rate = 25; break;
+                    default: rate = 12;
                 }
                 
                 const baseFare = 50;

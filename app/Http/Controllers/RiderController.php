@@ -32,7 +32,7 @@ class RiderController extends Controller
         $request->validate([
             'pickup_location' => 'required|string',
             'dropoff_location' => 'required|string',
-            'ride_type' => 'required|string|in:economy,premium,shared,green'
+            'ride_type' => 'required|string|in:bike,mini_car,sedan_car,suv'
         ]);
         
         // Simulate fare calculation
@@ -40,14 +40,14 @@ class RiderController extends Controller
         $time = $distance * 2.5; // Approximate time
         
         $rates = [
-            'economy' => 15,
-            'premium' => 25,
-            'shared' => 8,
-            'green' => 12
+            'bike' => 8,
+            'mini_car' => 12,
+            'sedan_car' => 18,
+            'suv' => 25
         ];
         
-        $ratePerKm = $rates[$request->ride_type] ?? 15;
-        $baseFare = 30;
+        $ratePerKm = $rates[$request->ride_type] ?? 12;
+        $baseFare = 25;
         $totalFare = $baseFare + ($distance * $ratePerKm);
         
         return response()->json([
