@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CommissionSlab extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'area_id',
         'min_fare',
@@ -27,5 +30,19 @@ class CommissionSlab extends Model
     public function area()
     {
         return $this->belongsTo(Area::class);
+    }
+
+    public function calculateCommission(float $fare): float
+    {
+        if ($this->commission_type === 'fixed') {
+            return $this->commission_value;
+        } else {
+            return ($this->commission_value / 100) * $fare;
+        }
+    }
+
+    public function isApplicableForFare(float $fare): bool
+    {
+        return $fare >= $this->min_fare && $fare <= $this->max_fare;
     }
 }

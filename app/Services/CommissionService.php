@@ -4,178 +4,202 @@ namespace App\Services;
 
 use App\Models\Area;
 use App\Models\CommissionSlab;
+use App\Models\Ride;
 use App\Models\DriverWallet;
 use App\Models\CompanyWallet;
-use App\Models\Coupon;
 use App\Models\CouponRedemption;
-use App\Models\Ride;
-use App\Models\User;
+use App\Models\Coupon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Model;
+use Exception;
 
 class CommissionService
 {
     /**
-     * Calculate transparent commission for a ride
+     * Calculate commission based on area and fare using dynamic slabs
+     * As per PDF: Step 1-6 workflow
      */
     public function calculateCommission(Ride $ride): array
     {
-        $area = $ride->area;
-        $fare = $ride->total_fare ?? $ride->estimated_fare;
-        
-        // Find applicable commission slab
-        $commissionSlab = $this->findCommissionSlab($area->id, $fare);
-        
-        if (!$commissionSlab) {
-            throw new \Exception("No commission slab found for area {$area->name} and fare {$fare}");
+        $areaId = $ride->area_id;
+        $totalFare = $ride->total_fare;
+
+        if (!$areaId || !$totalFare) {
+            throw new Exception("Area ID and total fare are required for commission calculation");
         }
-        
-        $commissionAmount = 0;
-        $commissionType = $commissionSlab->commission_type;
-        
-        if ($commissionType === 'fixed') {
-            $commissionAmount = $commissionSlab->commission_value;
-        } else {
-            $commissionAmount = ($fare * $commissionSlab->commission_value) / 100;
+
+        // Step 2: Find matching commission slab
+        $slab = $this->findMatchingSlab($areaId, $totalFare);
+
+        if (!$slab) {
+            throw new Exception("No commission slab found for area {$areaId} and fare {$totalFare}");
         }
-        
-        // Ensure commission doesn't exceed fare
-        $commissionAmount = min($commissionAmount, $fare);
-        
-        $driverPayout = $fare - $commissionAmount;
-        
+
+        // Step 4: Calculate commission
+        $commissionAmount = $this->calculateCommissionAmount($slab, $totalFare);
+
+        // Step 5: Calculate driver payout
+        $driverPayout = $totalFare - $commissionAmount;
+
         return [
-            'total_fare' => $fare,
+            'slab_id' => $slab->id,
+            'commission_type' => $slab->commission_type,
+            'commission_value' => $slab->commission_value,
             'commission_amount' => round($commissionAmount, 2),
-            'commission_type' => $commissionType,
-            'commission_rate' => $commissionSlab->commission_value,
             'driver_payout' => round($driverPayout, 2),
-            'area_name' => $area->name,
-            'slab_details' => [
-                'min_fare' => $commissionSlab->min_fare,
-                'max_fare' => $commissionSlab->max_fare,
-                'rate' => $commissionSlab->commission_value,
-                'type' => $commissionSlab->commission_type
-            ]
+            'total_fare' => $totalFare,
+            'area_name' => $slab->area->name ?? 'Unknown'
         ];
     }
-    
+
     /**
-     * Process coupon discount with company covering the cost
+     * Find matching commission slab for area and fare
+     * Step 2-3 from PDF workflow
      */
-    public function processCouponDiscount(Ride $ride, string $couponCode): array
+    private function findMatchingSlab(int $areaId, float $fare): ?CommissionSlab
     {
-        $coupon = Coupon::query()->where('code', $couponCode)
+        // Step 2: Look for slab with matching fare range
+        $slab = CommissionSlab::where('area_id', $areaId)
             ->where('active', true)
+            ->where('min_fare', '<=', $fare)
+            ->where('max_fare', '>=', $fare)
             ->first();
-            
-        if (!$coupon) {
-            throw new \Exception("Invalid or inactive coupon: {$couponCode}");
+
+        // Step 3: If no match, use default slab for area
+        if (!$slab) {
+            $slab = CommissionSlab::where('area_id', $areaId)
+                ->where('active', true)
+                ->where('is_default', true)
+                ->first();
         }
-        
-        if (!$coupon->isValid()) {
-            throw new \Exception("Coupon {$couponCode} has expired or reached usage limit");
-        }
-        
-        if (!$coupon->isApplicableForArea($ride->area_id)) {
-            throw new \Exception("Coupon {$couponCode} is not applicable for this area");
-        }
-        
-        $originalFare = $ride->total_fare ?? $ride->estimated_fare;
-        $discountAmount = $coupon->calculateDiscount($originalFare);
-        $finalFare = $originalFare - $discountAmount;
-        
-        return [
-            'original_fare' => $originalFare,
-            'discount_amount' => round($discountAmount, 2),
-            'final_fare' => round($finalFare, 2),
-            'coupon_code' => $couponCode,
-            'coupon_name' => $coupon->name,
-            'covered_by' => 'company' // Driver gets full fare, company absorbs discount
-        ];
+
+        return $slab;
     }
-    
+
     /**
-     * Complete ride transaction with transparent wallet management
+     * Calculate commission amount based on slab type
+     * Step 4 from PDF workflow
      */
-    public function completeRideTransaction(Ride $ride): array
+    private function calculateCommissionAmount(CommissionSlab $slab, float $fare): float
+    {
+        if ($slab->commission_type === 'fixed') {
+            return $slab->commission_value;
+        } else {
+            // Percentage calculation
+            return ($slab->commission_value / 100) * $fare;
+        }
+    }
+
+    /**
+     * Process coupon and ensure driver gets full fare
+     * Implements Tab 3 coupon workflow from PDF
+     */
+    public function processCouponRide(Ride $ride, string $couponCode): array
+    {
+        return DB::transaction(function () use ($ride, $couponCode) {
+            // Validate coupon
+            $coupon = Coupon::where('code', $couponCode)
+                ->where('active', true)
+                ->first();
+
+            if (!$coupon || !$coupon->isValid()) {
+                throw new Exception("Invalid or expired coupon: {$couponCode}");
+            }
+
+            $originalFare = $ride->total_fare;
+            $discountAmount = $coupon->calculateDiscount($originalFare);
+            $finalFare = $originalFare - $discountAmount;
+
+            // Update ride with coupon data
+            $ride->update([
+                'coupon_code' => $couponCode,
+                'coupon_discount' => $discountAmount,
+                'final_fare' => $finalFare
+            ]);
+
+            // Record coupon redemption
+            CouponRedemption::create([
+                'user_id' => $ride->passenger_id,
+                'ride_id' => $ride->id,
+                'coupon_code' => $couponCode,
+                'discount_amount' => $discountAmount,
+                'original_fare' => $originalFare,
+                'final_fare' => $finalFare,
+                'covered_by' => 'company'
+            ]);
+
+            return [
+                'original_fare' => $originalFare,
+                'discount_amount' => $discountAmount,
+                'final_fare' => $finalFare,
+                'coupon_code' => $couponCode
+            ];
+        });
+    }
+
+    /**
+     * Complete ride with commission calculation and wallet management
+     * Implements full workflow from Steps 1-7 plus coupon handling
+     */
+    public function completeRide(Ride $ride): array
     {
         return DB::transaction(function () use ($ride) {
-            $transactionLog = [];
-            
+            $result = [];
+
             // Calculate commission
             $commissionData = $this->calculateCommission($ride);
-            
-            // Handle coupon if applied
-            $couponData = null;
-            if ($ride->coupon_code) {
-                $couponData = $this->processCouponDiscount($ride, $ride->coupon_code);
-                
-                // Update ride with coupon data
-                $ride->update([
-                    'coupon_discount' => $couponData['discount_amount'],
-                    'final_fare' => $couponData['final_fare']
-                ]);
-                
-                // Record coupon redemption
-                CouponRedemption::query()->create([
-                    'user_id' => $ride->passenger_id,
-                    'ride_id' => $ride->id,
-                    'coupon_code' => $ride->coupon_code,
-                    'discount_amount' => $couponData['discount_amount'],
-                    'original_fare' => $couponData['original_fare'],
-                    'final_fare' => $couponData['final_fare'],
-                    'covered_by' => 'company'
-                ]);
-                
-                // Update coupon usage count
-                Coupon::query()->where('code', $ride->coupon_code)->increment('used_count');
-                
-                $transactionLog[] = "Coupon {$ride->coupon_code} applied: -{$couponData['discount_amount']}";
-            }
-            
-            // Update ride with commission data
+
+            // Update ride with commission data (Step 6)
             $ride->update([
                 'commission_amount' => $commissionData['commission_amount'],
                 'commission_type' => $commissionData['commission_type'],
                 'driver_payout' => $commissionData['driver_payout'],
+                'ride_status' => 'completed',
                 'payment_status' => 'completed'
             ]);
-            
-            // Credit driver wallet - Full amount for coupon rides, payout amount for regular rides
-            $driverCreditAmount = $ride->coupon_code ? 
-                $commissionData['total_fare'] : $commissionData['driver_payout'];
-                
-            DriverWallet::query()->create([
+
+            // Determine driver payout amount
+            if ($ride->coupon_code) {
+                // For coupon rides: Driver gets full original fare
+                $driverPayoutAmount = $ride->total_fare;
+                $reason = "Ride Fare with Coupon Covered";
+                $source = "User Paid + Company Coupon";
+            } else {
+                // For regular rides: Driver gets fare minus commission
+                $driverPayoutAmount = $commissionData['driver_payout'];
+                $reason = "Ride Fare after Commission";
+                $source = "ride_earning";
+            }
+
+            // Step 7: Credit driver wallet
+            DriverWallet::create([
                 'driver_id' => $ride->driver_id,
                 'ride_id' => $ride->id,
-                'amount' => $driverCreditAmount,
+                'amount' => $driverPayoutAmount,
                 'transaction_type' => 'credit',
-                'reason' => $ride->coupon_code ? 
-                    'Ride earning (full fare - coupon covered by company)' : 'Ride earning',
-                'source' => 'ride_earning'
+                'reason' => $reason,
+                'source' => $source
             ]);
-            
-            $transactionLog[] = "Driver credited: +{$driverCreditAmount}";
-            
+
+            $result['driver_payout'] = $driverPayoutAmount;
+
             // Company wallet transactions
             if ($ride->coupon_code) {
                 // Company absorbs coupon discount
-                CompanyWallet::query()->create([
+                CompanyWallet::create([
                     'ride_id' => $ride->id,
                     'driver_id' => $ride->driver_id,
-                    'amount' => $couponData['discount_amount'],
+                    'amount' => $ride->coupon_discount,
                     'transaction_type' => 'debit',
-                    'reason' => 'Coupon discount covered for driver',
+                    'reason' => "Coupon Redeem for Ride #{$ride->id}",
                     'source' => 'coupon_discount'
                 ]);
-                
-                $transactionLog[] = "Company absorbed coupon discount: -{$couponData['discount_amount']}";
+
+                $result['company_coupon_cost'] = $ride->coupon_discount;
             }
-            
+
             // Company earns commission
-            CompanyWallet::query()->create([
+            CompanyWallet::create([
                 'ride_id' => $ride->id,
                 'driver_id' => $ride->driver_id,
                 'amount' => $commissionData['commission_amount'],
@@ -183,78 +207,102 @@ class CommissionService
                 'reason' => 'Commission from ride',
                 'source' => 'commission'
             ]);
-            
-            $transactionLog[] = "Company commission: +{$commissionData['commission_amount']}";
-            
-            return [
-                'commission_data' => $commissionData,
-                'coupon_data' => $couponData,
-                'transaction_log' => $transactionLog,
-                'driver_net_earning' => $driverCreditAmount,
-                'company_net_earning' => $commissionData['commission_amount'] - ($couponData['discount_amount'] ?? 0)
-            ];
+
+            $result['commission_data'] = $commissionData;
+            $result['company_commission'] = $commissionData['commission_amount'];
+
+            return $result;
         });
     }
-    
+
     /**
-     * Get transparent commission breakdown for driver
+     * Get driver wallet summary with commission transparency
      */
-    public function getDriverCommissionBreakdown(User $driver, $startDate = null, $endDate = null): array
+    public function getDriverWalletSummary(int $driverId): array
     {
-        $query = $driver->driverRides()
-            ->where('payment_status', 'completed');
-            
-        if ($startDate) {
-            $query->where('completed_at', '>=', $startDate);
-        }
-        
-        if ($endDate) {
-            $query->where('completed_at', '<=', $endDate);
-        }
-        
-        $rides = $query->with(['area', 'coupon'])->get();
-        
-        $breakdown = [
-            'total_rides' => $rides->count(),
-            'total_fare' => $rides->sum('total_fare'),
-            'total_commission' => $rides->sum('commission_amount'),
-            'total_payout' => $rides->sum('driver_payout'),
-            'coupon_rides' => $rides->where('coupon_code', '!=', null)->count(),
-            'coupon_benefits' => $rides->where('coupon_code', '!=', null)->sum('coupon_discount'),
-            'wallet_balance' => $driver->getWalletBalance(),
-            'pending_balance' => $driver->getPendingWalletBalance(),
-            'rides_by_area' => []
+        $transactions = DriverWallet::where('driver_id', $driverId)->get();
+
+        $balance = $transactions->sum(function ($transaction) {
+            return $transaction->transaction_type === 'credit' 
+                ? $transaction->amount 
+                : -$transaction->amount;
+        });
+
+        $totalEarnings = $transactions->where('transaction_type', 'credit')->sum('amount');
+        $totalDeductions = $transactions->where('transaction_type', 'debit')->sum('amount');
+
+        // Earnings breakdown by source
+        $earningsBySource = $transactions
+            ->where('transaction_type', 'credit')
+            ->groupBy('source')
+            ->map(function ($group) {
+                return [
+                    'count' => $group->count(),
+                    'total' => $group->sum('amount')
+                ];
+            });
+
+        return [
+            'balance' => round($balance, 2),
+            'total_earnings' => round($totalEarnings, 2),
+            'total_deductions' => round($totalDeductions, 2),
+            'earnings_by_source' => $earningsBySource,
+            'recent_transactions' => $transactions->sortByDesc('created_at')->take(10)->values()
         ];
-        
-        // Group by area for transparency
-        foreach ($rides->groupBy('area_id') as $areaId => $areaRides) {
-            $area = $areaRides->first()->area;
-            $breakdown['rides_by_area'][] = [
-                'area_name' => $area->name,
-                'ride_count' => $areaRides->count(),
-                'total_fare' => $areaRides->sum('total_fare'),
-                'commission_amount' => $areaRides->sum('commission_amount'),
-                'driver_payout' => $areaRides->sum('driver_payout'),
-                'avg_commission_rate' => $areaRides->avg('commission_amount') / $areaRides->avg('total_fare') * 100
-            ];
-        }
-        
-        return $breakdown;
     }
-    
+
     /**
-     * Find applicable commission slab
+     * Get company wallet summary for admin dashboard
      */
-    private function findCommissionSlab(int $areaId, float $fare): ?CommissionSlab
+    public function getCompanyWalletSummary(): array
     {
-        return CommissionSlab::query()->where('area_id', $areaId)
+        $transactions = CompanyWallet::all();
+
+        $balance = $transactions->sum(function ($transaction) {
+            return $transaction->transaction_type === 'credit' 
+                ? $transaction->amount 
+                : -$transaction->amount;
+        });
+
+        $totalCommissions = $transactions
+            ->where('transaction_type', 'credit')
+            ->where('source', 'commission')
+            ->sum('amount');
+
+        $totalCouponCosts = $transactions
+            ->where('transaction_type', 'debit')
+            ->where('source', 'coupon_discount')
+            ->sum('amount');
+
+        return [
+            'balance' => round($balance, 2),
+            'total_commissions' => round($totalCommissions, 2),
+            'total_coupon_costs' => round($totalCouponCosts, 2),
+            'net_profit' => round($totalCommissions - $totalCouponCosts, 2)
+        ];
+    }
+
+    /**
+     * Validate commission slab ranges to prevent overlaps
+     * For admin panel slab management
+     */
+    public function validateSlabRange(int $areaId, float $minFare, float $maxFare, int $excludeSlabId = null): bool
+    {
+        $query = CommissionSlab::where('area_id', $areaId)
             ->where('active', true)
-            ->where('min_fare', '<=', $fare)
-            ->where('max_fare', '>=', $fare)
-            ->first() 
-            ?? CommissionSlab::query()->where('area_id', $areaId)
-                ->where('active', true)
-                ->where('is_default', true)
-                ->first();
+            ->where(function ($q) use ($minFare, $maxFare) {
+                $q->whereBetween('min_fare', [$minFare, $maxFare])
+                  ->orWhereBetween('max_fare', [$minFare, $maxFare])
+                  ->orWhere(function ($q) use ($minFare, $maxFare) {
+                      $q->where('min_fare', '<=', $minFare)
+                        ->where('max_fare', '>=', $maxFare);
+                  });
+            });
+
+        if ($excludeSlabId) {
+            $query->where('id', '!=', $excludeSlabId);
+        }
+
+        return $query->count() === 0;
     }
 }

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Area extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'city',
@@ -27,8 +30,26 @@ class Area extends Model
         'night_charges' => 'decimal:2',
     ];
 
-    public function commission_slabs()
+    public function commissionSlabs()
     {
         return $this->hasMany(CommissionSlab::class);
+    }
+
+    public function rides()
+    {
+        return $this->hasMany(Ride::class);
+    }
+
+    public function activeCommissionSlabs()
+    {
+        return $this->hasMany(CommissionSlab::class)->where('active', true);
+    }
+
+    public function defaultCommissionSlab()
+    {
+        return $this->hasMany(CommissionSlab::class)
+            ->where('active', true)
+            ->where('is_default', true)
+            ->first();
     }
 }
