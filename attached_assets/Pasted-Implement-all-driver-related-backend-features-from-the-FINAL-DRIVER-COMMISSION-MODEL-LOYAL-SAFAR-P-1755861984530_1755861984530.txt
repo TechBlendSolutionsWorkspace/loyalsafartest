@@ -1,0 +1,83 @@
+Implement all driver-related backend features from the FINAL DRIVER COMMISSION MODEL — LOYAL SAFAR PDF in Laravel (PHP) + MySQL/Postgres, with migrations, models, controllers, business logic, and REST APIs.
+This project must be production-ready for deployment on Render.com with proper environment configs, dual DB support, and deployment scripts.
+👉 No UI. Backend + Database + APIs only.
+🔹 Technology Stack
+Framework: Laravel (latest stable)
+Database: MySQL (preferred) or Postgres (Render-supported)
+ORM: Laravel Eloquent
+API: RESTful JSON endpoints
+Auth: Laravel Breeze/Sanctum (roles: Rider, Driver, Admin)
+Deployment: Render.com (Production) + Local Dev (SQLite/MySQL)
+🔹 Deployment Requirements (Render.com Ready)
+Configure .env.example for both dev and production:
+DB_CONNECTION = mysql (prod) / sqlite (dev)
+DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+APP_ENV = production on Render
+APP_KEY auto-generated
+Provide Render build & start command:
+Build: composer install && php artisan migrate --force && php artisan db:seed --force
+Start: php artisan serve --host 0.0.0.0 --port $PORT
+Add Procfile for Render:
+web: php artisan serve --host 0.0.0.0 --port $PORT
+Ensure migrations + seeders run automatically on first deploy.
+Provide README.md with Render deployment steps.
+🔹 Database Schema (from PDF, must include all)
+1️⃣ Driver Commission Model
+areas (id, name)
+commission_slabs (id, area_id, min_fare, max_fare, commission_type, commission_value, is_default, active)
+rides (id, user_id, driver_id, area_id, total_fare, commission_amount, commission_type, driver_payout, coupon_code, coupon_discount, final_fare, payment_status, ride_status)
+2️⃣ Ride Tracking & Sharing
+ride_sessions (id, ride_id, token, start_time, end_time, active)
+ride_shares (id, ride_id, shared_with, share_time, status)
+3️⃣ Coupons + Driver Payout
+driver_wallets (id, driver_id, ride_id, amount, transaction_type, reason, source, created_at)
+coupon_redemptions (id, user_id, ride_id, coupon_code, discount_amount, covered_by, created_at)
+company_wallets (id, ride_id, driver_id, amount, transaction_type, reason, created_at)
+🔹 Backend Logic (must implement fully)
+Commission Calculation
+Auto-applied when ride completes.
+Uses matching slab or fallback default.
+Saves to rides + credits driver wallet.
+Ride Tracking + Sharing
+OTP start triggers new ride session (JWT token).
+API for generating shareable link.
+API for fetching ride session details (masked driver contact, ETA).
+Auto-expire session after ride end + buffer.
+Log share events in ride_shares.
+Coupons + Driver Payout
+Coupon validation (expiry, usage).
+Discount applied → user pays final fare.
+Driver always credited full fare.
+Company wallet debited for discount.
+Redemption saved in coupon_redemptions.
+All transactions atomic (DB transaction).
+🔹 API Endpoints (JSON responses only)
+Rides:
+POST /api/rides/start → start ride after OTP
+POST /api/rides/complete → complete ride + commission logic
+POST /api/rides/share → generate ride link
+GET /api/rides/{id}/track → fetch live ride session details
+Coupons & Payouts:
+POST /api/coupons/apply → validate + apply coupon
+GET /api/wallets/driver/{id} → fetch driver wallet
+GET /api/wallets/company → fetch company wallet summary
+Admin:
+GET /api/admin/commission-slabs
+POST /api/admin/commission-slabs
+PUT /api/admin/commission-slabs/{id}
+DELETE /api/admin/commission-slabs/{id}
+GET /api/admin/coupons (CRUD for coupons)
+🔹 Deliverables
+Migrations for all tables (areas, slabs, rides, sessions, wallets, coupons).
+Seeders with example data (areas: Kolkata, Howrah; slabs; sample rides; coupons).
+Models + Eloquent Relationships.
+Controllers + Services implementing workflows.
+API Routes grouped by Rider, Driver, Admin.
+README.md: setup, API usage, Render deployment steps.
+Procfile for Render deployment.
+⚡ End Goal:
+Deliver a fully functional backend MVP for Loyal Safar that:
+Implements ALL driver features from the PDF (commission, wallets, coupons, ride sharing).
+Runs on local dev DB for testing.
+Deploys seamlessly to Render.com with production DB.
+Provides working REST APIs with no UI.

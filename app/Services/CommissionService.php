@@ -12,6 +12,7 @@ use App\Models\Ride;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
 
 class CommissionService
 {
@@ -65,7 +66,7 @@ class CommissionService
      */
     public function processCouponDiscount(Ride $ride, string $couponCode): array
     {
-        $coupon = Coupon::where('code', $couponCode)
+        $coupon = Coupon::query()->where('code', $couponCode)
             ->where('active', true)
             ->first();
             
@@ -118,7 +119,7 @@ class CommissionService
                 ]);
                 
                 // Record coupon redemption
-                CouponRedemption::create([
+                CouponRedemption::query()->create([
                     'user_id' => $ride->passenger_id,
                     'ride_id' => $ride->id,
                     'coupon_code' => $ride->coupon_code,
@@ -129,7 +130,7 @@ class CommissionService
                 ]);
                 
                 // Update coupon usage count
-                Coupon::where('code', $ride->coupon_code)->increment('used_count');
+                Coupon::query()->where('code', $ride->coupon_code)->increment('used_count');
                 
                 $transactionLog[] = "Coupon {$ride->coupon_code} applied: -{$couponData['discount_amount']}";
             }
@@ -146,7 +147,7 @@ class CommissionService
             $driverCreditAmount = $ride->coupon_code ? 
                 $commissionData['total_fare'] : $commissionData['driver_payout'];
                 
-            DriverWallet::create([
+            DriverWallet::query()->create([
                 'driver_id' => $ride->driver_id,
                 'ride_id' => $ride->id,
                 'amount' => $driverCreditAmount,
@@ -161,7 +162,7 @@ class CommissionService
             // Company wallet transactions
             if ($ride->coupon_code) {
                 // Company absorbs coupon discount
-                CompanyWallet::create([
+                CompanyWallet::query()->create([
                     'ride_id' => $ride->id,
                     'driver_id' => $ride->driver_id,
                     'amount' => $couponData['discount_amount'],
@@ -174,7 +175,7 @@ class CommissionService
             }
             
             // Company earns commission
-            CompanyWallet::create([
+            CompanyWallet::query()->create([
                 'ride_id' => $ride->id,
                 'driver_id' => $ride->driver_id,
                 'amount' => $commissionData['commission_amount'],
@@ -246,12 +247,12 @@ class CommissionService
      */
     private function findCommissionSlab(int $areaId, float $fare): ?CommissionSlab
     {
-        return CommissionSlab::where('area_id', $areaId)
+        return CommissionSlab::query()->where('area_id', $areaId)
             ->where('active', true)
             ->where('min_fare', '<=', $fare)
             ->where('max_fare', '>=', $fare)
             ->first() 
-            ?? CommissionSlab::where('area_id', $areaId)
+            ?? CommissionSlab::query()->where('area_id', $areaId)
                 ->where('active', true)
                 ->where('is_default', true)
                 ->first();
