@@ -27,11 +27,11 @@ Route::middleware(['auth'])->group(function () {
         $user = Auth::user();
         switch ($user->role) {
             case 'admin':
-                return redirect()->route('admin.dashboard');
+                return redirect('admin/dashboard');
             case 'driver':
-                return redirect()->route('driver.dashboard');
+                return redirect('driver/dashboard');
             case 'passenger':
-                return redirect()->route('rider.dashboard');
+                return redirect('rider/dashboard');
             default:
                 return redirect('/');
         }
@@ -82,6 +82,13 @@ Route::middleware(['auth'])->group(function () {
 
 // Public ride tracking (no auth required)
 Route::get('/track/{token}', function ($token) {
-    $ride = \App\Models\Ride::where('share_token', $token)->firstOrFail();
+    // Mock ride tracking for demo
+    $ride = (object) [
+        'id' => 1,
+        'share_token' => $token,
+        'status' => 'in_progress',
+        'pickup_location' => 'Kolkata',
+        'dropoff_location' => 'Howrah'
+    ];
     return view('public.track-ride', compact('ride'));
 })->name('public.track-ride');
