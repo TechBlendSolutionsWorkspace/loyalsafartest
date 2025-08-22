@@ -155,4 +155,25 @@ class DriverController extends Controller
             'message' => 'Payout request processed successfully!'
         ]);
     }
+    
+    public function community()
+    {
+        // Mock community data for drivers
+        $communityData = [
+            'announcements' => [
+                ['title' => 'New Safety Guidelines', 'content' => 'Please follow the updated safety protocols for Kolkata routes.', 'date' => '2025-08-20'],
+                ['title' => 'Peak Hours Bonus', 'content' => 'Extra ₹50 bonus during 8-10 AM and 6-8 PM in Howrah area.', 'date' => '2025-08-18']
+            ],
+            'tips' => [
+                ['title' => 'Best Routes in Kolkata', 'content' => 'Avoid Park Street during lunch hours for faster trips.'],
+                ['title' => 'Customer Service', 'content' => 'Greet passengers in Bengali: "Namaskar, kemon achen?"']
+            ],
+            'forum_posts' => [
+                ['author' => 'Rajesh Kumar', 'title' => 'Traffic Update: Howrah Bridge', 'replies' => 12, 'time' => '2 hours ago'],
+                ['author' => 'Amit Das', 'title' => 'Best pickup spots in Salt Lake', 'replies' => 8, 'time' => '4 hours ago']
+            ]
+        ];
+        
+        return view('driver.community', compact('communityData'));
+    }
 }
