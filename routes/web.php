@@ -65,6 +65,11 @@ Route::middleware(['auth'])->group(function () {
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+        Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
+        Route::get('/rides', [AdminController::class, 'rides'])->name('rides.index');
+        Route::get('/rides/{ride}', [AdminController::class, 'showRide'])->name('rides.show');
+        Route::get('/drivers', [AdminController::class, 'drivers'])->name('drivers');
         Route::get('/areas', [AdminController::class, 'areas'])->name('areas');
         Route::get('/commission-slabs', [AdminController::class, 'commissionSlabs'])->name('commission-slabs');
         Route::post('/commission-slabs', [AdminController::class, 'createCommissionSlab'])->name('commission-slabs.store');
@@ -75,7 +80,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/company-wallet', [AdminController::class, 'companyWalletReport'])->name('reports.company-wallet');
         Route::get('/reports/coupon-usage', [AdminController::class, 'couponUsageReport'])->name('reports.coupon-usage');
         Route::get('/reports/ride-shares', [AdminController::class, 'rideSharesReport'])->name('reports.ride-shares');
-        Route::get('/drivers', [AdminController::class, 'drivers'])->name('drivers');
         Route::post('/verify-driver/{driver}', [AdminController::class, 'verifyDriver'])->name('verify-driver');
         Route::post('/block-driver/{driver}', [AdminController::class, 'blockDriver'])->name('block-driver');
     });

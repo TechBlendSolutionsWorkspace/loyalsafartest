@@ -20,6 +20,65 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats'));
     }
     
+    public function users()
+    {
+        // Mock user data
+        $users = [
+            ['id' => 1, 'name' => 'Amit Rider', 'email' => 'rider@loyalsafar.com', 'role' => 'passenger', 'status' => 'active'],
+            ['id' => 2, 'name' => 'Rajesh Driver', 'email' => 'driver@loyalsafar.com', 'role' => 'driver', 'status' => 'verified'],
+            ['id' => 3, 'name' => 'Admin User', 'email' => 'admin@loyalsafar.com', 'role' => 'admin', 'status' => 'active']
+        ];
+        
+        return view('admin.users.index', compact('users'));
+    }
+    
+    public function showUser($userId)
+    {
+        // Mock user details
+        $user = (object) [
+            'id' => $userId,
+            'name' => 'Sample User',
+            'email' => 'user@loyalsafar.com',
+            'role' => 'passenger',
+            'status' => 'active',
+            'total_rides' => 5,
+            'total_spent' => 450
+        ];
+        
+        return view('admin.users.show', compact('user'));
+    }
+    
+    public function rides()
+    {
+        // Mock rides data
+        $rides = [
+            ['id' => 1, 'passenger' => 'Amit Rider', 'driver' => 'Rajesh Driver', 'pickup' => 'Kolkata Central', 'dropoff' => 'Howrah', 'status' => 'completed', 'fare' => 120],
+            ['id' => 2, 'passenger' => 'Priya Das', 'driver' => 'Suresh Kumar', 'pickup' => 'Salt Lake', 'dropoff' => 'Park Street', 'status' => 'completed', 'fare' => 95],
+            ['id' => 3, 'passenger' => 'Raj Kumar', 'driver' => null, 'pickup' => 'Esplanade', 'dropoff' => 'Garia', 'status' => 'pending', 'fare' => 150]
+        ];
+        
+        return view('admin.rides.index', compact('rides'));
+    }
+    
+    public function showRide($rideId)
+    {
+        // Mock ride details
+        $ride = (object) [
+            'id' => $rideId,
+            'passenger' => 'Sample Passenger',
+            'driver' => 'Sample Driver',
+            'pickup_location' => 'Kolkata Central',
+            'dropoff_location' => 'Howrah Station',
+            'status' => 'completed',
+            'fare' => 120,
+            'commission' => 18,
+            'distance' => 8.5,
+            'duration' => 25
+        ];
+        
+        return view('admin.rides.show', compact('ride'));
+    }
+    
     public function drivers()
     {
         // Mock driver data
