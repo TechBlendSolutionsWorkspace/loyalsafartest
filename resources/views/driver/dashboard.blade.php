@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Driver Dashboard - RideBook')
+@section('title', 'Driver Dashboard - Loyal Safar')
 
 @section('content')
 <div class="container-fluid">

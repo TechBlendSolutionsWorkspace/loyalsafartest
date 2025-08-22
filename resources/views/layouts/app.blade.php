@@ -243,45 +243,40 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ route('dashboard') }}">
+            <a class="navbar-brand" href="{{ auth()->check() ? route('dashboard') : '/' }}">
                 <i class="fas fa-car mr-2"></i>Loyal Safar
             </a>
             
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     @auth
-                        @if(auth()->user()->isDriver())
+                        @if(auth()->user()->role === 'driver')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('driver.dashboard') }}">
                                     <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('driver.rides') }}">
-                                    <i class="fas fa-route mr-1"></i>Rides
+                                <a class="nav-link" href="{{ route('driver.wallet') }}">
+                                    <i class="fas fa-wallet mr-1"></i>Wallet
                                 </a>
                             </li>
+                        @elseif(auth()->user()->role === 'passenger')
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('driver.earnings') }}">
-                                    <i class="fas fa-dollar-sign mr-1"></i>Earnings
-                                </a>
-                            </li>
-                        @elseif(auth()->user()->isPassenger())
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('passenger.dashboard') }}">
+                                <a class="nav-link" href="{{ route('rider.dashboard') }}">
                                     <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('passenger.book-ride') }}">
+                                <a class="nav-link" href="{{ route('rider.book-ride') }}">
                                     <i class="fas fa-plus mr-1"></i>Book Ride
                                 </a>
                             </li>
-                        @elseif(auth()->user()->isAdmin())
+                        @elseif(auth()->user()->role === 'admin')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.dashboard') }}">
                                     <i class="fas fa-cogs mr-1"></i>Admin Panel
@@ -290,26 +285,26 @@
                         @endif
                         
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                                @if(auth()->user()->avatar)
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                @if(isset(auth()->user()->avatar) && auth()->user()->avatar)
                                     <img src="{{ auth()->user()->avatar }}" class="driver-avatar mr-1" alt="Avatar">
                                 @else
                                     <i class="fas fa-user mr-1"></i>
                                 @endif
                                 {{ auth()->user()->name }}
                             </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                    <i class="fas fa-user-edit mr-2"></i>Profile
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                                    </button>
-                                </form>
-                            </div>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">{{ ucfirst(auth()->user()->role) }} Account</h6></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                     @else
                         <li class="nav-item">
@@ -343,8 +338,8 @@
     <!-- jQuery 3.4.1 -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
     
-    <!-- Bootstrap JS 4.4.1 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS 5.3.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Core JS 3.2.1 -->
     <script src="https://cdn.jsdelivr.net/npm/core-js@3.2.1/minified.js"></script>
