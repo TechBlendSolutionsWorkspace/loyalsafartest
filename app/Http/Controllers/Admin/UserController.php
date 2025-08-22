@@ -34,9 +34,17 @@ class UserController extends Controller
             });
         }
         
-        $users = $query->orderBy('created_at', 'desc')->paginate(15);
+        $users = $query->with(['driver'])->orderBy('created_at', 'desc')->paginate(15);
         
-        return view('admin.users.index', compact('users'));
+        // Calculate statistics
+        $stats = [
+            'total_users' => User::count(),
+            'passengers' => User::where('role', 'passenger')->count(),
+            'drivers' => User::where('role', 'driver')->count(),
+            'admins' => User::where('role', 'admin')->count(),
+        ];
+        
+        return view('admin.users.index', compact('users', 'stats'));
     }
     
     public function show(User $user)
