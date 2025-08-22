@@ -25,10 +25,17 @@ class DriverController extends Controller
             'total_earnings' => 0,
             'total_rides' => 0,
             'rating' => $user->rating ?? 4.5,
-            'wallet_balance' => 0
+            'wallet_balance' => 0,
+            'status' => 'online'
         ];
         
-        return view('driver.dashboard', compact('stats', 'driver'));
+        // Mock pending ride requests
+        $pendingRides = [
+            ['id' => 1, 'passenger' => 'Amit Sharma', 'pickup' => 'Kolkata Central', 'dropoff' => 'Howrah Station', 'fare' => 120, 'distance' => '8.5 km'],
+            ['id' => 2, 'passenger' => 'Priya Das', 'pickup' => 'Salt Lake', 'dropoff' => 'Park Street', 'fare' => 95, 'distance' => '6.2 km']
+        ];
+        
+        return view('driver.dashboard', compact('stats', 'driver', 'pendingRides'));
     }
     
     public function wallet()
