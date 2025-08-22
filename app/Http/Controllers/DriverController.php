@@ -35,7 +35,14 @@ class DriverController extends Controller
             ['id' => 2, 'passenger' => 'Priya Das', 'pickup' => 'Salt Lake', 'dropoff' => 'Park Street', 'fare' => 95, 'distance' => '6.2 km']
         ];
         
-        return view('driver.dashboard', compact('stats', 'driver', 'pendingRides'));
+        // Mock recent rides data
+        $recentRides = [
+            ['id' => 3, 'passenger' => 'Raj Kumar', 'pickup' => 'Esplanade', 'dropoff' => 'Garia', 'status' => 'completed', 'fare' => 150, 'date' => '2025-08-22'],
+            ['id' => 4, 'passenger' => 'Sneha Roy', 'pickup' => 'Howrah', 'dropoff' => 'Sealdah', 'status' => 'completed', 'fare' => 110, 'date' => '2025-08-21'],
+            ['id' => 5, 'passenger' => 'Arjun Das', 'pickup' => 'Park Street', 'dropoff' => 'New Market', 'status' => 'completed', 'fare' => 80, 'date' => '2025-08-21']
+        ];
+        
+        return view('driver.dashboard', compact('stats', 'driver', 'pendingRides', 'recentRides'));
     }
     
     public function wallet()
