@@ -58,7 +58,7 @@
                 <div class="row mb-4">
                     <div class="col-lg-3 col-md-6 mb-3">
                         <div class="card earnings-card">
-                            <div class="card-body text-center text-white">
+                            <div class="card-body text-center" style="color: var(--indrive-white);">
                                 <i class="fas fa-rupee-sign fa-3x mb-3"></i>
                                 <h3 class="font-weight-bold">₹{{ number_format($wallet_balance ?? 0, 2) }}</h3>
                                 <p class="mb-0">Available Balance</p>
@@ -68,34 +68,34 @@
                     </div>
                     
                     <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card eco-card">
-                            <div class="card-body text-center text-white">
+                        <div class="card payout-card">
+                            <div class="card-body text-center" style="color: var(--indrive-green);">
                                 <i class="fas fa-chart-line fa-3x mb-3"></i>
                                 <h3 class="font-weight-bold">₹{{ number_format($total_earnings ?? 0, 2) }}</h3>
-                                <p class="mb-0">Total Earnings</p>
-                                <small class="opacity-75">This month</small>
+                                <p class="mb-0" style="color: var(--indrive-dark);">Total Earnings</p>
+                                <small style="color: var(--indrive-dark);">This month</small>
                             </div>
                         </div>
                     </div>
                     
                     <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card bg-info text-white">
-                            <div class="card-body text-center">
+                        <div class="card payout-card">
+                            <div class="card-body text-center" style="color: var(--indrive-blue);">
                                 <i class="fas fa-exchange-alt fa-3x mb-3"></i>
                                 <h3 class="font-weight-bold">{{ $total_payouts ?? 0 }}</h3>
-                                <p class="mb-0">Total Payouts</p>
-                                <small class="opacity-75">All time</small>
+                                <p class="mb-0" style="color: var(--indrive-dark);">Total Payouts</p>
+                                <small style="color: var(--indrive-dark);">All time</small>
                             </div>
                         </div>
                     </div>
                     
                     <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card bg-warning text-white">
+                        <div class="card commission-card">
                             <div class="card-body text-center">
-                                <i class="fas fa-percentage fa-3x mb-3"></i>
-                                <h3 class="font-weight-bold">{{ number_format($avg_commission ?? 0, 1) }}%</h3>
-                                <p class="mb-0">Avg Commission</p>
-                                <small class="opacity-75">Last 30 days</small>
+                                <i class="fas fa-percentage fa-3x mb-3" style="color: var(--indrive-dark);"></i>
+                                <h3 class="font-weight-bold" style="color: var(--indrive-dark);">{{ number_format($avg_commission ?? 0, 1) }}%</h3>
+                                <p class="mb-0" style="color: var(--indrive-dark);">Avg Commission</p>
+                                <small style="color: var(--indrive-dark);">Last 30 days</small>
                             </div>
                         </div>
                     </div>
@@ -111,14 +111,14 @@
                                 </h5>
                                 <div class="row">
                                     <div class="col-lg-3 col-md-6 mb-3">
-                                        <button class="btn btn-success btn-block h-100" data-bs-toggle="modal" data-bs-target="#instantPayoutModal">
+                                        <button class="btn btn-ride btn-block h-100" data-bs-toggle="modal" data-bs-target="#instantPayoutModal">
                                             <i class="fas fa-money-bill-wave fa-2x d-block mb-2"></i>
                                             Instant Payout
                                             <small class="d-block">UPI/Bank Transfer</small>
                                         </button>
                                     </div>
                                     <div class="col-lg-3 col-md-6 mb-3">
-                                        <button class="btn btn-primary btn-block h-100" data-bs-toggle="modal" data-bs-target="#earningsModal">
+                                        <button class="btn btn-block h-100" data-bs-toggle="modal" data-bs-target="#earningsModal" style="background: var(--indrive-blue); color: var(--indrive-white); border: none;">
                                             <i class="fas fa-chart-bar fa-2x d-block mb-2"></i>
                                             Earnings Report
                                             <small class="d-block">Detailed breakdown</small>
@@ -148,8 +148,8 @@
                 <div class="row">
                     <div class="col-lg-8 mb-4">
                         <div class="card">
-                            <div class="card-header" style="background: var(--loyal-gradient);">
-                                <h5 class="mb-0 text-white">
+                            <div class="card-header" style="background: var(--indrive-green); color: var(--indrive-white);">
+                                <h5 class="mb-0">
                                     <i class="fas fa-history mr-2"></i>
                                     Recent Transactions
                                 </h5>
@@ -158,7 +158,7 @@
                                 @if(isset($transactions) && count($transactions) > 0)
                                     <div class="table-responsive">
                                         <table class="table table-hover">
-                                            <thead class="table-light">
+                                            <thead style="background: var(--indrive-light); color: var(--indrive-dark);">
                                                 <tr>
                                                     <th>Date</th>
                                                     <th>Transaction</th>
@@ -195,7 +195,7 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            <strong class="text-{{ $transaction->transaction_type == 'credit' ? 'success' : 'danger' }}">
+                                                            <strong style="color: {{ $transaction->transaction_type == 'credit' ? 'var(--indrive-green)' : 'var(--indrive-red)' }};">
                                                                 {{ $transaction->transaction_type == 'credit' ? '+' : '-' }}₹{{ number_format($transaction->amount, 2) }}
                                                             </strong>
                                                         </td>
@@ -223,7 +223,7 @@
                     <!-- Payout Methods -->
                     <div class="col-lg-4 mb-4">
                         <div class="card">
-                            <div class="card-header bg-success text-white">
+                            <div class="card-header" style="background: var(--indrive-green); color: var(--indrive-white);">
                                 <h5 class="mb-0">
                                     <i class="fas fa-university mr-2"></i>
                                     Payout Methods
@@ -231,15 +231,15 @@
                             </div>
                             <div class="card-body">
                                 <div class="payout-method mb-3" id="upi-method">
-                                    <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                                    <div class="d-flex justify-content-between align-items-center p-3 border rounded" style="background: var(--indrive-white); border-color: var(--indrive-light);">
                                         <div class="d-flex align-items-center">
-                                            <i class="fas fa-mobile-alt fa-2x text-primary mr-3"></i>
+                                            <i class="fas fa-mobile-alt fa-2x mr-3" style="color: var(--indrive-green);"></i>
                                             <div>
-                                                <h6 class="mb-0">UPI Instant</h6>
-                                                <small class="text-success">**** **** 9876</small>
+                                                <h6 class="mb-0" style="color: var(--indrive-dark);">UPI Instant</h6>
+                                                <small style="color: var(--indrive-green);">**** **** 9876</small>
                                             </div>
                                         </div>
-                                        <span class="badge badge-success">Active</span>
+                                        <span class="badge" style="background: var(--indrive-green); color: var(--indrive-white);">Active</span>
                                     </div>
                                 </div>
                                 
@@ -313,7 +313,7 @@
 <div class="modal fade" id="instantPayoutModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-success text-white">
+            <div class="modal-header" style="background: var(--indrive-green); color: var(--indrive-white);">
                 <h5 class="modal-title">
                     <i class="fas fa-money-bill-wave mr-2"></i>Instant Payout
                 </h5>
@@ -357,7 +357,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="processPayoutBtn">
+                <button type="button" class="btn btn-ride" id="processPayoutBtn">
                     <i class="fas fa-paper-plane mr-2"></i>Process Payout
                 </button>
             </div>

@@ -5,7 +5,7 @@
 @section('content')
 <div class="container-fluid p-0">
     <!-- Hero Section with Booking Form -->
-    <div class="hero-section" style="background: var(--loyal-gradient); min-height: 100vh;">
+    <div class="hero-section" style="background: var(--indrive-gradient); min-height: 100vh;">
         <div class="container">
             <div class="row align-items-center min-vh-100">
                 <div class="col-lg-6">
@@ -172,8 +172,8 @@
                                 <div class="collapse mt-3" id="couponCollapse">
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="coupon_code" 
-                                               placeholder="Enter coupon code">
-                                        <button class="btn btn-outline-success" type="button" id="applyCoupon">
+                                               placeholder="Enter coupon code" style="background: var(--indrive-light); border-color: var(--indrive-light);">
+                                        <button class="btn btn-ride" type="button" id="applyCoupon">
                                             Apply
                                         </button>
                                     </div>
@@ -182,13 +182,13 @@
                                     <div class="available-coupons mt-3">
                                         <small class="text-muted d-block mb-2">Available offers:</small>
                                         <div class="coupon-chips">
-                                            <span class="badge bg-success me-2 mb-1 coupon-chip" data-code="FIRST50">
+                                            <span class="badge me-2 mb-1 coupon-chip" data-code="FIRST50" style="background: var(--indrive-green); color: var(--indrive-white);">
                                                 FIRST50 - ₹50 off
                                             </span>
-                                            <span class="badge bg-primary me-2 mb-1 coupon-chip" data-code="LOYAL20">
+                                            <span class="badge me-2 mb-1 coupon-chip" data-code="LOYAL20" style="background: var(--indrive-blue); color: var(--indrive-white);">
                                                 LOYAL20 - 20% off
                                             </span>
-                                            <span class="badge bg-info me-2 mb-1 coupon-chip" data-code="GREEN15">
+                                            <span class="badge me-2 mb-1 coupon-chip" data-code="GREEN15" style="background: var(--indrive-green); color: var(--indrive-white);">
                                                 GREEN15 - ₹15 off eco rides
                                             </span>
                                         </div>
@@ -235,7 +235,7 @@
                                         </button>
                                     </div>
                                     <div class="col-6">
-                                        <button type="button" class="btn btn-outline-danger btn-sm w-100" data-bs-toggle="modal" data-bs-target="#emergencyModal">
+                                        <button type="button" class="btn btn-panic btn-sm w-100" data-bs-toggle="modal" data-bs-target="#emergencyModal">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Emergency
                                         </button>
                                     </div>
@@ -339,7 +339,7 @@
 <div class="modal fade" id="emergencyModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
+            <div class="modal-header" style="background: var(--indrive-red); color: var(--indrive-white);">
                 <h5 class="modal-title">
                     <i class="fas fa-exclamation-triangle mr-2"></i>Emergency Contacts
                 </h5>

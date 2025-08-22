@@ -58,12 +58,12 @@
                 <div class="row mb-4">
                     @foreach($areas as $area)
                         <div class="col-lg-3 col-md-6 mb-3">
-                            <div class="card eco-card">
-                                <div class="card-body text-center text-white">
-                                    <i class="fas fa-map-marked-alt fa-2x mb-2"></i>
+                            <div class="card payout-card">
+                                <div class="card-body text-center" style="color: var(--indrive-dark);">
+                                    <i class="fas fa-map-marked-alt fa-2x mb-2" style="color: var(--indrive-green);"></i>
                                     <h5 class="font-weight-bold">{{ $area->name }}</h5>
-                                    <p class="mb-1">{{ $area->commission_slabs_count }} Slabs Active</p>
-                                    <small>Base: ₹{{ $area->base_fare }} | Per KM: ₹{{ $area->per_km_rate }}</small>
+                                    <p class="mb-1">{{ $area->commission_slabs_count ?? 0 }} Slabs Active</p>
+                                    <small>Base: ₹{{ $area->base_fare ?? 0 }} | Per KM: ₹{{ $area->per_km_rate ?? 0 }}</small>
                                 </div>
                             </div>
                         </div>
@@ -73,18 +73,18 @@
                 <!-- Commission Slabs by Area -->
                 @foreach($areas as $area)
                     <div class="card mb-4">
-                        <div class="card-header" style="background: var(--loyal-gradient);">
-                            <h5 class="mb-0 text-white">
+                        <div class="card-header" style="background: var(--indrive-green); color: var(--indrive-white);">
+                            <h5 class="mb-0">
                                 <i class="fas fa-map-marker-alt mr-2"></i>
                                 {{ $area->name }} Commission Structure
-                                <span class="badge badge-light ml-2">{{ $area->commission_slabs->count() }} Slabs</span>
+                                <span class="badge" style="background: var(--indrive-white); color: var(--indrive-green);">{{ $area->commission_slabs->count() ?? 0 }} Slabs</span>
                             </h5>
                         </div>
                         <div class="card-body">
                             @if($area->commission_slabs->count() > 0)
                                 <div class="table-responsive">
                                     <table class="table table-hover">
-                                        <thead class="table-light">
+                                        <thead style="background: var(--indrive-green); color: var(--indrive-white);">
                                             <tr>
                                                 <th>Fare Range</th>
                                                 <th>Commission Type</th>
@@ -95,23 +95,23 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($area->commission_slabs as $slab)
-                                                <tr>
+                                            @foreach($area->commission_slabs ?? [] as $slab)
+                                                <tr style="background: var(--indrive-white);">
                                                     <td>
-                                                        <strong>₹{{ number_format($slab->min_fare, 2) }}</strong>
+                                                        <strong style="color: var(--indrive-dark);">₹{{ number_format($slab->min_fare, 2) }}</strong>
                                                         @if($slab->max_fare)
-                                                            - <strong>₹{{ number_format($slab->max_fare, 2) }}</strong>
+                                                            - <strong style="color: var(--indrive-dark);">₹{{ number_format($slab->max_fare, 2) }}</strong>
                                                         @else
-                                                            <span class="text-success">& Above</span>
+                                                            <span style="color: var(--indrive-green);">& Above</span>
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        <span class="badge badge-{{ $slab->commission_type == 'percentage' ? 'primary' : 'info' }}">
+                                                        <span class="badge" style="background: var(--indrive-{{ $slab->commission_type == 'percentage' ? 'green' : 'blue' }}); color: var(--indrive-white);">
                                                             {{ ucfirst($slab->commission_type) }}
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <strong class="text-success">
+                                                        <strong style="color: var(--indrive-green);">
                                                             @if($slab->commission_type == 'percentage')
                                                                 {{ $slab->commission_value }}%
                                                             @else

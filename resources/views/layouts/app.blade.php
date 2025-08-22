@@ -27,36 +27,33 @@
     <!-- Custom CSS -->
     <style>
         :root {
-            --loyal-primary: #1e88e5;
-            --loyal-secondary: #43a047;
-            --loyal-accent: #00c853;
-            --loyal-eco: #2e7d32;
-            --loyal-trust: #1565c0;
-            --loyal-light: #e8f5e8;
-            --loyal-dark: #1b5e20;
-            --loyal-gradient: linear-gradient(135deg, #1e88e5, #43a047);
-            --loyal-eco-gradient: linear-gradient(135deg, #2e7d32, #00c853);
+            --indrive-green: #00D26A;
+            --indrive-dark: #202124;
+            --indrive-light: #F5F5F5;
+            --indrive-white: #FFFFFF;
+            --indrive-blue: #007AFF;
+            --indrive-red: #FF3B30;
+            --indrive-gradient: linear-gradient(135deg, #00D26A, #00B85A);
         }
         
         body {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--loyal-light), #f0f9ff);
+            background: var(--indrive-light);
             min-height: 100vh;
+            color: var(--indrive-dark);
         }
         
         .navbar-brand {
             font-weight: 800;
             font-size: 1.8rem;
-            background: var(--loyal-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--indrive-green) !important;
         }
         
         .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: var(--indrive-white) !important;
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(30, 136, 229, 0.1);
+            border-bottom: 1px solid var(--indrive-light);
+            box-shadow: 0 2px 4px rgba(32, 33, 36, 0.1);
         }
         
         .ride-card {
@@ -89,20 +86,29 @@
         }
         
         .earnings-card {
-            background: var(--loyal-gradient);
-            color: white;
+            background: var(--indrive-gradient);
+            color: var(--indrive-white);
             border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 210, 106, 0.15);
         }
         
-        .eco-card {
-            background: var(--loyal-eco-gradient);
-            color: white;
+        .payout-card {
+            background: var(--indrive-white);
+            border: 1px solid var(--indrive-light);
             border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.15);
+            box-shadow: 0 4px 12px rgba(32, 33, 36, 0.08);
+        }
+        
+        .commission-card {
+            background: var(--indrive-white);
+            border-left: 4px solid var(--indrive-green);
+            color: var(--indrive-dark);
         }
         
         .btn-ride {
+            background: var(--indrive-green);
+            border: none;
+            color: var(--indrive-white);
             border-radius: 25px;
             padding: 0.75rem 2rem;
             font-weight: 600;
@@ -110,28 +116,59 @@
         }
         
         .btn-ride:hover {
+            background: #00B85A;
             transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 210, 106, 0.3);
+            color: var(--indrive-white);
+        }
+        
+        .btn-panic {
+            background: var(--indrive-red);
+            border: none;
+            color: var(--indrive-white);
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-panic:hover {
+            background: #E5342A;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 59, 48, 0.3);
+            color: var(--indrive-white);
         }
         
         .sidebar {
             min-height: 100vh;
-            background: linear-gradient(180deg, var(--loyal-trust), var(--loyal-dark));
-            box-shadow: 4px 0 15px rgba(30, 136, 229, 0.1);
+            background: var(--indrive-dark);
+            box-shadow: 4px 0 15px rgba(32, 33, 36, 0.15);
         }
         
         .sidebar .nav-link {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.7);
             padding: 1rem 1.5rem;
             border-radius: 10px;
             margin: 0.2rem 0;
             transition: all 0.3s;
         }
         
-        .sidebar .nav-link:hover,
+        .sidebar .nav-link:hover {
+            background: rgba(0, 210, 106, 0.1);
+            color: var(--indrive-green);
+        }
+        
         .sidebar .nav-link.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
+            background: var(--indrive-green);
+            color: var(--indrive-white);
+        }
+        
+        .sidebar .nav-link i {
+            color: var(--indrive-green);
+        }
+        
+        .sidebar .nav-link.active i {
+            color: var(--indrive-white);
         }
         
         .loading-spinner {
@@ -139,11 +176,61 @@
         }
         
         .rating-stars {
-            color: #ffc107;
+            color: var(--indrive-green);
         }
         
         .vehicle-info {
-            background: white;
+            background: var(--indrive-white);
+        }
+        
+        /* Table Styling for InDrive Theme */
+        .table tbody tr:nth-child(even) {
+            background-color: var(--indrive-light);
+        }
+        
+        .table tbody tr:nth-child(odd) {
+            background-color: var(--indrive-white);
+        }
+        
+        .table th {
+            border-color: var(--indrive-light);
+            color: var(--indrive-dark);
+        }
+        
+        .table td {
+            border-color: var(--indrive-light);
+            color: var(--indrive-dark);
+        }
+        
+        /* Form Elements */
+        .form-control:focus {
+            border-color: var(--indrive-green);
+            box-shadow: 0 0 0 0.2rem rgba(0, 210, 106, 0.25);
+        }
+        
+        .form-select:focus {
+            border-color: var(--indrive-green);
+            box-shadow: 0 0 0 0.2rem rgba(0, 210, 106, 0.25);
+        }
+        
+        /* Alert Styling */
+        .alert-success {
+            background-color: rgba(0, 210, 106, 0.1);
+            border-color: var(--indrive-green);
+            color: var(--indrive-dark);
+        }
+        
+        .alert-danger {
+            background-color: rgba(255, 59, 48, 0.1);
+            border-color: var(--indrive-red);
+            color: var(--indrive-dark);
+        }
+        
+        .alert-info {
+            background-color: rgba(0, 122, 255, 0.1);
+            border-color: var(--indrive-blue);
+            color: var(--indrive-dark);
+        }
             border-radius: 10px;
             padding: 1rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
