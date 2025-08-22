@@ -179,18 +179,18 @@
                                     @foreach($recentRides as $ride)
                                         <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                                             <div>
-                                                <h6 class="mb-1">{{ $ride->passenger->name }}</h6>
+                                                <h6 class="mb-1">{{ $ride['passenger'] }}</h6>
                                                 <p class="text-muted mb-0">
                                                     <small>
-                                                        <span class="status-badge badge badge-{{ $ride->status == 'completed' ? 'success' : 'warning' }}">
-                                                            {{ ucfirst(str_replace('_', ' ', $ride->status)) }}
+                                                        <span class="status-badge badge badge-{{ $ride['status'] == 'completed' ? 'success' : 'warning' }}">
+                                                            {{ ucfirst(str_replace('_', ' ', $ride['status'])) }}
                                                         </span>
                                                     </small>
                                                 </p>
                                             </div>
                                             <div class="text-right">
-                                                <h6 class="mb-0 text-success">₹{{ number_format($ride->actual_fare ?? $ride->estimated_fare, 2) }}</h6>
-                                                <small class="text-muted">{{ $ride->created_at->format('M d') }}</small>
+                                                <h6 class="mb-0 text-success">₹{{ number_format($ride['fare'], 2) }}</h6>
+                                                <small class="text-muted">{{ $ride['date'] }}</small>
                                             </div>
                                         </div>
                                     @endforeach
