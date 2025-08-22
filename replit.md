@@ -1,8 +1,8 @@
-# LuxeJewels - Modern High-End Jewellery E-Commerce Platform
+# RideBook - Professional Ride Booking Platform
 
 ## Overview
 
-This is a completely rebuilt modern, high-end jewellery e-commerce platform called "LuxeJewels" built with React, TypeScript, and PostgreSQL. Following the rewrite instructions, all previous code was scrapped and replaced with a luxury jewelry shopping experience featuring elegant gold/black/white design aesthetic, comprehensive product catalog, secure authentication, shopping cart functionality, and admin management system.
+RideBook is a comprehensive ride-booking driver application built with Laravel/PHP, featuring role-based authentication for drivers, passengers, and administrators. The platform provides real-time ride matching, GPS tracking, earnings management, and secure payment processing. Built using Laravel framework with Bootstrap 4.4.1, jQuery 3.4.1, and modern web technologies for a responsive, mobile-first experience.
 
 ## User Preferences
 
@@ -11,180 +11,50 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Routing**: Wouter (lightweight client-side routing)
-- **State Management**
--
--
--
--
--
--
--
--
--
--
--    TanStack Query (React Query) for server state
-- **UI Framework**: Shadcn/ui components built on Radix UI primitives
-- **Styling**: Tailwind CSS with custom design system
-- **Build Tool**: Vite for fast development and optimized builds
+- **Bootstrap 4.4.1 Framework**: Responsive design using Bootstrap grid system and components
+- **jQuery 3.4.1 Integration**: Enhanced interactivity with jQuery for AJAX requests and DOM manipulation
+- **Modern UI Libraries**: Swiper for carousels, FancyBox for modals, Highlight.js for code highlighting
+- **Real-time Updates**: Live ride tracking, status updates, and location tracking functionality
 
-### Backend Architecture  
-- **Runtime**: Node.js with Express.js
-- **Language**: TypeScript with ES modules
-- **API Pattern**: RESTful API with JSON responses
-- **Development**: TSX for TypeScript execution in development
-- **Production**: ESBuild for optimized bundling
+### Backend Architecture
+- **Laravel Framework**: MVC architecture with Eloquent ORM for database operations
+- **Role-Based Authentication**: Multi-role system supporting drivers, passengers, and administrators
+- **Ride Management System**: Complete workflow from booking to completion with status tracking
+- **Payment Processing**: Secure payment handling with multiple payment method support
 
-### Database & ORM
-- **Database**: PostgreSQL (configured for Neon serverless)
-- **ORM**: Drizzle ORM with migrations
-- **Schema**: Centralized in `/shared/schema.ts` for type safety
-- **Validation**: Zod schemas derived from Drizzle tables
+### Data Storage Solutions
+- **Product Catalog Structure**: 
+  - Products with hierarchical categories (Main Category → Subcategory)
+  - Variation attributes (Duration, Price, Features, Activation Time, Warranty)
+  - Inventory tracking and availability status
+- **Order Management Schema**:
+  - Order records with product variations and customer information
+  - Payment status tracking for manual verification workflow
+- **Category Management**: Two-tier categorization system for organized product browsing
 
-## Key Components
-
-### Data Models
-The database schema includes ready-to-use tables for:
-- **Categories**: Hierarchical category system with subcategory support
-- **Products**: Comprehensive product model with all common e-commerce fields
-- **Orders**: Complete order management system
-- **Users**: User authentication and profile management
-- **Reviews**: Customer review system with ratings and moderation
-- **Blog Posts**: Content management for articles
-- **Testimonials**: Customer testimonials system
-
-All tables are currently empty and ready for your new application data.
-
-### Recent Changes (August 16, 2025)
-- ✅ **COMPLETE PROJECT RESTRUCTURE** - Completely rebuilt from scratch as luxury jewellery e-commerce platform, removing all restaurant-related code and design
-- ✅ **NEW DATABASE SCHEMA** - Designed fresh schema for products, users, orders, cart, wishlist, and inventory management with proper relationships
-- ✅ **LUXURY UI DESIGN** - Implemented elegant gold/black/white color palette with premium typography and smooth animations
-- ✅ **PRODUCT CATALOG SYSTEM** - Built comprehensive catalog with categories (Rings, Necklaces, Bracelets, Earrings, Bridal, Custom) and advanced filtering
-- ✅ **AUTHENTICATION & SECURITY** - Implemented JWT-based secure authentication with user roles and session management
-- ✅ **E-COMMERCE FUNCTIONALITY** - Added shopping cart, wishlist, checkout flow, and order management system
-- ✅ **ADMIN DASHBOARD** - Created admin panel for product, order, and user management with role-based access control
-
-### Recent Changes (August 6, 2025) 
-- ✅ **PRODUCTION MODE ONLY DEPLOYMENT** - Application now runs exclusively in production mode (NODE_ENV=production) with optimized performance and minified assets
-- ✅ **COMPLETE DATABASE SYNCHRONIZATION** - All development changes successfully pushed to production build with DatabaseStorage active for 16 categories and 133 authentic products
-- ✅ **THEATER HERO PRODUCTION** - Winter Theatre Performance video and premium UI optimized for production deployment with proper API-only data fetching
-- ✅ **ELIMINATED DEVELOPMENT MODE** - Removed all dev dependencies and health check errors, ensuring clean production-only operation
-- ✅ **API-FIRST ARCHITECTURE** - Zero hardcoded data, everything fetched via REST API endpoints from PostgreSQL database as requested
-- ✅ **RESERVED VM READY** - Production build optimized for Reserved VM deployment with 99.9% uptime guarantee and dedicated resources
-- ✅ **COMPREHENSIVE BUSINESS CATALOG** - 16 categories with 204+ authentic digital products migrated from development to production database, all API-driven
-
-### Previous Changes (February 6, 2025)
-- ✓ **EMAIL & OTP AUTHENTICATION SYSTEM** - Complete passwordless authentication replacing Replit Auth with secure email verification, 6-digit OTP codes, session management, and user profiles
-- ✓ **PROFESSIONAL LOGIN MODAL** - Modern authentication interface with email-first approach, OTP verification, loading states, and comprehensive error handling
-- ✓ **USER MENU COMPONENT** - Complete user dropdown with profile display, settings access, logout functionality, and responsive design
-- ✓ **DEPLOYMENT HEALTH MONITORING** - Advanced deployment status dashboard with real-time API endpoint monitoring, database connection verification, and comprehensive troubleshooting tools
-- ✓ **PRODUCTION-READY BUILD SYSTEM** - Optimized build configuration with environment-specific logging, health checks, and deployment verification endpoints
-
-### Previous Changes (February 5, 2025)
-- ✓ **COMPLETE IMB PAYMENT GATEWAY INTEGRATION** - Fully functional end-to-end payment processing with secure IMB API integration, real-time transaction handling, and database storage
-- ✓ **PROFESSIONAL CHECKOUT FLOW** - Advanced checkout modal with customer information forms, payment validation, and secure payment processing with loading states
-- ✓ **PAYMENT SUCCESS & ERROR HANDLING** - Comprehensive payment success page with order tracking, transaction details, and professional error handling for failed payments
-- ✓ **WHATSAPP POST-PURCHASE INTEGRATION** - Automatic WhatsApp message generation with order details, product information, and customer support contact after successful payments
-- ✓ **DATABASE-DRIVEN ARCHITECTURE** - Switched from memory storage to PostgreSQL database with proper CRUD operations, order management, and payment tracking
-- ✓ **COMPREHENSIVE WELCOME SCREEN** - Professional animated welcome page with sliding hero sections, category previews, feature highlights, and smooth navigation transitions
-- ✓ **FULLY INTEGRATED ADMIN DASHBOARD** - Business-ready admin panel with real-time product management, category overview, order tracking, and comprehensive statistics
-- ✓ **OPTIMIZED PRODUCT STRUCTURE** - Restructured OTT products using platform names (Netflix, Amazon Prime, Disney+, Sony LIV, ZEE5) as subcategories for better navigation
-- ✓ **COMPLETE DIGITAL CATALOG INTEGRATION** - Added 26+ products from Digital Products Catalog across ADULT, MARKETING, COURSES, and STREAMING SERVICES categories
-- ✓ **SEAMLESS FRONTEND-BACKEND INTEGRATION** - Zero runtime errors with proper data flow, error handling, and smooth page transitions throughout the application
-
-### Previous Changes (February 2, 2025)
-- ✓ **CRITICAL FIX: Product Management System** - Completely rebuilt admin dashboard with proper state management, no auto-refresh conflicts
-- ✓ **User Management & Rights System** - Added comprehensive user management with role-based permissions (Admin, Moderator, User)
-- ✓ **Optimized Form Controls** - Fixed all form inputs to use controlled components with proper onChange handlers
-- ✓ **Manual Refresh System** - Implemented manual-only data refresh to prevent form conflicts and unwanted updates
-- ✓ **Business-Ready Admin Dashboard** - Production-optimized admin interface with full CRUD operations working perfectly
-- ✓ **Granular User Permissions** - Added specific permission controls for products, users, orders, and reviews management
-- ✓ **Enhanced Security Model** - Implemented proper user roles with admin access controls and permission enforcement
-- ✓ **Professional User Interface** - Modern, responsive admin dashboard with comprehensive business management tools
-- ✓ **Fixed Product Editing** - Product forms now properly save, edit, and update without conflicts or errors
-- ✓ **Real-time Business Operations** - All admin functions work seamlessly for business management and operations
-
-### Previous Changes (February 1, 2025)
-- ✓ **WordPress-Style Navigation Restructure** - Removed all products from home page, keeping only popular/trending items and categories
-- ✓ **Separate Category Pages** - Created individual category pages (/category/ott, /category/vpn, etc.) showing unique products without variants
-- ✓ **Product Variant Pages** - Built dedicated variant pages (/product/netflix, /product/surfshark) with comprehensive plan comparisons
-- ✓ **Advanced Admin Dashboard** - Implemented comprehensive admin panel with analytics, order management, and business insights accessible via /admin
-- ✓ **Full Responsive Design** - Made entire platform fully responsive for mobile, tablet, and desktop users including admin dashboard
-- ✓ **Authentic Service Icons** - Added original brand icons for Spotify, YouTube, YouTube Music, Amazon Prime Video, ZEE5, Sony, and Gagana Plus
-- ✓ **Professional Business Metrics** - Key performance indicators including conversion rates, average ratings, and growth statistics
-- ✓ **Enhanced Navigation** - Added admin access link in header for business management dashboard with responsive design
-- ✓ **WordPress-Style Product Organization** - Only main products show in categories, variants accessible via individual product pages
-- ✓ **Mobile-First Design** - Optimized user experience across all device sizes with responsive grids, typography, and navigation
-- ✓ **User Authentication System** - Integrated Replit Auth for secure user login/logout with profile management
-- ✓ **Object Storage Integration** - File upload functionality with drag-and-drop interface for product images
-- ✓ **Clean Admin Interface** - Removed redundant icon input fields while preserving image upload capabilities
-
-### Previous Changes (January 26, 2025)
-- ✓ Imported authentic product data from CSV catalogs
-- ✓ Updated product schema to include duration, features, activation time, warranty, and notes
-- ✓ Enhanced product cards with detailed service information
-- ✓ Integrated Font Awesome icons for better visual presentation
-- ✓ Updated WhatsApp integration to use full product names
-- ✓ Focused on four main categories: OTT, VPN, Cloud Storage, and Streaming Services
-
-### Core Features
-- **Product Catalog**: Filterable grid with category-based navigation
-- **Checkout System**: Modal-based purchase flow with payment method selection
-- **Review System**: Comprehensive customer feedback with 5-star ratings, moderation, and verification badges
-- **WhatsApp Integration**: Automated customer communication post-purchase
-- **Responsive Design**: Mobile-first approach with dark/light theme support
-- **SEO Optimized**: Meta tags and structured content
-
-### UI Components
-- **Design System**: Consistent theming with CSS custom properties
-- **Component Library**: Reusable components in `/client/src/components/ui/`
-- **Layout Components**: Header, Footer, Hero sections
-- **Interactive Elements**: Modals, toasts, carousels, accordions
-
-## Data Flow
-
-1. **Product Display**: Frontend fetches products/categories from `/api/products` and `/api/categories`
-2. **Order Creation**: User selects product → checkout modal → payment method selection → order submission to `/api/orders`
-3. **WhatsApp Redirect**: After successful order, user redirected to WhatsApp with pre-filled message
-4. **Content Loading**: Blog posts and testimonials loaded via dedicated API endpoints
-5. **State Management**: TanStack Query handles caching, background updates, and optimistic updates
+### Authentication and Authorization
+- **User Session Management**: Basic user authentication for order tracking and history
+- **Admin Access Control**: Administrative interface for product management and order processing
+- **Guest Checkout Support**: Streamlined purchasing without mandatory account creation
 
 ## External Dependencies
 
-### UI & Styling
-- **Radix UI**: Accessible component primitives
-- **Tailwind CSS**: Utility-first styling framework
-- **Lucide React**: Consistent icon library
-- **Class Variance Authority**: Type-safe component variants
+### Communication Integration
+- **WhatsApp Business API**: Automated order confirmation and customer support integration with pre-filled message templates including order details and unique identifiers
 
-### Data & API
-- **TanStack Query**: Server state management
-- **React Hook Form**: Form handling with validation
-- **Date-fns**: Date manipulation utilities
+### Payment Processing
+- **Manual Payment Verification**: Support for UPI, Paytm, and Google Pay with manual confirmation workflow
+- **Payment Gateway Integration**: Infrastructure ready for automated payment processing (Razorpay/Stripe compatibility)
 
-### Development Tools
-- **Drizzle Kit**: Database migrations and schema management
-- **ESBuild**: Fast JavaScript bundling
-- **PostCSS**: CSS processing with Autoprefixer
+### Data Import Services
+- **File Processing Engine**: Support for Excel (.xlsx) and CSV file formats for bulk product catalog imports
+- **Data Mapping System**: Automated field mapping from external catalogs to internal product schema
 
-## Deployment Strategy
+### Third-Party Services
+- **Analytics Integration**: User behavior tracking and conversion monitoring capabilities
+- **Email Services**: Order confirmation and customer communication infrastructure
+- **CDN Support**: Image and asset delivery optimization for product catalogs
 
-### Development
-- **Hot Reload**: Vite dev server with HMR
-- **API Proxy**: Express serves both API and static files
-- **Database**: Environment-based connection via `DATABASE_URL`
-
-### Production Build
-1. Frontend: Vite builds optimized React app to `/dist/public`
-2. Backend: ESBuild bundles Express server to `/dist/index.js`
-3. Assets: Static files served from built directory
-4. Database: Drizzle migrations run via `npm run db:push`
-
-### Environment Setup
-- **Node.js**: ES modules with TypeScript compilation
-- **Database**: PostgreSQL connection string required
-- **Static Assets**: Served from `/dist/public` in production
-- **API Routes**: All backend routes prefixed with `/api`
-
-The application follows a monorepo structure with shared TypeScript definitions, enabling type safety across the full stack while maintaining clear separation between frontend and backend concerns.
+### Development and Security
+- **Code Quality Tools**: Semgrep integration for security scanning and code quality enforcement
+- **Security Compliance**: Input validation, CSRF protection, and secure parameter handling for sensitive data

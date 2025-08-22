@@ -1,0 +1,44 @@
+Erase all existing system data, legacy architecture, and configurations. Rebuild a Ride-Booking Driver Application from the ground up using the following mandatory technologies:
+	•	Backend Framework: Laravel (PHP)
+	•	Programming Language: PHP
+	•	UI Framework: Bootstrap (4.4.1)
+	•	Frontend Libraries:
+	•	jQuery (3.4.1)
+	•	List.js
+	•	Highlight.js
+	•	FancyBox (3.5.7)
+	•	Swiper
+	•	Flickity
+	•	core-js (3.2.1)
+	•	Font Awesome
+	•	Web Server: Apache HTTP Server (2.4.41)
+	•	Operating System: Ubuntu
+	•	Debugging Tools: PHPDebugBar
+
+Scope:
+	1.	Data Reset
+	•	Purge all existing datasets, logs, and configurations.
+	•	Establish a clean database schema tailored for a ride-booking ecosystem (Users, Drivers, Rides, Payments, Ratings, Vehicle Management).
+	2.	Core Modules to Implement:
+	•	User & Driver Authentication: Secure login/registration, role-based access.
+	•	Ride Booking Workflow: Request, match driver, confirm, track in real-time.
+	•	Driver App Features: Ride acceptance, navigation (integrated with mapping APIs), earnings dashboard.
+	•	Passenger App Features: Ride history, live tracking, fare calculation.
+	•	Admin Panel: Manage users, rides, driver verification, reports.
+	•	Payment Integration: Secure digital payments (Stripe/PayPal or custom gateway).
+	3.	UI/UX Requirements:
+	•	Fully responsive with Bootstrap 4.4.1.
+	•	Use Font Awesome for all icons.
+	•	Rich, smooth interactions with Swiper (sliders), Flickity (carousels), and FancyBox (modals).
+	•	Highlight.js for syntax highlighting (if showing logs/reports in admin panel).
+	•	List.js for search and filtering within admin and user dashboards.
+	4.	Performance & Security:
+	•	Use Laravel best practices for routing, middleware, and Eloquent ORM.
+	•	Optimize for speed and scalability with caching, queue management.
+	•	Ensure strict input validation & CSRF protection.
+	5.	Deployment:
+	•	Deploy on Ubuntu server with Apache 2.4.41.
+	•	Continuous integration pipeline to automate testing and deployment.
+
+Directive:
+Destroy all legacy dependencies and rebuild this app from scratch with zero reliance on outdated structures. Deliver a clean, scalable, production-ready ride-booking platform aligned with the tech stack above.
