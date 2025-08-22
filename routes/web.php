@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/instant-payout', [DriverController::class, 'instantPayout'])->name('instant-payout');
         Route::get('/leaderboard', [DriverController::class, 'leaderboard'])->name('leaderboard');
         Route::get('/community', [DriverController::class, 'community'])->name('community');
+        Route::get('/profile', [DriverController::class, 'profile'])->name('profile');
     });
     
     // Admin Routes

@@ -176,4 +176,29 @@ class DriverController extends Controller
         
         return view('driver.community', compact('communityData'));
     }
+    
+    public function profile()
+    {
+        $user = Auth::user();
+        
+        // Mock driver profile data
+        $profileData = [
+            'driver_license' => 'WB12AB345678',
+            'vehicle_registration' => 'WB 02 AB 1234',
+            'vehicle_type' => 'SEDAN CAR',
+            'vehicle_model' => 'Maruti Suzuki Dzire',
+            'vehicle_color' => 'White',
+            'joining_date' => '2024-01-15',
+            'total_trips' => 0,
+            'rating' => $user->rating ?? 4.5,
+            'documents' => [
+                'license' => ['status' => 'verified', 'expiry' => '2026-12-31'],
+                'registration' => ['status' => 'verified', 'expiry' => '2025-06-30'],
+                'insurance' => ['status' => 'verified', 'expiry' => '2025-12-31'],
+                'pollution' => ['status' => 'verified', 'expiry' => '2025-03-31']
+            ]
+        ];
+        
+        return view('driver.profile', compact('user', 'profileData'));
+    }
 }
