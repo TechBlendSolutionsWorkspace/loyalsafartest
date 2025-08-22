@@ -85,6 +85,21 @@ class DriverController extends Controller
         ]);
     }
     
+    public function updateLocation(Request $request)
+    {
+        $user = Auth::user();
+        
+        // In a real app, you would update the driver's location in the database
+        // For demo purposes, we'll just return a success response
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Location updated successfully',
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude
+        ]);
+    }
+    
     public function leaderboard()
     {
         // Mock leaderboard data
