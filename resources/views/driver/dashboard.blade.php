@@ -122,30 +122,30 @@
                                                     <div class="col-md-6">
                                                         <h6 class="mb-1">
                                                             <i class="fas fa-map-marker-alt text-success mr-1"></i>
-                                                            {{ Str::limit($ride->pickup_address, 30) }}
+                                                            {{ Str::limit($ride['pickup'], 30) }}
                                                         </h6>
                                                         <p class="text-muted mb-1">
                                                             <i class="fas fa-flag-checkered text-danger mr-1"></i>
-                                                            {{ Str::limit($ride->destination_address, 30) }}
+                                                            {{ Str::limit($ride['dropoff'], 30) }}
                                                         </p>
                                                         <p class="text-muted mb-0">
                                                             <small>
                                                                 <i class="fas fa-clock mr-1"></i>
-                                                                {{ $ride->requested_at->diffForHumans() }}
+                                                                {{ $ride['distance'] }}
                                                             </small>
                                                         </p>
                                                     </div>
                                                     <div class="col-md-3 text-center">
-                                                        <h5 class="text-success mb-0">₹{{ number_format($ride->estimated_fare, 2) }}</h5>
+                                                        <h5 class="text-success mb-0">₹{{ number_format($ride['fare'], 2) }}</h5>
                                                         <small class="text-muted">Estimated Fare</small>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <button class="btn btn-success btn-sm btn-block accept-ride" 
-                                                                data-ride-id="{{ $ride->id }}">
+                                                                data-ride-id="{{ $ride['id'] }}">
                                                             <i class="fas fa-check mr-1"></i>Accept
                                                         </button>
                                                         <button class="btn btn-outline-secondary btn-sm btn-block mt-1 decline-ride" 
-                                                                data-ride-id="{{ $ride->id }}">
+                                                                data-ride-id="{{ $ride['id'] }}">
                                                             <i class="fas fa-times mr-1"></i>Decline
                                                         </button>
                                                     </div>
