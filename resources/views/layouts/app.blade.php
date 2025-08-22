@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'RideBook - Ride Booking Application')</title>
+    <title>@yield('title', 'Loyal Safar - Your Trusted Ride Partner')</title>
     
-    <!-- Bootstrap CSS 4.4.1 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <!-- Bootstrap CSS 5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -27,24 +27,36 @@
     <!-- Custom CSS -->
     <style>
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #6c757d;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #17a2b8;
-            --dark-color: #343a40;
-            --light-color: #f8f9fa;
+            --loyal-primary: #1e88e5;
+            --loyal-secondary: #43a047;
+            --loyal-accent: #00c853;
+            --loyal-eco: #2e7d32;
+            --loyal-trust: #1565c0;
+            --loyal-light: #e8f5e8;
+            --loyal-dark: #1b5e20;
+            --loyal-gradient: linear-gradient(135deg, #1e88e5, #43a047);
+            --loyal-eco-gradient: linear-gradient(135deg, #2e7d32, #00c853);
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--loyal-light), #f0f9ff);
+            min-height: 100vh;
         }
         
         .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: var(--loyal-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(30, 136, 229, 0.1);
         }
         
         .ride-card {
@@ -77,9 +89,17 @@
         }
         
         .earnings-card {
-            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            background: var(--loyal-gradient);
             color: white;
-            border-radius: 15px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.15);
+        }
+        
+        .eco-card {
+            background: var(--loyal-eco-gradient);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.15);
         }
         
         .btn-ride {
@@ -96,7 +116,8 @@
         
         .sidebar {
             min-height: 100vh;
-            background: linear-gradient(180deg, var(--dark-color), #495057);
+            background: linear-gradient(180deg, var(--loyal-trust), var(--loyal-dark));
+            box-shadow: 4px 0 15px rgba(30, 136, 229, 0.1);
         }
         
         .sidebar .nav-link {

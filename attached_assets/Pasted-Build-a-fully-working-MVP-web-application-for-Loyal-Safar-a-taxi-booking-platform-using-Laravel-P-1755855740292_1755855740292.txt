@@ -1,0 +1,64 @@
+Build a fully working MVP web application for Loyal Safar (a taxi booking platform) using Laravel (PHP), MySQL, Bootstrap 5, and jQuery, with real navigation, backend logic, database sync, and responsive UI.
+This MVP must NOT be a dead UI — it should feel like a live working app, where all pages, buttons, redirects, database interactions, and flows work end-to-end.
+🔹 Core Requirements
+Environment Setup
+Configure dual database environments:
+Development (SQLite/MySQL local)
+Production (MySQL)
+Laravel .env handling for dev/prod separation.
+Database migrations + seeders for demo data.
+User Roles & Flows
+Rider Panel
+Book Ride form (pickup, drop, fare calculation).
+OTP verification → start ride.
+Live ride tracking + share link modal (dummy map + socket simulation).
+Apply coupon → discount applied, company covers difference.
+Panic button → triggers SMS/WhatsApp alert simulation.
+Driver Panel
+Login/Signup.
+Wallet dashboard → live payout updates after rides.
+Ride completion → commission slab auto-applied → payout credited.
+Leaderboard with driver rewards (dummy seed data).
+Admin Panel
+Manage Areas & Commission Slabs.
+Manage Coupons (CRUD).
+Reports (driver wallet payouts, company wallet debits, coupon usage, shared ride logs).
+Role-based access (admin, driver, rider).
+🔹 Database Schema (sync with migrations)
+areas (id, name)
+commission_slabs (id, area_id, min_fare, max_fare, commission_type, commission_value, is_default, active)
+rides (id, user_id, driver_id, area_id, total_fare, commission_amount, commission_type, driver_payout, coupon_code, coupon_discount, final_fare, payment_status, ride_status)
+ride_sessions (id, ride_id, token, start_time, end_time, active)
+ride_shares (id, ride_id, shared_with, share_time, status)
+driver_wallets (id, driver_id, ride_id, amount, transaction_type, reason, source, created_at)
+coupon_redemptions (id, user_id, ride_id, coupon_code, discount_amount, covered_by, created_at)
+company_wallets (id, ride_id, driver_id, amount, transaction_type, reason, created_at)
+🔹 Functionalities (must be active, not dummy)
+✅ Dynamic Commission Model → slab-based fare deduction.
+✅ Coupon Model → discount applied, driver always gets full payout.
+✅ Wallets → driver wallet credited, company wallet debited for discounts.
+✅ Ride Tracking & Sharing → OTP verified, generate tokenized share link with dummy map route (Google Maps / Leaflet).
+✅ Instant UPI Payout Simulation → RazorpayX/Cashfree API placeholder.
+✅ Reports → live reports in admin panel (use Laravel DataTables for interactivity).
+🔹 UI/UX & Responsiveness
+Apply InDrive-inspired color theme:
+Green (#00D26A), White (#FFFFFF), Dark Gray (#202124), Light Gray (#F5F5F5), Panic Red (#FF3B30).
+Mobile-first responsive design (Bootstrap grid).
+Buttons & Links must redirect correctly (no dead links).
+Forms → must POST to Laravel routes → update DB.
+Notifications & Modals → show success/error messages.
+Navigation: Rider ↔ Driver ↔ Admin panels fully linked.
+🔹 Integrations
+WhatsApp/SMS API (Twilio/Meta Placeholder) → for panic button + ride link sharing.
+Firebase/Socket.IO (dummy integration) → simulate live driver location.
+Payment Gateway Placeholder (Razorpay/UPI simulation) → for ride payment.
+🔹 Deliverables
+Complete Laravel Project with:
+Auth system (Rider, Driver, Admin).
+Working migrations & seeders.
+Fully responsive Bootstrap UI.
+Active Rider, Driver, Admin flows.
+Demo data (users, rides, slabs, coupons).
+README with setup instructions + demo credentials.
+⚡ End Goal:
+A live working MVP website where the business owner can book a ride, apply a coupon, see payouts update in driver wallet, check reports in admin panel, share ride tracking links, and experience the app as if it were already in production.

@@ -1,8 +1,8 @@
-# RideBook - Professional Ride Booking Platform
+# Loyal Safar - Professional Taxi Booking MVP Prototype
 
 ## Overview
 
-RideBook is a comprehensive ride-booking driver application built with Laravel/PHP, featuring role-based authentication for drivers, passengers, and administrators. The platform provides real-time ride matching, GPS tracking, earnings management, and secure payment processing. Built using Laravel framework with Bootstrap 4.4.1, jQuery 3.4.1, and modern web technologies for a responsive, mobile-first experience.
+**Loyal Safar** is a comprehensive MVP prototype for a taxi booking application built with Laravel/PHP/MySQL/Bootstrap 5, featuring advanced commission management, driver wallets with instant UPI payouts, ride sharing, coupon systems, panic button, and eco-friendly blue/green theme specifically targeting Kolkata/Howrah areas. The platform provides intelligent commission slabs, real-time earnings management, and sustainable transportation solutions.
 
 ## User Preferences
 
@@ -11,16 +11,16 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
-- **Bootstrap 4.4.1 Framework**: Responsive design using Bootstrap grid system and components
-- **jQuery 3.4.1 Integration**: Enhanced interactivity with jQuery for AJAX requests and DOM manipulation
-- **Modern UI Libraries**: Swiper for carousels, FancyBox for modals, Highlight.js for code highlighting
-- **Real-time Updates**: Live ride tracking, status updates, and location tracking functionality
+- **Bootstrap 5.3.0 Framework**: Modern responsive design with updated components and utilities
+- **Advanced UI Components**: Swiper.js carousels for ride options, Chart.js for earnings visualization
+- **Eco-Friendly Design**: Blue/green color scheme with modern gradients and eco-themed elements
+- **Mobile-First Approach**: Optimized for mobile devices with touch-friendly interfaces
 
 ### Backend Architecture
-- **Laravel Framework**: MVC architecture with Eloquent ORM for database operations
-- **Role-Based Authentication**: Multi-role system supporting drivers, passengers, and administrators
-- **Ride Management System**: Complete workflow from booking to completion with status tracking
-- **Payment Processing**: Secure payment handling with multiple payment method support
+- **Laravel Framework**: MVC architecture with comprehensive database schema (8 new tables)
+- **Commission Management**: Intelligent slab system with percentage/fixed rates for different fare ranges
+- **Wallet System**: Driver wallets with instant UPI payouts and transaction history
+- **Area-Based Pricing**: Kolkata/Howrah specific areas with customized fare structures
 
 ### Data Storage Solutions
 - **Product Catalog Structure**: 
