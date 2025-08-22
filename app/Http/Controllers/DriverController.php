@@ -71,6 +71,20 @@ class DriverController extends Controller
         return view('driver.rides', compact('rides'));
     }
     
+    public function toggleStatus(Request $request)
+    {
+        $user = Auth::user();
+        
+        // In a real app, you would update the driver's online status in the database
+        // For demo purposes, we'll just return a success response
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated successfully',
+            'status' => $request->status === 'online' ? 'online' : 'offline'
+        ]);
+    }
+    
     public function leaderboard()
     {
         // Mock leaderboard data

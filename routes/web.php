@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DriverController::class, 'dashboard'])->name('dashboard');
         Route::get('/rides', [DriverController::class, 'rides'])->name('rides');
         Route::get('/wallet', [DriverController::class, 'wallet'])->name('wallet');
+        Route::post('/toggle-status', [DriverController::class, 'toggleStatus'])->name('toggle-status');
         Route::post('/accept-ride/{ride}', [DriverController::class, 'acceptRide'])->name('accept-ride');
         Route::post('/start-ride/{ride}', [DriverController::class, 'startRide'])->name('start-ride');
         Route::post('/complete-ride/{ride}', [DriverController::class, 'completeRide'])->name('complete-ride');
